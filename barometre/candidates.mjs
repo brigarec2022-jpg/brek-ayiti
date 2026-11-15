@@ -2,7 +2,7 @@ export const snapshot = [
   {
     "full_name": "Lucmanne Delille",
     "political_group": "Debout Citoyen pour la Transformation d'Haïti",
-    "photo_url": "",
+    "photo_url": "/news/26-candidats-choisir-autrement/portraits/delille.webp",
     "cep_status": "En attente",
     "last_name": "Delille"
   },
