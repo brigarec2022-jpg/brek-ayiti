@@ -1,5 +1,19 @@
 export const snapshot = [
   {
+    "full_name": "Lucmanne Delille",
+    "political_group": "Debout Citoyen pour la Transformation d'Haïti",
+    "photo_url": "",
+    "cep_status": "En attente",
+    "last_name": "Delille"
+  },
+  {
+    "full_name": "Kely C. Bastien",
+    "political_group": "DELIVRANS",
+    "photo_url": "",
+    "cep_status": "En attente",
+    "last_name": "Bastien"
+  },
+  {
     "full_name": "Daniest Adrien",
     "political_group": "PRC",
     "photo_url": "/news/26-candidats-choisir-autrement/portraits/01.webp",
