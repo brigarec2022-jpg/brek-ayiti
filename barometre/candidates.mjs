@@ -9,7 +9,7 @@ export const snapshot = [
   {
     "full_name": "Kely C. Bastien",
     "political_group": "DELIVRANS",
-    "photo_url": "",
+    "photo_url": "/news/26-candidats-choisir-autrement/portraits/bastien.webp",
     "cep_status": "En attente",
     "last_name": "Bastien"
   },
