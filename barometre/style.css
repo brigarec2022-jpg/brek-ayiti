@@ -31,3 +31,17 @@ details>summary{cursor:pointer;font-weight:700;color:#a90029;margin:12px 0}.meth
 .vote-panel{border:2px solid #206747}.candidate.picked{outline:3px solid #b9002c;outline-offset:2px}.candidate.mine{outline:3px solid #206747}
 .confirm{position:sticky;bottom:12px;z-index:2147483000;background:#fff;border:2px solid #b9002c;border-radius:14px;padding:16px 18px;box-shadow:0 10px 30px #3b1d0a33;margin:20px 0}.confirm p{margin:0 0 6px;font-size:17px}.captcha{margin-top:10px}
 @media(max-width:600px){.res-row{grid-template-columns:1fr auto}.res-track{grid-column:1/-1;grid-row:2}}
+
+/* Baromètre v3 : trois postes */
+.step{margin-top:34px}.ballot h3{font-size:22px;margin:4px 0 6px;color:#ad0028}
+.search{margin:8px 0 12px;max-width:520px}
+.options{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin:10px 0}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;background:#fffaf0;color:#29251e;border:1px solid #dcc38f;border-radius:10px;padding:10px 12px;font-weight:400}
+.opt b{display:block;font-size:16px}.opt small{display:block;color:#72695d;font-size:13px}
+.opt .dot{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid #b9002c;display:grid;place-items:center;color:#fff;font-weight:800}
+.opt.picked{border-color:#b9002c;background:#fff0f2}.opt.picked .dot{background:#b9002c}
+.candidate.pick{text-align:left;color:#29251e;cursor:pointer;font:inherit;align-items:flex-start}
+.candidate.pick .tick{margin-top:auto;font-weight:700;color:#a90029;border:1px solid #b9002c;border-radius:7px;padding:8px 12px;width:100%;text-align:center}
+.candidate.pick.picked .tick{background:#b9002c;color:#fff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
+.confirm ul{margin:4px 0 8px;padding-left:20px}.small{font-size:13px;margin-top:8px}

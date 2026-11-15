@@ -103,6 +103,11 @@ function Results({race,choices,tick}){
   <${Evolution} daily=${daily} choices=${choices}/>`}</div>`
 }
 
+// Supabase renvoie au plus 1 000 lignes par requête : on lit les choix par pages.
+async function loadChoices(){const all=[];for(let i=0;;i+=1000){
+ const {data,error}=await supabase.from("bar_choices").select("id,race_id,full_name,party,photo_url,kind,sort,active").order("race_id").order("sort").order("id").range(i,i+999)
+ if(error)throw error;all.push(...data);if(data.length<1000)return all}}
+
 /* ---------- Application ---------- */
 function App(){
  const [geo,setGeo]=useState([]),[races,setRaces]=useState([]),[choices,setChoices]=useState([])
@@ -113,8 +118,9 @@ function App(){
  const [captchaBox,captchaToken,resetCaptcha]=useTurnstile()
 
  const dept=geo.find(d=>d.slug===place.dept)
- const communes=useMemo(()=>dept?[...new Set(dept.circs.flatMap(c=>c.communes))].sort((a,b)=>a.localeCompare(b,"fr")):[],[dept])
- const circsOfCommune=dept?dept.circs.filter(c=>c.communes.includes(place.commune)):[]
+ const communes=dept?dept.communes:[]
+ const commune=communes.find(m=>m.name===place.commune)
+ const circsOfCommune=dept&&commune?dept.circs.filter(c=>commune.races.includes(c.race)):[]
  const circRace=circsOfCommune.length===1?circsOfCommune[0].race:circsOfCommune.some(c=>c.race===place.race)?place.race:""
  const byId=Object.fromEntries(races.map(r=>[r.id,r]))
  const myRaces=["president",...(dept?["senateur/"+dept.slug]:[]),...(circRace?[circRace]:[])].map(id=>byId[id]).filter(Boolean)
@@ -129,10 +135,10 @@ function App(){
   ;(async()=>{try{
    const [g,r,c,{data:{session}}]=await Promise.all([fetch("/barometre/geo-2026.json?v=20261115").then(x=>x.json()),
     supabase.from("bar_races").select("id,office,department,label,sort").order("sort"),
-    supabase.from("bar_choices").select("id,race_id,full_name,party,photo_url,kind,sort,active").order("sort").range(0,9999),
+    loadChoices(),
     supabase.auth.getSession()])
-   if(!alive)return;if(r.error)throw r.error;if(c.error)throw c.error
-   setGeo(g);setRaces(r.data||[]);setChoices(c.data||[]);setUser(session?.user||null);await loadPrivate(session?.user||null)
+   if(!alive)return;if(r.error)throw r.error
+   setGeo(g);setRaces(r.data||[]);setChoices(c);setUser(session?.user||null);await loadPrivate(session?.user||null)
   }catch(e){alive&&setMessage("Erreur de chargement : "+e.message)}finally{alive&&setLoading(false)}})()
   const timer=setInterval(()=>setTick(t=>t+1),5*60*1000)
   return()=>{alive=false;clearInterval(timer)}},[])
@@ -174,7 +180,7 @@ function App(){
   <p className="muted">Votre département et votre commune servent seulement à afficher vos sénateurs et vos députés. Rien d’autre n’est demandé.</p>
   <div className="fields">
    <label className="field">Département<select value=${place.dept} onChange=${e=>setDept(e.target.value)}><option value="">— Choisir —</option>${geo.map(d=>html`<option key=${d.slug} value=${d.slug}>${d.name}</option>`)}</select></label>
-   <label className="field">Commune<select value=${place.commune} disabled=${!dept} onChange=${e=>setCommune(e.target.value)}><option value="">— Choisir —</option>${communes.map(m=>html`<option key=${m} value=${m}>${m}</option>`)}</select></label>
+   <label className="field">Commune<select value=${place.commune} disabled=${!dept} onChange=${e=>setCommune(e.target.value)}><option value="">— Choisir —</option>${communes.map(m=>html`<option key=${m.name} value=${m.name}>${m.name}</option>`)}</select></label>
    ${circsOfCommune.length>1&&html`<label className="field">Circonscription<select value=${place.race} onChange=${e=>setPlace({...place,race:e.target.value})}><option value="">— Choisir —</option>${circsOfCommune.map(c=>html`<option key=${c.race} value=${c.race}>${c.label}</option>`)}</select></label>`}
   </div>
   ${!place.dept&&html`<p className="muted">Vous pouvez aussi donner seulement votre choix pour la présidence, sans indiquer votre département.</p>`}
