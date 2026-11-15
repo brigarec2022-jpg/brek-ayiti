@@ -1,5 +1,4 @@
-import {mergeCandidates} from './candidates.mjs?v=20261115'
-import React,{useState,useEffect,useRef} from "https://esm.sh/react@19.1.1"
+import React,{useState,useEffect,useRef,useMemo} from "https://esm.sh/react@19.1.1"
 import {createRoot} from "https://esm.sh/react-dom@19.1.1/client"
 import htm from "https://esm.sh/htm@3.1.1"
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2"
@@ -9,21 +8,19 @@ const supabase=createClient("https://arefkpzykkhfzoizsbap.supabase.co","sb_publi
 
 // Clé publique Cloudflare Turnstile (anti-robot). Laisser vide tant qu'elle n'est pas créée.
 const TURNSTILE_SITE_KEY=""
-const THRESHOLD=50
+const THRESHOLD={president:50,senateur:30,depute:20}
 const SHOWN=10
 const PAGE_URL="https://brek-ayiti.pages.dev/barometre/"
-const unknown="Préférence non précisée"
 const COLORS=["#b9002c","#206747","#b38a36","#3d4f9f"]
+const PLACE_KEY="brek-barometre-lieu"
 const menus=[["Accueil","/"],["Qui sommes-nous","/#qui-sommes-nous"],["Programme","/#programme"],["Coordination","/#coordination"],["Radio · TV","/#radio"],["News","/#news"],["Sensibilisation","/#sensibilisation"],["Culture et Éducation","/#culture"],["Soutenir","/#soutenir"],["Brochure","/#brochure"],["Baromètre électoral","/barometre/"]]
-const demoFields=[["age_bracket","Tranche d’âge",["18–24","25–34","35–44","45–54","55–64","65+"]],["sex","Sexe",["Femme","Homme","Autre"]],["category","Catégorie socioprofessionnelle",["Étudiant(e)","Salarié(e)","Indépendant(e)","Entrepreneur(e)","Sans emploi","Retraité(e)","Autre"]],["department","Département",["Artibonite","Centre","Grand’Anse","Nippes","Nord","Nord-Est","Nord-Ouest","Ouest","Sud","Sud-Est","Diaspora"]]]
 
 const fmt=n=>Number(n||0).toLocaleString("fr-FR")
 const pct=(n,t)=>t?(n/t*100).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1})+" %":"0 %"
 const hhmm=d=>d?new Date(d).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Port-au-Prince"}):""
 const dayLabel=d=>new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})
-const status=v=>{const s=String(v||"").toLocaleLowerCase("fr")
- return s.includes("admis")?["🟢 Admis CEP","green"]:/refus|rejet/.test(s)?["🔴 Refusé CEP","red"]:["🟠 En attente CEP","orange"]}
-const nameOf=c=>c.full_name||c.last_name||"Candidat"
+const fold=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()
+const store={get(){try{return JSON.parse(localStorage.getItem(PLACE_KEY)||"null")}catch{return null}},set(v){try{localStorage.setItem(PLACE_KEY,JSON.stringify(v))}catch{}}}
 
 function useTurnstile(){
  const box=useRef(null),[token,setToken]=useState("")
@@ -31,160 +28,183 @@ function useTurnstile(){
   const render=()=>{if(box.current&&window.turnstile&&!box.current.dataset.done){box.current.dataset.done="1"
    window.turnstile.render(box.current,{sitekey:TURNSTILE_SITE_KEY,language:"fr",callback:setToken,"expired-callback":()=>setToken("")})}}
   if(window.turnstile)render()
-  else{const s=document.createElement("script");s.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";s.async=true;s.onload=render;document.head.appendChild(s)}},[])
+  else{const s=document.createElement("script");s.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";s.async=true;s.onload=render;document.head.appendChild(s)}})
  return [box,token,()=>{setToken("");try{window.turnstile?.reset(box.current)}catch{}}]
 }
 
+/* ---------- Choix d'un candidat dans une course ---------- */
+function Ballot({race,choices,value,onChange,done,photos}){
+ const [q,setQ]=useState("")
+ const people=choices.filter(c=>c.kind==="candidate")
+ const special=choices.filter(c=>c.kind!=="candidate")
+ const list=q?people.filter(c=>fold(c.full_name+" "+(c.party||"")).includes(fold(q))):people
+ const mine=choices.find(c=>c.id===done)
+ return html`<section className="panel ballot" id=${"b-"+race.office}>
+  <h3>${race.label}</h3>
+  ${done?html`<p className="success">✓ Intention enregistrée : <b>${mine?.full_name||"—"}</b></p>`:html`
+  <p className="muted">${people.length} candidat${people.length>1?"s":""} · touchez un nom pour le choisir.</p>
+  ${people.length>8&&html`<input type="search" className="search" placeholder="Chercher un nom ou un parti" value=${q} onInput=${e=>setQ(e.target.value)}/>`}
+  <div className=${photos?"grid":"options"}>${list.map(c=>photos?html`
+   <button key=${c.id} className=${"candidate pick"+(value===c.id?" picked":"")} onClick=${()=>onChange(value===c.id?null:c.id)} aria-pressed=${value===c.id}>
+    ${c.photo_url&&html`<img src=${c.photo_url} alt="" loading="lazy" className=${/ricardo/i.test(c.full_name)?"portrait-ricardo":""}/>`}
+    <span className="name">${c.full_name}</span><span className="muted">${c.party||"Groupe non précisé"}</span>
+    <span className="tick">${value===c.id?"✓ Choisi":"Choisir"}</span></button>`:html`
+   <button key=${c.id} className=${"opt"+(value===c.id?" picked":"")} onClick=${()=>onChange(value===c.id?null:c.id)} aria-pressed=${value===c.id}>
+    <span><b>${c.full_name}</b><small>${c.party||"Groupe non précisé"}</small></span><span className="dot">${value===c.id?"✓":""}</span></button>`)}</div>
+  ${!list.length&&html`<p className="muted">Aucun nom ne correspond à « ${q} ».</p>`}
+  <div className="actions">${special.map(c=>html`<button key=${c.id} className=${value===c.id?"":"secondary"} onClick=${()=>onChange(value===c.id?null:c.id)}>${c.full_name}</button>`)}</div>`}
+ </section>`
+}
+
+/* ---------- Résultats d'une course ---------- */
 function Evolution({daily,choices}){
  if(!daily.length)return null
  const days=[...new Set(daily.map(r=>r.day))].sort()
- const share={};for(const r of daily){(share[r.day]??={})[r.candidate_id]=r.total?r.cumul/r.total*100:0}
+ const share={};for(const r of daily){(share[r.day]??={})[r.choice_id]=r.total?r.cumul/r.total*100:0}
  const last=days[days.length-1]
  const top=choices.filter(c=>c.kind==="candidate").sort((a,b)=>(share[last]?.[b.id]||0)-(share[last]?.[a.id]||0)).slice(0,4)
  const W=640,H=200,P=30,max=Math.max(10,...top.map(c=>Math.max(...days.map(d=>share[d]?.[c.id]||0))))
  const x=i=>P+(days.length<2?0:i*(W-2*P)/(days.length-1)),y=v=>H-P-(v/max)*(H-2*P)
- return html`<details className="evo" open><summary>Évolution jour par jour</summary>
+ return html`<details className="evo"><summary>Évolution jour par jour</summary>
  <svg viewBox=${"0 0 "+W+" "+H} role="img" aria-label="Évolution de la part des quatre premiers choix">
   <line x1=${P} x2=${W-P} y1=${H-P} y2=${H-P} stroke="#d9c79f"/><line x1=${P} x2=${W-P} y1=${y(max)} y2=${y(max)} stroke="#eee2c6"/>
   <text x="2" y=${y(max)+4} className="axis">${Math.round(max)}</text><text x="2" y=${H-P+4} className="axis">0</text>
   <text x=${P} y=${H-8} className="axis">${dayLabel(days[0])}</text><text x=${W-P} y=${H-8} textAnchor="end" className="axis">${dayLabel(last)}</text>
   ${top.map((c,i)=>html`<polyline key=${c.id} fill="none" stroke=${COLORS[i]} strokeWidth="3" points=${days.map((d,j)=>x(j)+","+y(share[d]?.[c.id]||0)).join(" ")}/>`)}
  </svg>
- <div className="legend">${top.map((c,i)=>html`<span key=${c.id}><i style=${{background:COLORS[i]}}></i>${nameOf(c)}</span>`)}</div>
- <p className="muted">Part de chaque choix parmi les intentions retenues, à la fin de chaque journée (heure d’Haïti). Le tableau donne les 5 derniers jours.</p>
- <div className="table-scroll"><table><thead><tr><th>Jour</th>${top.map(c=>html`<th key=${c.id}>${nameOf(c)}</th>`)}</tr></thead>
+ <div className="legend">${top.map((c,i)=>html`<span key=${c.id}><i style=${{background:COLORS[i]}}></i>${c.full_name}</span>`)}</div>
+ <p className="muted">Part de chaque choix parmi les intentions retenues, à la fin de chaque journée (heure d’Haïti).</p>
+ <div className="table-scroll"><table><thead><tr><th>Jour</th>${top.map(c=>html`<th key=${c.id}>${c.full_name}</th>`)}</tr></thead>
  <tbody>${days.slice(-5).reverse().map(d=>html`<tr key=${d}><td>${dayLabel(d)}</td>${top.map(c=>html`<td key=${c.id}>${(share[d]?.[c.id]||0).toLocaleString("fr-FR",{maximumFractionDigits:1})} %</td>`)}</tr>`)}</tbody></table></div>
  </details>`
 }
 
+function Results({race,choices,tick}){
+ const [rows,setRows]=useState(null),[meta,setMeta]=useState(null),[daily,setDaily]=useState([]),[err,setErr]=useState("")
+ useEffect(()=>{if(!race)return;let alive=true;setRows(null)
+  Promise.all([supabase.rpc("bar_results",{p_race:race.id}),supabase.rpc("bar_meta",{p_race:race.id}),supabase.rpc("bar_daily",{p_race:race.id})])
+  .then(([r,m,d])=>{if(!alive)return;if(r.error)throw r.error;setRows(r.data||[]);setMeta(m.data||null);setDaily(d.data||[]);setErr("")})
+  .catch(e=>alive&&setErr(e.message));return()=>{alive=false}},[race?.id,tick])
+ if(!race)return null
+ if(err)return html`<p className="error">Résultats indisponibles : ${err}</p>`
+ if(!rows)return html`<p className="muted">Chargement des résultats…</p>`
+ const counts=Object.fromEntries(rows.map(r=>[r.choice_id,Number(r.total)]))
+ const total=rows.reduce((a,r)=>a+Number(r.total),0),need=THRESHOLD[race.office]
+ const ranked=choices.filter(c=>c.active!==false||counts[c.id]).sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)||a.sort-b.sort)
+ const row=c=>{const n=counts[c.id]||0;return html`<div key=${c.id} className="res-row"><div className="res-name"><b>${c.full_name}</b>${c.party&&html`<small>${c.party}</small>`}</div>
+  <div className="res-track"><span style=${{width:(total?n/total*100:0)+"%"}}></span></div><div className="res-num"><b>${pct(n,total)}</b><small>${fmt(n)} intention${n>1?"s":""}</small></div></div>`}
+ return html`<div>
+  ${meta&&html`<p className="muted">Mis à jour à ${hhmm(meta.generated_at)} (heure d’Haïti).</p>`}
+  ${total<need?html`<p><strong>Résultats masqués : ${fmt(total)}/${need} intentions pour l’instant.</strong></p><p className="muted">Les pourcentages de cette course seront publiés à partir de ${need} intentions retenues.</p>`:html`
+  <p><strong>${fmt(total)} intentions retenues</strong></p>
+  ${meta?.suspect>0&&html`<p className="alert">Des envois massifs et suspects (${fmt(meta.suspect)}) ont été détectés et retirés de ces résultats.</p>`}
+  <div className="results">${ranked.slice(0,SHOWN).map(row)}</div>
+  ${ranked.length>SHOWN&&html`<details className="more"><summary>Voir les ${ranked.length-SHOWN} autres choix</summary><div className="results">${ranked.slice(SHOWN).map(row)}</div></details>`}
+  <${Evolution} daily=${daily} choices=${choices}/>`}</div>`
+}
+
+/* ---------- Application ---------- */
 function App(){
- const [candidates,setCandidates]=useState(mergeCandidates([]).map(c=>({...c,kind:"candidate"})))
- const [votes,setVotes]=useState([]),[meta,setMeta]=useState(null),[daily,setDaily]=useState([])
- const [user,setUser]=useState(null),[myVote,setMyVote]=useState(null),[admin,setAdmin]=useState(false)
- const [selected,setSelected]=useState(null),[chosen,setChosen]=useState([])
- const [demo,setDemo]=useState({age_bracket:unknown,sex:unknown,category:unknown,department:unknown})
- const [loading,setLoading]=useState(true),[busy,setBusy]=useState(false),[message,setMessage]=useState(""),[copied,setCopied]=useState(false)
- const [adminMode]=useState(()=>location.hash==="#admin"),[email,setEmail]=useState(""),[password,setPassword]=useState("")
+ const [geo,setGeo]=useState([]),[races,setRaces]=useState([]),[choices,setChoices]=useState([])
+ const [place,setPlace]=useState(()=>store.get()||{dept:"",commune:"",race:""})
+ const [picks,setPicks]=useState({}),[done,setDone]=useState({}),[user,setUser]=useState(null)
+ const [busy,setBusy]=useState(false),[message,setMessage]=useState(""),[loading,setLoading]=useState(true),[copied,setCopied]=useState(false)
+ const [tab,setTab]=useState("president"),[resDept,setResDept]=useState(""),[resCirc,setResCirc]=useState(""),[tick,setTick]=useState(0)
  const [captchaBox,captchaToken,resetCaptcha]=useTurnstile()
- const confirmRef=useRef(null)
 
- const counts=Object.fromEntries(votes.map(v=>[v.candidate_id,Number(v.total_votes||0)]))
- const total=votes.reduce((a,v)=>a+Number(v.total_votes||0),0)
- const open=total>=THRESHOLD
- const people=candidates.filter(c=>c.kind==="candidate")
- const special=candidates.filter(c=>c.kind!=="candidate").sort((a,b)=>(a.sort_order||0)-(b.sort_order||0))
- const ranked=[...candidates].sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)||nameOf(a).localeCompare(nameOf(b),"fr"))
- const grid=open?[...people].sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)):[...people].sort((a,b)=>nameOf(a).localeCompare(nameOf(b),"fr"))
- const choice=candidates.find(c=>c.id===selected)
+ const dept=geo.find(d=>d.slug===place.dept)
+ const communes=useMemo(()=>dept?[...new Set(dept.circs.flatMap(c=>c.communes))].sort((a,b)=>a.localeCompare(b,"fr")):[],[dept])
+ const circsOfCommune=dept?dept.circs.filter(c=>c.communes.includes(place.commune)):[]
+ const circRace=circsOfCommune.length===1?circsOfCommune[0].race:circsOfCommune.some(c=>c.race===place.race)?place.race:""
+ const byId=Object.fromEntries(races.map(r=>[r.id,r]))
+ const myRaces=["president",...(dept?["senateur/"+dept.slug]:[]),...(circRace?[circRace]:[])].map(id=>byId[id]).filter(Boolean)
+ const choicesOf=id=>choices.filter(c=>c.race_id===id&&(c.active!==false))
+ const pending=myRaces.filter(r=>picks[r.id]&&!done[r.id])
 
- const loadPublic=async()=>{
-  const [c,r,m,d]=await Promise.all([
-   supabase.from("candidates").select("id,full_name,last_name,political_group,cep_status,photo_url,kind,sort_order"),
-   supabase.rpc("get_vote_intentions_summary"),supabase.rpc("get_barometre_meta"),supabase.rpc("get_vote_daily")])
-  if(c.error)throw c.error;if(r.error)throw r.error
-  const rows=c.data||[]
-  setCandidates([...mergeCandidates(rows.filter(x=>(x.kind||"candidate")==="candidate")).map(x=>({...x,kind:"candidate"})),...rows.filter(x=>x.kind&&x.kind!=="candidate").map(x=>({...x,voting_available:true}))])
-  setVotes(r.data||[]);setMeta(m.error?null:m.data);setDaily(d.error?[]:(d.data||[]))}
-
- const loadPrivate=async u=>{if(!u){setMyVote(null);setAdmin(false);return}
-  const v=await supabase.from("vote_intentions").select("candidate_id").eq("voter_id",u.id).maybeSingle()
-  if(!v.error)setMyVote(v.data?.candidate_id||null)
-  if(!u.is_anonymous){const p=await supabase.from("profiles").select("role").eq("id",u.id).maybeSingle();setAdmin(!p.error&&p.data?.role==="admin")}}
+ const loadPrivate=async u=>{if(!u){setDone({});return}
+  const {data}=await supabase.from("bar_votes").select("race_id,choice_id")
+  setDone(Object.fromEntries((data||[]).map(v=>[v.race_id,v.choice_id])))}
 
  useEffect(()=>{let alive=true
-  ;(async()=>{try{const {data:{session}}=await supabase.auth.getSession();if(!alive)return
-   setUser(session?.user||null);await Promise.all([loadPublic(),loadPrivate(session?.user||null)])}
-   catch(e){if(alive)setMessage("Erreur de chargement : "+e.message)}finally{if(alive)setLoading(false)}})()
-  const {data:{subscription}}=supabase.auth.onAuthStateChange((_e,s)=>{if(!alive)return;setUser(s?.user||null);setTimeout(()=>loadPrivate(s?.user||null).catch(()=>{}),0)})
-  const timer=setInterval(()=>loadPublic().catch(()=>{}),5*60*1000)
-  return()=>{alive=false;subscription.unsubscribe();clearInterval(timer)}},[])
+  ;(async()=>{try{
+   const [g,r,c,{data:{session}}]=await Promise.all([fetch("/barometre/geo-2026.json?v=20261115").then(x=>x.json()),
+    supabase.from("bar_races").select("id,office,department,label,sort").order("sort"),
+    supabase.from("bar_choices").select("id,race_id,full_name,party,photo_url,kind,sort,active").order("sort").range(0,9999),
+    supabase.auth.getSession()])
+   if(!alive)return;if(r.error)throw r.error;if(c.error)throw c.error
+   setGeo(g);setRaces(r.data||[]);setChoices(c.data||[]);setUser(session?.user||null);await loadPrivate(session?.user||null)
+  }catch(e){alive&&setMessage("Erreur de chargement : "+e.message)}finally{alive&&setLoading(false)}})()
+  const timer=setInterval(()=>setTick(t=>t+1),5*60*1000)
+  return()=>{alive=false;clearInterval(timer)}},[])
 
- const pick=id=>{if(myVote||busy)return;setSelected(id);setMessage("");setTimeout(()=>confirmRef.current?.scrollIntoView({behavior:"smooth",block:"center"}),50)}
+ useEffect(()=>{store.set(place);if(place.dept&&!resDept)setResDept(place.dept)},[place])
+ useEffect(()=>{if(circRace&&!resCirc)setResCirc(circRace)},[circRace])
 
- const submitVote=async()=>{
-  if(!selected||myVote||busy)return
-  if(TURNSTILE_SITE_KEY&&!captchaToken){setMessage("Impossible d’enregistrer : cochez d’abord la vérification anti-robot.");return}
+ const setDept=v=>{setPlace({dept:v,commune:"",race:""});setPicks(p=>({president:p.president}))}
+ const setCommune=v=>{setPlace({...place,commune:v,race:""});setPicks(p=>({president:p.president,["senateur/"+place.dept]:p["senateur/"+place.dept]}))}
+
+ const submit=async()=>{
+  if(!pending.length||busy)return
+  if(TURNSTILE_SITE_KEY&&!captchaToken){setMessage("Impossible d’envoyer : cochez d’abord la vérification anti-robot.");return}
   setBusy(true);setMessage("")
-  try{
-   let u=user
-   if(!u){const {data,error}=await supabase.auth.signInAnonymously(TURNSTILE_SITE_KEY?{options:{captchaToken}}:undefined)
-    if(error)throw error;u=data.user;setUser(u)}
-   const row={voter_id:u.id,candidate_id:selected}
-   for(const k of Object.keys(demo))if(demo[k]!==unknown)row[k]=demo[k]
-   const {error}=await supabase.from("vote_intentions").insert(row)
-   if(error){if(error.code==="23505"){setMessage("Impossible d’enregistrer : une intention a déjà été exprimée depuis cet appareil.");await loadPrivate(u)}else throw error}
-   else{setMyVote(selected);setSelected(null);setMessage("Merci. Votre intention a été enregistrée.");await loadPublic()}
-  }catch(e){setMessage("Impossible d’enregistrer votre intention : "+e.message)}finally{setBusy(false);resetCaptcha()}}
-
- const adminLogin=async e=>{e.preventDefault();setBusy(true)
-  const {error}=await supabase.auth.signInWithPassword({email,password});setMessage(error?"Impossible : "+error.message:"Connexion administrateur effectuée.");setBusy(false)}
-
- const changeStatus=async v=>{if(!admin||!chosen.length||busy)return;setBusy(true)
-  const {error}=await supabase.from("candidates").update({cep_status:v}).in("id",chosen)
-  setMessage(error?"Mise à jour refusée : "+error.message:"Statuts mis à jour.");if(!error){setChosen([]);await loadPublic()};setBusy(false)}
+  try{let u=user
+   if(!u){const {data,error}=await supabase.auth.signInAnonymously(TURNSTILE_SITE_KEY?{options:{captchaToken}}:undefined);if(error)throw error;u=data.user;setUser(u)}
+   const rows=pending.map(r=>({race_id:r.id,choice_id:picks[r.id],department:place.dept||null,commune:place.commune||null}))
+   let dup=false
+   for(const row of rows){const {error}=await supabase.from("bar_votes").insert(row);if(error){if(error.code==="23505")dup=true;else throw error}}
+   await loadPrivate(u);setPicks({});setTick(t=>t+1)
+   setMessage(dup?"Merci. Certaines intentions avaient déjà été enregistrées depuis cet appareil.":"Merci. Vos intentions ont été enregistrées.")
+   document.getElementById("resultats")?.scrollIntoView({behavior:"smooth"})
+  }catch(e){setMessage("Impossible d’enregistrer : "+e.message)}finally{setBusy(false);resetCaptcha()}}
 
  const copy=async()=>{try{await navigator.clipboard.writeText(PAGE_URL);setCopied(true);setTimeout(()=>setCopied(false),2000)}catch{}}
-
- const row=c=>{const n=counts[c.id]||0
-  return html`<div key=${c.id} className="res-row"><div className="res-name"><b>${nameOf(c)}</b>${c.political_group&&html`<small>${c.political_group}</small>`}</div>
-  <div className="res-track"><span style=${{width:(total?n/total*100:0)+"%"}}></span></div>
-  <div className="res-num"><b>${pct(n,total)}</b><small>${fmt(n)} intention${n>1?"s":""}</small></div></div>`}
-
- const isError=/^(Erreur|Impossible|Mise à jour refusée)/.test(message)
+ const isError=/^(Erreur|Impossible)/.test(message)
+ const resRace=tab==="president"?byId.president:tab==="senateur"?byId["senateur/"+resDept]:byId[resCirc]
+ const resGeo=geo.find(d=>d.slug===resDept)
 
  return html`<div className="app-shell"><div className="topline">Un mouvement né en 2017 · Haïti et diaspora</div>
  <header className="head"><a className="brand" href="/"><img src="/logo-original.jpg" alt="Logo BREK"/><span><b>BREK</b><small>Brigade Revolisyon Klasik</small></span></a>
  <nav className="nav">${menus.map(([n,u])=>html`<a key=${n} className=${n==="Baromètre électoral"?"active":""} href=${u}>${n}</a>`)}</nav></header>
  <main><div className="muted">BREK-AYITI · BAROMÈTRE CITOYEN</div><h1>Baromètre d’intentions de vote</h1>
- <p className="lead">Choisissez, confirmez, c’est fait. <b>Aucun compte, aucun e-mail, aucun mot de passe.</b></p>
- <div className="notice"><strong>Sondage d’intentions — non officiel, ne remplace pas l’élection.</strong> Ce baromètre mesure une opinion exprimée volontairement sur internet. Ce n’est pas l’élection organisée par le CEP. BREK ne recommande aucun vote. Les candidats sont affichés à titre informatif, y compris ceux dont le dossier reste en attente de validation par le CEP.</div>
+ <p className="lead">Président, sénateur, député : dites-nous pour qui vous comptez voter. <b>Aucun nom, aucun e-mail, aucun compte.</b></p>
+ <div className="notice"><strong>Sondage d’intentions — non officiel, ne remplace pas l’élection.</strong> Ce baromètre mesure une opinion exprimée volontairement sur internet. Ce n’est pas l’élection organisée par le CEP. BREK ne recommande aucun vote. Les listes de candidats proviennent du registre publié par le CEP et peuvent encore changer.</div>
  ${message&&html`<div role="status" className=${"panel "+(isError?"error":"success")}>${message}</div>`}
 
- <section className="panel" id="resultats"><h2>Président de la République</h2>
- ${meta&&html`<p className="muted">Résultats mis à jour à ${hhmm(meta.generated_at)} (heure d’Haïti), puis toutes les 5 minutes.</p>`}
- ${!open?html`<p><strong>Résultats masqués : ${fmt(total)}/${THRESHOLD} intentions pour l’instant.</strong></p><p className="muted">Les pourcentages seront publiés à partir de ${THRESHOLD} intentions retenues. Aucun classement anticipé n’est affiché.</p>`
- :html`<p><strong>${fmt(total)} intentions retenues</strong></p>
-  ${meta?.suspect>0&&html`<p className="alert">Des envois massifs et suspects (${fmt(meta.suspect)}) ont été détectés et retirés des résultats.</p>`}
-  <div className="results">${ranked.slice(0,SHOWN).map(row)}</div>
-  ${ranked.length>SHOWN&&html`<details className="more"><summary>Voir les ${ranked.length-SHOWN} autres choix</summary><div className="results">${ranked.slice(SHOWN).map(row)}</div></details>`}
-  <${Evolution} daily=${daily} choices=${candidates}/>`}
- <div className="actions"><a className="btn-wa" href=${"https://wa.me/?text="+encodeURIComponent("Baromètre citoyen BREK-AYITI — donnez votre intention de vote en 10 secondes, sans compte (sondage non officiel) : "+PAGE_URL)} target="_blank" rel="noopener noreferrer">📲 Pataje sou WhatsApp</a>
- <button className="secondary" onClick=${copy}>${copied?"Lien copié ✓":"Copier le lien"}</button>
- <button className="secondary" disabled=${busy} onClick=${()=>loadPublic().catch(e=>setMessage("Erreur de chargement : "+e.message))}>Actualiser</button></div>
- <details className="method"><summary>Comment ces chiffres sont calculés</summary>
-  <p>Chaque appareil peut exprimer une seule intention. Aucun nom, e-mail ni numéro de téléphone n’est demandé.</p>
-  <p>Pour repérer les envois en masse, nous gardons une empreinte chiffrée et irréversible de l’adresse réseau, jamais l’adresse elle-même. Quand un nombre anormal d’intentions arrive de la même adresse en moins d’une heure, ces envois sont marqués comme suspects et retirés des résultats. Le seuil est volontairement large, car en Haïti beaucoup de téléphones partagent la même adresse réseau.${TURNSTILE_SITE_KEY?" Une vérification anti-robot discrète bloque aussi les programmes automatiques.":""}</p>
-  <p>Les pourcentages portent sur toutes les intentions retenues, y compris « Aucun candidat » et « Je ne sais pas encore ». Ce sondage en ligne n’est pas un échantillon scientifique : il reflète seulement les personnes qui ont choisi d’y répondre.</p>
- </details></section>
-
- <section className="panel vote-panel" id="voter"><h2>${myVote?"Votre intention est enregistrée":"Exprimer mon intention"}</h2>
- ${myVote?html`<p className="success">✓ Vous avez choisi : <b>${nameOf(candidates.find(c=>c.id===myVote)||{})}</b>. Une seule intention par appareil.</p>`
- :html`<p>1. Touchez un candidat ci-dessous, ou l’un de ces choix. 2. Confirmez.</p>
-  <div className="actions">${special.map(c=>html`<button key=${c.id} className=${selected===c.id?"":"secondary"} disabled=${busy} onClick=${()=>pick(c.id)}>${nameOf(c)}</button>`)}</div>`}
+ <section className="panel where" id="voter"><h2>1. Où votez-vous ?</h2>
+  <p className="muted">Votre département et votre commune servent seulement à afficher vos sénateurs et vos députés. Rien d’autre n’est demandé.</p>
+  <div className="fields">
+   <label className="field">Département<select value=${place.dept} onChange=${e=>setDept(e.target.value)}><option value="">— Choisir —</option>${geo.map(d=>html`<option key=${d.slug} value=${d.slug}>${d.name}</option>`)}</select></label>
+   <label className="field">Commune<select value=${place.commune} disabled=${!dept} onChange=${e=>setCommune(e.target.value)}><option value="">— Choisir —</option>${communes.map(m=>html`<option key=${m} value=${m}>${m}</option>`)}</select></label>
+   ${circsOfCommune.length>1&&html`<label className="field">Circonscription<select value=${place.race} onChange=${e=>setPlace({...place,race:e.target.value})}><option value="">— Choisir —</option>${circsOfCommune.map(c=>html`<option key=${c.race} value=${c.race}>${c.label}</option>`)}</select></label>`}
+  </div>
+  ${!place.dept&&html`<p className="muted">Vous pouvez aussi donner seulement votre choix pour la présidence, sans indiquer votre département.</p>`}
  </section>
 
- <h2>Les candidats (${people.length})</h2>
- ${loading?html`<p>Chargement des candidats…</p>`:html`<div className="grid">${grid.map(c=>{const st=status(c.cep_status),n=counts[c.id]||0
-  return html`<article key=${c.id} className=${"candidate"+(selected===c.id?" picked":"")+(myVote===c.id?" mine":"")}>
-  ${c.photo_url&&(c.photo_url.startsWith("https://")||c.photo_url.startsWith("/news/"))&&html`<img className=${/ricardo\s+jean[- ]pierre/i.test(c.full_name||"")?"portrait-ricardo":""} src=${c.photo_url} alt=${"Photo de "+c.full_name} loading="lazy"/>`}
-  <div className="name">${nameOf(c)}</div><div className="muted">${c.political_group||"Groupe non précisé"}</div><span className=${"badge "+st[1]}>${st[0]}</span>
-  ${open&&html`<div><strong>${pct(n,total)}</strong> <span className="muted">· ${fmt(n)}</span><div className="bar"><div className="fill" style=${{width:(total?n/total*100:0)+"%"}}></div></div></div>`}
-  ${myVote===c.id?html`<div className="voteLabel">✓ Votre intention</div>`:!myVote&&(c.voting_available?html`<button disabled=${busy} className=${selected===c.id?"":"secondary"} onClick=${()=>pick(c.id)}>${selected===c.id?"✓ Sélectionné":"Choisir"}</button>`:html`<p className="muted">Choix bientôt disponible.</p>`)}
-  </article>`})}</div>`}
+ <h2 className="step">2. Vos choix</h2>
+ ${loading?html`<p>Chargement des listes…</p>`:myRaces.map(r=>html`<${Ballot} key=${r.id} race=${r} choices=${choicesOf(r.id)} photos=${r.office==="president"} value=${picks[r.id]||null} done=${done[r.id]} onChange=${v=>setPicks({...picks,[r.id]:v})}/>`)}
+ ${place.commune&&circsOfCommune.length>1&&!circRace&&html`<p className="muted">Choisissez votre circonscription ci-dessus pour voir vos candidats à la députation.</p>`}
 
- ${!myVote&&choice&&html`<div className="confirm" ref=${confirmRef} role="dialog" aria-label="Confirmer mon intention">
-  <p>Votre choix : <b>${nameOf(choice)}</b></p>
-  <details><summary>Ajouter des informations facultatives (âge, sexe, département…)</summary><div className="fields">${demoFields.map(([k,l,o])=>html`<label key=${k} className="field">${l}<select value=${demo[k]} onChange=${e=>setDemo({...demo,[k]:e.target.value})}>${[unknown,...o].map(x=>html`<option key=${x} value=${x}>${x}</option>`)}</select></label>`)}</div></details>
+ ${pending.length>0&&html`<div className="confirm" role="dialog" aria-label="Confirmer mes intentions">
+  <p><b>Vos choix :</b></p><ul>${pending.map(r=>html`<li key=${r.id}>${r.label} : <b>${choices.find(c=>c.id===picks[r.id])?.full_name}</b></li>`)}</ul>
   ${TURNSTILE_SITE_KEY&&html`<div ref=${captchaBox} className="captcha"></div>`}
-  <div className="actions"><button disabled=${busy} onClick=${submitVote}>${busy?"Enregistrement…":"Confirmer mon intention"}</button><button className="secondary" disabled=${busy} onClick=${()=>setSelected(null)}>Annuler</button></div>
- </div>`}
+  <div className="actions"><button disabled=${busy} onClick=${submit}>${busy?"Envoi…":"Envoyer mes intentions"}</button><button className="secondary" disabled=${busy} onClick=${()=>setPicks({})}>Effacer</button></div>
+  <p className="muted small">Une seule intention par poste et par appareil. Elle ne peut plus être modifiée ensuite.</p></div>`}
 
- ${adminMode&&!admin&&html`<section className="panel"><h2>Connexion administrateur</h2><form onSubmit=${adminLogin}><div className="fields">
-  <label className="field">E-mail<input type="email" required value=${email} onChange=${e=>setEmail(e.target.value)}/></label>
-  <label className="field">Mot de passe<input type="password" required value=${password} onChange=${e=>setPassword(e.target.value)}/></label></div>
-  <div className="actions"><button disabled=${busy} type="submit">Se connecter</button></div></form></section>`}
- ${admin&&html`<section className="panel"><h2>Administration · statuts CEP</h2>${people.filter(c=>c.voting_available).map(c=>html`<label key=${c.id} style=${{display:"block",padding:"7px 0"}}><input type="checkbox" style=${{width:"auto",marginRight:10}} checked=${chosen.includes(c.id)} onChange=${e=>setChosen(e.target.checked?[...chosen,c.id]:chosen.filter(x=>x!==c.id))}/>${c.full_name} — ${c.cep_status||"En attente"}</label>`)}
-  <div className="actions"><button disabled=${busy||!chosen.length} onClick=${()=>changeStatus("Admis")}>Marquer ADMIS</button><button disabled=${busy||!chosen.length} onClick=${()=>changeStatus("Refusé")}>Marquer REFUSÉ</button><button disabled=${busy||!chosen.length} onClick=${()=>changeStatus("En attente")}>Remettre EN ATTENTE</button><button className="secondary" onClick=${()=>supabase.auth.signOut()}>Se déconnecter</button></div></section>`}
+ <section className="panel" id="resultats"><h2>Résultats du baromètre</h2>
+  <div className="tabs" role="tablist">${[["president","Président"],["senateur","Sénat"],["depute","Députés"]].map(([k,l])=>html`<button key=${k} role="tab" aria-selected=${tab===k} className=${tab===k?"":"secondary"} onClick=${()=>setTab(k)}>${l}</button>`)}</div>
+  ${tab!=="president"&&html`<div className="fields">
+   <label className="field">Département<select value=${resDept} onChange=${e=>{setResDept(e.target.value);setResCirc("")}}><option value="">— Choisir —</option>${geo.map(d=>html`<option key=${d.slug} value=${d.slug}>${d.name}</option>`)}</select></label>
+   ${tab==="depute"&&resGeo&&html`<label className="field">Circonscription<select value=${resCirc} onChange=${e=>setResCirc(e.target.value)}><option value="">— Choisir —</option>${resGeo.circs.map(c=>html`<option key=${c.race} value=${c.race}>${c.label}</option>`)}</select></label>`}</div>`}
+  ${resRace?html`<h3>${resRace.label}</h3><${Results} race=${resRace} choices=${choices.filter(c=>c.race_id===resRace.id)} tick=${tick}/>`:html`<p className="muted">Choisissez un ${tab==="senateur"?"département":"département et une circonscription"}.</p>`}
+  <div className="actions"><a className="btn-wa" href=${"https://wa.me/?text="+encodeURIComponent("Baromètre citoyen BREK-AYITI — président, sénateur, député : donnez vos intentions de vote en une minute, sans nom ni compte (sondage non officiel) : "+PAGE_URL)} target="_blank" rel="noopener noreferrer">📲 Pataje sou WhatsApp</a>
+   <button className="secondary" onClick=${copy}>${copied?"Lien copié ✓":"Copier le lien"}</button>
+   <button className="secondary" onClick=${()=>setTick(t=>t+1)}>Actualiser</button></div>
+  <details className="method"><summary>Comment ces chiffres sont calculés</summary>
+   <p>Chaque appareil peut exprimer une seule intention par poste. Aucun nom, e-mail ni numéro de téléphone n’est demandé. Le département et la commune servent à afficher les bonnes listes.</p>
+   <p>Pour repérer les envois en masse, nous gardons une empreinte chiffrée et irréversible de l’adresse réseau, jamais l’adresse elle-même. Quand un nombre anormal d’appareils envoie des intentions depuis la même adresse en moins d’une heure, ces envois sont marqués comme suspects et retirés des résultats. Le seuil est volontairement large, car en Haïti beaucoup de téléphones partagent la même adresse réseau.${TURNSTILE_SITE_KEY?" Une vérification anti-robot discrète bloque aussi les programmes automatiques.":""}</p>
+   <p>Les pourcentages portent sur toutes les intentions retenues dans chaque course, y compris « Aucun candidat » et « Je ne sais pas encore ». Ils ne sont publiés qu’à partir de ${THRESHOLD.president} intentions pour la présidence, ${THRESHOLD.senateur} par département pour le Sénat et ${THRESHOLD.depute} par circonscription pour les députés. Ce sondage en ligne n’est pas un échantillon scientifique : il reflète seulement les personnes qui ont choisi d’y répondre.</p>
+   <p>Listes : registre des candidatures du CEP, tel que relevé par <a href="https://espas.ht/haiti/election" target="_blank" rel="noopener noreferrer">Espas</a>.</p>
+  </details></section>
  </main><footer className="foot">BREK · Brigade Revolisyon Klasik — Baromètre non officiel</footer></div>`}
 
 createRoot(document.getElementById("root")).render(React.createElement(App))
