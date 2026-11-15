@@ -1,0 +1,1 @@
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const s=b.closest('section'),t=s.querySelector('.message').textContent;try{await navigator.clipboard.writeText(t);s.querySelector('.status').textContent='Copié ✓ / Kopye ✓';}catch(e){s.querySelector('.status').textContent='Sélectionnez le texte pour le copier.';}}));

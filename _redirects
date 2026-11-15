@@ -1,0 +1,14 @@
+/api/* / 404
+/barometre /barometre/index.html 200
+/barometre/ /barometre/index.html 200
+/news/fils-aime-salvador /news/fils-aime-salvador/index.html 200
+/news/fils-aime-salvador/ /news/fils-aime-salvador/index.html 200
+/news/fausse-fierte-nationaliste /news/fausse-fierte-nationaliste/index.html 200
+/news/fausse-fierte-nationaliste/ /news/fausse-fierte-nationaliste/index.html 200
+/news/martelly-lobbying-sanctions /news/martelly-lobbying-sanctions/index.html 200
+/news/martelly-lobbying-sanctions/ /news/martelly-lobbying-sanctions/index.html 200
+/i/:code /invitation/index.html 200
+/i/:code/ /invitation/index.html 200
+/news/anmwe-ne-rendez-pas-la-plaine-aux-gangs /news/anmwe-ne-rendez-pas-la-plaine-aux-gangs/index.html 200
+/news/anmwe-ne-rendez-pas-la-plaine-aux-gangs/ /news/anmwe-ne-rendez-pas-la-plaine-aux-gangs/index.html 200
+/* /index.html 200
