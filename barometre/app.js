@@ -1,4 +1,4 @@
-import {mergeCandidates} from './candidates.mjs?v=20261115';
+import {mergeCandidates} from './candidates.mjs?v=20261115b';
 import React,{useState,useEffect} from "https://esm.sh/react@19.1.1";
 import{createRoot}from"https://esm.sh/react-dom@19.1.1/client";
 import htm from"https://esm.sh/htm@3.1.1";
