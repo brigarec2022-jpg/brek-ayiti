@@ -1,13 +1,114 @@
-import {mergeCandidates} from './candidates.mjs?v=20261115b';
-import React,{useState,useEffect} from "https://esm.sh/react@19.1.1";
-import{createRoot}from"https://esm.sh/react-dom@19.1.1/client";
-import htm from"https://esm.sh/htm@3.1.1";
-import{createClient}from"https://esm.sh/@supabase/supabase-js@2";
-const html=htm.bind(React.createElement);
-const supabase=createClient("https://arefkpzykkhfzoizsbap.supabase.co","sb_publishable_qSyrtmo9Iijl7eakvc6UnA_7TyEbXC1");
-const unknown="Préférence non précisée";
-const menus=[["Accueil","/"],["Qui sommes-nous","/#qui-sommes-nous"],["Programme","/#programme"],["Coordination","/#coordination"],["Radio · TV","/#radio"],["News","/#news"],["Sensibilisation","/#sensibilisation"],["Culture et Éducation","/#culture"],["Soutenir","/#soutenir"],["Brochure","/#brochure"],["Baromètre électoral","/barometre/"]];
-const status=(v)=>{const s=String(v||"").toLocaleLowerCase("fr");return s.includes("admis")?["🟢 Admis CEP","green"]:s.includes("refusé")||s.includes("refuse")||s.includes("rejeté")||s.includes("rejete")?["🔴 Refusé CEP","red"]:["🟠 En attente CEP","orange"]};
+import React,{useState,useEffect,useRef,useMemo} from "https://esm.sh/react@19.1.1"
+import {createRoot} from "https://esm.sh/react-dom@19.1.1/client"
+import htm from "https://esm.sh/htm@3.1.1"
+import {createClient} from "https://esm.sh/@supabase/supabase-js@2"
+
+const html=htm.bind(React.createElement)
+const supabase=createClient("https://arefkpzykkhfzoizsbap.supabase.co","sb_publishable_qSyrtmo9Iijl7eakvc6UnA_7TyEbXC1")
+
+// Clé publique Cloudflare Turnstile (anti-robot). Laisser vide tant qu'elle n'est pas créée.
+const TURNSTILE_SITE_KEY=""
+const THRESHOLD={president:50,senateur:30,depute:20}
+const SHOWN=10
+const PAGE_URL="https://brek-ayiti.pages.dev/barometre/"
+const COLORS=["#b9002c","#206747","#b38a36","#3d4f9f"]
+const PLACE_KEY="brek-barometre-lieu"
+const menus=[["Accueil","/"],["Qui sommes-nous","/#qui-sommes-nous"],["Programme","/#programme"],["Coordination","/#coordination"],["Radio · TV","/#radio"],["News","/#news"],["Sensibilisation","/#sensibilisation"],["Culture et Éducation","/#culture"],["Soutenir","/#soutenir"],["Brochure","/#brochure"],["Baromètre électoral","/barometre/"]]
+
+const fmt=n=>Number(n||0).toLocaleString("fr-FR")
+const pct=(n,t)=>t?(n/t*100).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1})+" %":"0 %"
+const hhmm=d=>d?new Date(d).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Port-au-Prince"}):""
+const dayLabel=d=>new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})
+const fold=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()
+const store={get(){try{return JSON.parse(localStorage.getItem(PLACE_KEY)||"null")}catch{return null}},set(v){try{localStorage.setItem(PLACE_KEY,JSON.stringify(v))}catch{}}}
+
+function useTurnstile(){
+ const box=useRef(null),[token,setToken]=useState("")
+ useEffect(()=>{if(!TURNSTILE_SITE_KEY)return
+  const render=()=>{if(box.current&&window.turnstile&&!box.current.dataset.done){box.current.dataset.done="1"
+   window.turnstile.render(box.current,{sitekey:TURNSTILE_SITE_KEY,language:"fr",callback:setToken,"expired-callback":()=>setToken("")})}}
+  if(window.turnstile)render()
+  else{const s=document.createElement("script");s.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";s.async=true;s.onload=render;document.head.appendChild(s)}})
+ return [box,token,()=>{setToken("");try{window.turnstile?.reset(box.current)}catch{}}]
+}
+
+/* ---------- Choix d'un candidat dans une course ---------- */
+function Ballot({race,choices,value,onChange,done,photos}){
+ const [q,setQ]=useState("")
+ const people=choices.filter(c=>c.kind==="candidate")
+ const special=choices.filter(c=>c.kind!=="candidate")
+ const list=q?people.filter(c=>fold(c.full_name+" "+(c.party||"")).includes(fold(q))):people
+ const mine=choices.find(c=>c.id===done)
+ return html`<section className="panel ballot" id=${"b-"+race.office}>
+  <h3>${race.label}</h3>
+  ${done?html`<p className="success">✓ Intention enregistrée : <b>${mine?.full_name||"—"}</b></p>`:html`
+  <p className="muted">${people.length} candidat${people.length>1?"s":""} · touchez un nom pour le choisir.</p>
+  ${people.length>8&&html`<input type="search" className="search" placeholder="Chercher un nom ou un parti" value=${q} onInput=${e=>setQ(e.target.value)}/>`}
+  <div className=${photos?"grid":"options"}>${list.map(c=>photos?html`
+   <button key=${c.id} className=${"candidate pick"+(value===c.id?" picked":"")} onClick=${()=>onChange(value===c.id?null:c.id)} aria-pressed=${value===c.id}>
+    ${c.photo_url&&html`<img src=${c.photo_url} alt="" loading="lazy" className=${/ricardo/i.test(c.full_name)?"portrait-ricardo":""}/>`}
+    <span className="name">${c.full_name}</span><span className="muted">${c.party||"Groupe non précisé"}</span>
+    <span className="tick">${value===c.id?"✓ Choisi":"Choisir"}</span></button>`:html`
+   <button key=${c.id} className=${"opt"+(value===c.id?" picked":"")} onClick=${()=>onChange(value===c.id?null:c.id)} aria-pressed=${value===c.id}>
+    <span><b>${c.full_name}</b><small>${c.party||"Groupe non précisé"}</small></span><span className="dot">${value===c.id?"✓":""}</span></button>`)}</div>
+  ${!list.length&&html`<p className="muted">Aucun nom ne correspond à « ${q} ».</p>`}
+  <div className="actions">${special.map(c=>html`<button key=${c.id} className=${value===c.id?"":"secondary"} onClick=${()=>onChange(value===c.id?null:c.id)}>${c.full_name}</button>`)}</div>`}
+ </section>`
+}
+
+/* ---------- Résultats d'une course ---------- */
+function Evolution({daily,choices}){
+ if(!daily.length)return null
+ const days=[...new Set(daily.map(r=>r.day))].sort()
+ const share={};for(const r of daily){(share[r.day]??={})[r.choice_id]=r.total?r.cumul/r.total*100:0}
+ const last=days[days.length-1]
+ const top=choices.filter(c=>c.kind==="candidate").sort((a,b)=>(share[last]?.[b.id]||0)-(share[last]?.[a.id]||0)).slice(0,4)
+ const W=640,H=200,P=30,max=Math.max(10,...top.map(c=>Math.max(...days.map(d=>share[d]?.[c.id]||0))))
+ const x=i=>P+(days.length<2?0:i*(W-2*P)/(days.length-1)),y=v=>H-P-(v/max)*(H-2*P)
+ return html`<details className="evo"><summary>Évolution jour par jour</summary>
+ <svg viewBox=${"0 0 "+W+" "+H} role="img" aria-label="Évolution de la part des quatre premiers choix">
+  <line x1=${P} x2=${W-P} y1=${H-P} y2=${H-P} stroke="#d9c79f"/><line x1=${P} x2=${W-P} y1=${y(max)} y2=${y(max)} stroke="#eee2c6"/>
+  <text x="2" y=${y(max)+4} className="axis">${Math.round(max)}</text><text x="2" y=${H-P+4} className="axis">0</text>
+  <text x=${P} y=${H-8} className="axis">${dayLabel(days[0])}</text><text x=${W-P} y=${H-8} textAnchor="end" className="axis">${dayLabel(last)}</text>
+  ${top.map((c,i)=>html`<polyline key=${c.id} fill="none" stroke=${COLORS[i]} strokeWidth="3" points=${days.map((d,j)=>x(j)+","+y(share[d]?.[c.id]||0)).join(" ")}/>`)}
+ </svg>
+ <div className="legend">${top.map((c,i)=>html`<span key=${c.id}><i style=${{background:COLORS[i]}}></i>${c.full_name}</span>`)}</div>
+ <p className="muted">Part de chaque choix parmi les intentions retenues, à la fin de chaque journée (heure d’Haïti).</p>
+ <div className="table-scroll"><table><thead><tr><th>Jour</th>${top.map(c=>html`<th key=${c.id}>${c.full_name}</th>`)}</tr></thead>
+ <tbody>${days.slice(-5).reverse().map(d=>html`<tr key=${d}><td>${dayLabel(d)}</td>${top.map(c=>html`<td key=${c.id}>${(share[d]?.[c.id]||0).toLocaleString("fr-FR",{maximumFractionDigits:1})} %</td>`)}</tr>`)}</tbody></table></div>
+ </details>`
+}
+
+function Results({race,choices,tick}){
+ const [rows,setRows]=useState(null),[meta,setMeta]=useState(null),[daily,setDaily]=useState([]),[err,setErr]=useState("")
+ useEffect(()=>{if(!race)return;let alive=true;setRows(null)
+  Promise.all([supabase.rpc("bar_results",{p_race:race.id}),supabase.rpc("bar_meta",{p_race:race.id}),supabase.rpc("bar_daily",{p_race:race.id})])
+  .then(([r,m,d])=>{if(!alive)return;if(r.error)throw r.error;setRows(r.data||[]);setMeta(m.data||null);setDaily(d.data||[]);setErr("")})
+  .catch(e=>alive&&setErr(e.message));return()=>{alive=false}},[race?.id,tick])
+ if(!race)return null
+ if(err)return html`<p className="error">Résultats indisponibles : ${err}</p>`
+ if(!rows)return html`<p className="muted">Chargement des résultats…</p>`
+ const counts=Object.fromEntries(rows.map(r=>[r.choice_id,Number(r.total)]))
+ const total=rows.reduce((a,r)=>a+Number(r.total),0),need=THRESHOLD[race.office]
+ const ranked=choices.filter(c=>c.active!==false||counts[c.id]).sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)||a.sort-b.sort)
+ const row=c=>{const n=counts[c.id]||0;return html`<div key=${c.id} className="res-row"><div className="res-name"><b>${c.full_name}</b>${c.party&&html`<small>${c.party}</small>`}</div>
+  <div className="res-track"><span style=${{width:(total?n/total*100:0)+"%"}}></span></div><div className="res-num"><b>${pct(n,total)}</b><small>${fmt(n)} intention${n>1?"s":""}</small></div></div>`}
+ return html`<div>
+  ${meta&&html`<p className="muted">Mis à jour à ${hhmm(meta.generated_at)} (heure d’Haïti).</p>`}
+  ${total<need?html`<p><strong>Résultats masqués : ${fmt(total)}/${need} intentions pour l’instant.</strong></p><p className="muted">Les pourcentages de cette course seront publiés à partir de ${need} intentions retenues.</p>`:html`
+  <p><strong>${fmt(total)} intentions retenues</strong></p>
+  ${meta?.suspect>0&&html`<p className="alert">Des envois massifs et suspects (${fmt(meta.suspect)}) ont été détectés et retirés de ces résultats.</p>`}
+  <div className="results">${ranked.slice(0,SHOWN).map(row)}</div>
+  ${ranked.length>SHOWN&&html`<details className="more"><summary>Voir les ${ranked.length-SHOWN} autres choix</summary><div className="results">${ranked.slice(SHOWN).map(row)}</div></details>`}
+  <${Evolution} daily=${daily} choices=${choices}/>`}</div>`
+}
+
+// Supabase renvoie au plus 1 000 lignes par requête : on lit les choix par pages.
+async function loadChoices(){const all=[];for(let i=0;;i+=1000){
+ const {data,error}=await supabase.from("bar_choices").select("id,race_id,full_name,party,photo_url,kind,sort,active").order("race_id").order("sort").order("id").range(i,i+999)
+ if(error)throw error;all.push(...data);if(data.length<1000)return all}}
+
+/* ---------- Application ---------- */
 function App(){
  const [geo,setGeo]=useState([]),[races,setRaces]=useState([]),[choices,setChoices]=useState([])
  const [place,setPlace]=useState(()=>store.get()||{dept:"",commune:"",race:""})
