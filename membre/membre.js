@@ -202,7 +202,7 @@ async function drawBadge(c,m){
  x.font="800 50px system-ui,sans-serif";x.fillText(String(m.nom).toUpperCase(),334,310)
  x.fillStyle="#5c4a2e";x.font="600 28px system-ui,sans-serif"
  x.fillText(m.departement==="Diaspora"?`Diaspora · ${m.commune}${m.pays?", "+m.pays:""}`:`${m.commune} · ${m.departement}`,334,362)
- x.fillText("Depuis le "+fmtDate(m.depuis),334,404)
+ x.fillText("Membre depuis le "+new Date(m.depuis).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",timeZone:"America/Port-au-Prince"}),334,404)
  const t=TITRE[m.titre||"membre"];x.font="800 30px system-ui,sans-serif";const tw=x.measureText(t.toUpperCase()).width+44
  x.fillStyle=TITRE_COUL[m.titre||"membre"];rr(x,334,428,tw,52,26);x.fill();x.fillStyle="#fff";x.fillText(t.toUpperCase(),356,465)
  x.fillStyle="#2a1d14";x.font="800 36px ui-monospace,monospace";x.fillText(m.numero,334,532)
