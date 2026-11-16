@@ -51,9 +51,12 @@ const push=button('🔔 Notifications sur cet appareil',async()=>{
   if(!os.Notifications.isPushSupported()){status.textContent='Sur iPhone/iPad, ajoutez le site à l’écran d’accueil puis ouvrez-le depuis son icône. Sinon, choisissez les emails.';return;}
   syncSubscription();if(subscriptionState==='active')return;
   if(os.Notifications.permissionNative==='denied'){status.textContent=tr('Les notifications sont bloquées dans ce navigateur. Autorisez-les dans les paramètres du site.','Navigatè sa a bloke notifikasyon yo. Otorize yo nan paramèt sit la.');return;}
-  dialog.close();
-  if(os.Notifications.permission)await os.User.PushSubscription.optIn();else await os.Slidedown.promptPush();
-  syncSubscription();
+  status.textContent=tr('Autorisez les notifications dans la fenêtre qui s’ouvre…','Otorize notifikasyon yo nan fenèt k ap louvri a…');
+  if(!os.Notifications.permission){await os.Notifications.requestPermission();}
+  if(typeof Notification!=='undefined'&&Notification.permission==='denied'){status.textContent=tr('Les notifications sont bloquées sur cet appareil. Ouvrez Paramètres → Applications → Chrome (ou BREK-AYITI) → Notifications, autorisez-les, puis réessayez.','Notifikasyon yo bloke sou aparèy sa a. Louvri Paramèt → Aplikasyon → Chrome (oswa BREK-AYITI) → Notifikasyon, otorize yo, epi eseye ankò.');return;}
+  await os.User.PushSubscription.optIn();
+  await new Promise(r=>setTimeout(r,1500));syncSubscription();
+  status.textContent=subscriptionState==='active'?tr('✓ C’est fait : vous recevrez les notifications de BREK-AYITI sur cet appareil.','✓ Sa fèt : w ap resevwa notifikasyon BREK-AYITI sou aparèy sa a.'):tr('L’abonnement n’a pas abouti. Réessayez dans un instant.','Abònman an pa pase. Eseye ankò nan yon ti moman.');
  }catch(e){failure(e);}finally{renderSubscription();}
 });
 function updatePush(){syncSubscription();}
