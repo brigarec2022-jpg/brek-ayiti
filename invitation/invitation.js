@@ -3,6 +3,6 @@
   const match = location.pathname.match(/^\/i\/([a-z0-9]{6,24})\/?$/i);
   const code = match ? match[1] : new URLSearchParams(location.search).get('ref');
   const target = new URL('/membre/', location.origin);
-  if (code && /^[a-z0-9]{8}$/i.test(code)) target.searchParams.set('ref', code.toUpperCase());
+  if (code && /^[a-z0-9]{6,24}$/i.test(code)) target.searchParams.set('ref', code.toUpperCase());
   document.getElementById('join').href = target.href;
 })();

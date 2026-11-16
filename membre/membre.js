@@ -353,7 +353,7 @@ async function viewAdmin(){
  try{
   if(location.hash==="#admin")return await viewAdmin()
   if(qs.get("n"))return await viewVerify(qs.get("n"))
-  if(qs.get("ref"))return await viewForm({ref:qs.get("ref").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,12)})
+  if(qs.get("ref"))return await viewForm({ref:qs.get("ref").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,24)})
   const j=qs.get("j")||store.get()
   if(j&&/^[0-9a-f-]{36}$/i.test(j))return await viewStatus(j)
   await viewForm()
