@@ -192,8 +192,8 @@ async function drawBadge(c,m){
  const W=1012,H=638;c.width=W;c.height=H;const x=c.getContext("2d")
  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#fff6e3");g.addColorStop(1,"#f3dfad");x.fillStyle=g;rr(x,0,0,W,H,36);x.fill()
  x.fillStyle="#111";x.fillRect(0,0,W/2,18);x.fillStyle="#b3121e";x.fillRect(W/2,0,W/2,18)
- const [logo,photo]=await Promise.all([loadImg("/logo-original.jpg"),loadImg(photoUrl(m.photo_path))])
- if(logo){x.save();x.beginPath();x.arc(92,96,52,0,7);x.clip();x.drawImage(logo,40,44,104,104);x.restore()}
+ const [logo,photo]=await Promise.all([loadImg("/membre/logo-brek-carre.png"),loadImg(photoUrl(m.photo_path))])
+ if(logo){x.save();x.beginPath();x.arc(96,98,58,0,7);x.clip();x.drawImage(logo,38,40,116,116);x.restore();x.beginPath();x.arc(96,98,58,0,7);x.lineWidth=4;x.strokeStyle="#d4b26a";x.stroke()}
  x.fillStyle="#2a1d14";x.font="800 46px system-ui,sans-serif";x.fillText("BREK-AYITI",162,92)
  x.fillStyle="#5c4a2e";x.font="600 24px system-ui,sans-serif";x.fillText("Brigade Revolisyon Klasik · Carte de membre",162,128)
  x.fillStyle="#efe3c7";rr(x,48,190,250,310,22);x.fill()
