@@ -290,7 +290,7 @@ async function viewAdmin(){
     ${m.statut==="valide"?`<div class="actions"><label class="field">Titre sur la carte<select data-titre>${Object.entries(TITRE).map(([k,l])=>`<option value="${k}" ${m.titre===k?"selected":""}>${l}</option>`).join("")}</select></label></div>`:""}
     <div class="actions"><button class="secondary" data-piece="${esc(m.piece_path)}">Ouvrir la pièce d’identité</button></div>
     ${m.statut!=="valide"?`<label class="oath"><input type="checkbox" data-check><span>J’ai contrôlé la pièce : l’identité et la date de naissance correspondent, et la personne a au moins 18 ans.</span></label>
-     <div class="actions"><button data-ok>Valider et émettre la carte</button></div>`:""}
+     <div class="actions"><button data-ok>Valider et émettre la carte</button></div><p class="error" data-err-ok role="alert"></p>`:""}
     <div class="actions"><textarea rows="2" placeholder="Motif du refus (sera montré à la personne)" data-motif></textarea><button class="secondary" data-ko>Rejeter</button></div>
     <p class="error" data-err></p>
    </div></article>`).join("")}</section>`
@@ -300,8 +300,11 @@ async function viewAdmin(){
    const {data,error}=await sb.storage.from("membres-pieces").createSignedUrl(b.dataset.piece,600)
    if(error){w?.close();alert("Impossible d’ouvrir la pièce : "+error.message)}else if(w)w.location=data.signedUrl;else location.href=data.signedUrl})
   app.querySelectorAll(".card").forEach(card=>{const id=card.dataset.id,errp=card.querySelector("[data-err]")
-   card.querySelector("[data-ok]")?.addEventListener("click",async()=>{if(!card.querySelector("[data-check]").checked){errp.textContent="Cochez d’abord le contrôle de la pièce.";return}
-    const {error}=await sb.rpc("admin_decider",{p_id:id,p_decision:"valide"});error?errp.textContent=error.message:render()})
+   card.querySelector("[data-ok]")?.addEventListener("click",async e=>{const eo=card.querySelector("[data-err-ok]")
+    if(!card.querySelector("[data-check]").checked){eo.textContent="Cochez d’abord la case « J’ai contrôlé la pièce » juste au-dessus.";return}
+    e.target.disabled=true;e.target.textContent="Validation…"
+    const {error}=await sb.rpc("admin_decider",{p_id:id,p_decision:"valide"})
+    if(error){eo.textContent="Validation impossible : "+error.message;e.target.disabled=false;e.target.textContent="Valider et émettre la carte"}else{tab="valide";render()}})
    card.querySelector("[data-titre]")?.addEventListener("change",async e=>{const {data,error}=await sb.rpc("admin_titre",{p_id:id,p_titre:e.target.value})
     if(error){errp.textContent=error.message;render()}else errp.innerHTML=`<span class="success">Titre enregistré. Cofondateurs : ${data.cofondateurs}/12.</span>`})
    card.querySelector("[data-ko]").onclick=async()=>{const motif=card.querySelector("[data-motif]").value.trim()
