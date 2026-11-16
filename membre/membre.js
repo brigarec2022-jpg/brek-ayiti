@@ -262,8 +262,9 @@ async function viewAdmin(){
  if(!isAdmin){
   app.innerHTML=`<div class="eyebrow">Administration</div><h1>Gestion des membres</h1>
   <form class="panel" id="login"><div class="fields"><label class="field">E-mail<input name="email" type="email" required autocomplete="username"></label>
-  <label class="field">Mot de passe<input name="password" type="password" required autocomplete="current-password"></label></div>
+  <label class="field">Mot de passe<span class="pw"><input name="password" type="password" required autocomplete="current-password"><button type="button" class="eye" aria-label="Afficher le mot de passe" title="Afficher le mot de passe">👁️</button></span></label></div>
   <p class="error" id="err"></p><div class="actions"><button>Se connecter</button></div></form>`
+  const eye=app.querySelector(".eye");eye.onclick=()=>{const i=eye.previousElementSibling,show=i.type==="password";i.type=show?"text":"password";eye.textContent=show?"🙈":"👁️";eye.setAttribute("aria-label",show?"Masquer le mot de passe":"Afficher le mot de passe")}
   document.getElementById("login").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target).entries())
    if(s?.user?.is_anonymous)await sb.auth.signOut()
    const {error}=await sb.auth.signInWithPassword({email:d.email,password:d.password})
