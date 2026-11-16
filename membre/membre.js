@@ -38,6 +38,61 @@ async function upload(bucket,uid,file){
  const {error}=await sb.storage.from(bucket).upload(path,file,{contentType:file.type,upsert:false})
  if(error)throw error;return path}
 
+/* ---------- Caméra : ouvrir l'appareil photo du téléphone ou de l'ordinateur ---------- */
+function openCamera(facing="user"){
+ return new Promise(async(ok,ko)=>{
+  if(!navigator.mediaDevices?.getUserMedia){ko(new Error("nocam"));return}
+  let stream,face=facing
+  const box=document.createElement("div");box.className="cam"
+  box.innerHTML=`<div class="cam-in"><video playsinline autoplay muted></video>
+   <div class="actions"><button type="button" data-snap>📸 Prendre la photo</button><button type="button" class="secondary" data-flip>🔄 Changer de caméra</button><button type="button" class="secondary" data-close>Annuler</button></div>
+   <p class="error" data-err></p></div>`
+  document.body.appendChild(box);const v=box.querySelector("video")
+  const stop=()=>stream?.getTracks().forEach(t=>t.stop())
+  const start=async()=>{stop();try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:face,width:{ideal:1280},height:{ideal:1280}},audio:false});v.srcObject=stream;v.style.transform=face==="user"?"scaleX(-1)":"none"}
+   catch(e){box.querySelector("[data-err]").textContent="Caméra indisponible : autorisez l’accès à la caméra, ou choisissez une photo."}}
+  await start()
+  box.querySelector("[data-flip]").onclick=()=>{face=face==="user"?"environment":"user";start()}
+  box.querySelector("[data-close]").onclick=()=>{stop();box.remove();ko(new Error("cancel"))}
+  box.querySelector("[data-snap]").onclick=()=>{if(!v.videoWidth)return;const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight
+   const x=c.getContext("2d");if(face==="user"){x.translate(c.width,0);x.scale(-1,1)}x.drawImage(v,0,0)
+   c.toBlob(b=>{stop();box.remove();ok(b)},"image/jpeg",.92)}
+ })}
+
+/* ---------- Studio photo : recadrer et ajuster le béret BREK ---------- */
+const beretImg=new Image();beretImg.src="/membership/beret-brek.webp"
+function studio(root,onChange){
+ const S=720;const st={img:null,zoom:1,px:0,py:0,beret:true,bw:.78,bx:.5,by:.2,rot:0}
+ root.innerHTML=`<div class="studio"><canvas width="${S}" height="${S}" aria-label="Aperçu de la photo de carte"></canvas>
+  <div class="ctrl"><label class="oath"><input type="checkbox" data-k="beret" checked><span>Porter le béret BREK</span></label>
+  <label class="field">Taille du béret<input type="range" min="0.35" max="1.4" step="0.01" value="${st.bw}" data-k="bw"></label>
+  <label class="field">Inclinaison du béret<input type="range" min="-35" max="35" step="1" value="0" data-k="rot"></label>
+  <label class="field">Zoom de la photo<input type="range" min="1" max="2.5" step="0.01" value="1" data-k="zoom"></label>
+  <p class="muted">Glissez le béret avec le doigt pour le poser sur la tête. Glissez avec deux doigts, ou en dehors du béret, pour déplacer la photo.</p></div></div>`
+ const c=root.querySelector("canvas"),x=c.getContext("2d")
+ const draw=()=>{x.fillStyle="#efe3c7";x.fillRect(0,0,S,S);const im=st.img;if(!im)return
+  const s=Math.max(S/im.width,S/im.height)*st.zoom,w=im.width*s,h=im.height*s
+  x.drawImage(im,(S-w)/2+st.px,(S-h)/2+st.py,w,h)
+  if(st.beret&&beretImg.complete){const bw=st.bw*S,bh=bw*beretImg.height/beretImg.width
+   x.save();x.translate(st.bx*S,st.by*S);x.rotate(st.rot*Math.PI/180);x.drawImage(beretImg,-bw/2,-bh/2,bw,bh);x.restore()}
+  onChange?.()}
+ beretImg.onload=draw
+ root.querySelectorAll("[data-k]").forEach(i=>i.oninput=()=>{st[i.dataset.k]=i.type==="checkbox"?i.checked:+i.value;draw()})
+ let drag=null
+ const pos=e=>{const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}}
+ const onBeret=p=>{if(!st.beret)return false;const bw=st.bw,bh=bw*beretImg.height/beretImg.width;return Math.abs(p.x-st.bx)<bw/2&&Math.abs(p.y-st.by)<bh/2}
+ const pointers=new Map()
+ c.addEventListener("pointerdown",e=>{c.setPointerCapture(e.pointerId);pointers.set(e.pointerId,pos(e));const p=pos(e)
+  drag=pointers.size>1||!onBeret(p)?{mode:"photo",p,px:st.px,py:st.py}:{mode:"beret",p,bx:st.bx,by:st.by};e.preventDefault()})
+ c.addEventListener("pointermove",e=>{if(!drag||!pointers.has(e.pointerId))return;pointers.set(e.pointerId,pos(e));const p=pos(e),dx=p.x-drag.p.x,dy=p.y-drag.p.y
+  if(drag.mode==="beret"){st.bx=Math.min(1,Math.max(0,drag.bx+dx));st.by=Math.min(1,Math.max(-.1,drag.by+dy))}else{st.px=drag.px+dx*S;st.py=drag.py+dy*S}draw()})
+ const end=e=>{pointers.delete(e.pointerId);if(!pointers.size)drag=null}
+ c.addEventListener("pointerup",end);c.addEventListener("pointercancel",end)
+ return{set(blob){const im=new Image();im.onload=()=>{st.img=im;st.px=st.py=0;draw()};im.src=URL.createObjectURL(blob)},
+  has:()=>!!st.img,
+  blob:()=>new Promise(ok=>{const o=document.createElement("canvas");o.width=o.height=600;o.getContext("2d").drawImage(c,0,0,600,600);o.toBlob(b=>ok(new File([b],"photo.jpg",{type:"image/jpeg"})),"image/jpeg",.88)})}
+}
+
 /* ---------- Formulaire d'inscription (ou à refaire) ---------- */
 async function viewForm({ref=null,redo=null,jeton=null}={}){
  let parrain=null
@@ -63,10 +118,17 @@ async function viewForm({ref=null,redo=null,jeton=null}={}){
   </div>
   <h2>Vos photos</h2>
   <p class="muted">Une photo de vous pour la carte de membre, et une photo de votre pièce d’identité (CIN, passeport ou permis). La pièce d’identité reste dans un dépôt privé : seuls les responsables chargés de la vérification peuvent la voir.</p>
-  <div class="files">
-   <label class="drop"><span class="ph" id="pvPhoto">🙂</span><span><b>Photo de vous</b><small>Visage bien visible</small><br><input type="file" name="photo" accept="image/*" required></span></label>
-   <label class="drop"><span class="ph" id="pvPiece">🪪</span><span><b>Pièce d’identité</b><small>Photo ou PDF</small><br><input type="file" name="piece" accept="image/*,application/pdf" required></span></label>
-  </div>
+  <h3>1. Photo de vous, avec le béret BREK</h3>
+  <div class="actions"><button type="button" class="secondary" id="camPhoto">📷 Prendre une photo</button>
+   <label class="btn-file secondary">🖼️ Choisir une photo<input type="file" accept="image/*" id="filePhoto" hidden></label>
+   <label class="btn-file secondary" id="capPhoto" hidden>📷 Ouvrir l’appareil photo<input type="file" accept="image/*" capture="user" hidden></label></div>
+  <div id="studio" hidden></div>
+  <h3>2. Pièce d’identité</h3>
+  <p class="muted">CIN, passeport ou permis. Photographiez la pièce à plat, bien lisible.</p>
+  <div class="actions"><button type="button" class="secondary" id="camPiece">📷 Photographier la pièce</button>
+   <label class="btn-file secondary">📎 Choisir un fichier (photo ou PDF)<input type="file" accept="image/*,application/pdf" id="filePiece" hidden></label>
+   <label class="btn-file secondary" id="capPiece" hidden>📷 Ouvrir l’appareil photo<input type="file" accept="image/*" capture="environment" hidden></label></div>
+  <p id="pieceInfo" class="success"></p>
   <label class="oath"><input type="checkbox" name="serment" required ${v.prenom?"checked":""}><span>Je m’engage à respecter les valeurs de BREK : compétence, intégrité, honnêteté, engagement, responsabilité, loyauté, altruisme et esprit de sacrifice. Je certifie que les informations données sont exactes.</span></label>
   <p id="err" class="error" role="alert"></p>
   <div class="actions"><button type="submit" id="go">${redo?"Renvoyer mon inscription":"Envoyer mon inscription"}</button></div>
@@ -77,23 +139,30 @@ async function viewForm({ref=null,redo=null,jeton=null}={}){
   document.getElementById("paysField").hidden=!dia;f.commune.previousSibling.textContent=dia?"Ville":"Commune"
   document.getElementById("communes").innerHTML=(dia?[]:await communesOf(d)).map(c=>`<option value="${esc(c)}">`).join("")}
  f.departement.onchange=syncDept;syncDept()
- const preview=(input,box)=>input.onchange=()=>{const file=input.files[0];if(!file)return
-  const el=document.getElementById(box);if(/^image\//.test(file.type)){const i=new Image();i.src=URL.createObjectURL(file);i.alt="";el.replaceWith(Object.assign(i,{id:box}))}else el.textContent="📄"}
- preview(f.photo,"pvPhoto");preview(f.piece,"pvPiece")
+ const st=studio(document.getElementById("studio"));let piece=null
+ const showStudio=b=>{document.getElementById("studio").hidden=false;st.set(b);document.getElementById("studio").scrollIntoView({behavior:"smooth",block:"center"})}
+ const setPiece=b=>{piece=b;document.getElementById("pieceInfo").textContent=b?"✓ Pièce d’identité ajoutée ("+(b.type==="application/pdf"?"PDF":"photo")+")":""}
+ const cam=async(face,done,fallbackId)=>{try{done(await openCamera(face))}catch(e){if(e.message==="nocam"){const l=document.getElementById(fallbackId);l.hidden=false;l.querySelector("input").click()}}}
+ document.getElementById("camPhoto").onclick=()=>cam("user",showStudio,"capPhoto")
+ document.getElementById("camPiece").onclick=()=>cam("environment",setPiece,"capPiece")
+ for(const [id,fn] of [["filePhoto",showStudio],["filePiece",setPiece]])document.getElementById(id).onchange=e=>e.target.files[0]&&fn(e.target.files[0])
+ document.querySelector("#capPhoto input").onchange=e=>e.target.files[0]&&showStudio(e.target.files[0])
+ document.querySelector("#capPiece input").onchange=e=>e.target.files[0]&&setPiece(e.target.files[0])
  f.onsubmit=async e=>{e.preventDefault();err.textContent=""
   const d=Object.fromEntries(new FormData(f).entries())
   const need=[["prenom","le prénom"],["nom","le nom"],["date_naissance","la date de naissance"],["telephone","le téléphone"],["departement","le département"],["commune",d.departement==="Diaspora"?"la ville":"la commune"]]
   for(const [k,l] of need)if(!String(d[k]||"").trim()){err.textContent="Indiquez "+l+".";return}
   const age=(Date.now()-new Date(d.date_naissance))/31557600000
   if(!(age>=18)){err.textContent="Il faut avoir au moins 18 ans pour devenir membre.";return}
-  if(!f.photo.files[0]||!f.piece.files[0]){err.textContent="Ajoutez votre photo et votre pièce d’identité.";return}
+  if(!st.has()){err.textContent="Prenez ou choisissez votre photo.";return}
+  if(!piece){err.textContent="Ajoutez la photo de votre pièce d’identité.";return}
   if(!f.serment.checked){err.textContent="Cochez l’engagement pour continuer.";return}
   go.disabled=true;go.textContent="Envoi en cours…"
   try{
    const u=await session()
-   const [photo,piece]=await Promise.all([shrink(f.photo.files[0],900),shrink(f.piece.files[0])])
+   const [photo,pieceFile]=await Promise.all([st.blob(),shrink(piece)])
    const photo_path=await upload("membres-photos",u.id,photo)
-   const piece_path=await upload("membres-pieces",u.id,piece)
+   const piece_path=await upload("membres-pieces",u.id,pieceFile)
    const p={prenom:d.prenom,nom:d.nom,date_naissance:d.date_naissance,sexe:d.sexe,telephone:d.telephone,departement:d.departement,
     commune:d.commune,pays:d.pays,numero_cin:d.numero_cin,photo_path,piece_path,serment:true,parrain_code:ref||""}
    const {data,error}=redo?await sb.rpc("membre_refaire",{p_jeton:jeton,p}):await sb.rpc("membre_inscrire",{p})
