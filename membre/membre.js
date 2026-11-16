@@ -67,6 +67,12 @@ function studio(root,onChange){
  const S=720;const st={img:null,zoom:1,px:0,py:0,beret:true,bw:.78,bx:.5,by:.2,rot:0}
  root.innerHTML=`<div class="studio"><canvas width="${S}" height="${S}" aria-label="Aperçu de la photo de carte"></canvas>
   <div class="ctrl"><label class="oath"><input type="checkbox" data-k="beret" checked><span>Porter le béret BREK</span></label>
+  <div class="field">Position du béret<div class="pad">
+   <button type="button" class="secondary" data-move="0,-1" aria-label="Monter le béret">⬆️ Monter</button>
+   <button type="button" class="secondary" data-move="-1,0" aria-label="Déplacer le béret à gauche">⬅️</button>
+   <button type="button" class="secondary" data-move="1,0" aria-label="Déplacer le béret à droite">➡️</button>
+   <button type="button" class="secondary" data-move="0,1" aria-label="Descendre le béret">⬇️ Descendre</button></div>
+   <small>Maintenez le bouton appuyé pour aller plus vite.</small></div>
   <label class="field">Taille du béret<input type="range" min="0.35" max="1.4" step="0.01" value="${st.bw}" data-k="bw"></label>
   <label class="field">Inclinaison du béret<input type="range" min="-35" max="35" step="1" value="0" data-k="rot"></label>
   <label class="field">Zoom de la photo<input type="range" min="1" max="2.5" step="0.01" value="1" data-k="zoom"></label>
@@ -80,6 +86,12 @@ function studio(root,onChange){
   onChange?.()}
  beretImg.onload=draw
  root.querySelectorAll("[data-k]").forEach(i=>i.oninput=()=>{st[i.dataset.k]=i.type==="checkbox"?i.checked:+i.value;draw()})
+ root.querySelectorAll("[data-move]").forEach(b=>{const [dx,dy]=b.dataset.move.split(",").map(Number);let t=null
+  const step=()=>{st.bx=Math.min(1,Math.max(0,st.bx+dx*.01));st.by=Math.min(1,Math.max(-.15,st.by+dy*.01));draw()}
+  const stop=()=>{clearTimeout(t);clearInterval(t);t=null}
+  b.addEventListener("pointerdown",e=>{e.preventDefault();stop();step();t=setTimeout(()=>{t=setInterval(step,60)},350)})
+  for(const ev of ["pointerup","pointerleave","pointercancel"])b.addEventListener(ev,stop)
+  b.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();step()}})})
  let drag=null
  const pos=e=>{const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}}
  const onBeret=p=>{if(!st.beret)return false;const bw=st.bw,bh=bw*beretImg.height/beretImg.width;return Math.abs(p.x-st.bx)<bw/2&&Math.abs(p.y-st.by)<bh/2}
