@@ -189,26 +189,57 @@ async function viewForm({ref=null,redo=null,jeton=null}={}){
 function loadImg(src){return new Promise(ok=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src})}
 function rr(x,a,b,w,h,r){x.beginPath();x.roundRect?x.roundRect(a,b,w,h,r):x.rect(a,b,w,h)}
 async function drawBadge(c,m){
- const W=1012,H=638;c.width=W;c.height=H;const x=c.getContext("2d")
- const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#fff6e3");g.addColorStop(1,"#f3dfad");x.fillStyle=g;rr(x,0,0,W,H,36);x.fill()
- x.fillStyle="#111";x.fillRect(0,0,W/2,18);x.fillStyle="#b3121e";x.fillRect(W/2,0,W/2,18)
+ // Modèle de la carte BREK-AYITI : diagonale noir / rouge, filets or, photo à droite, QR à gauche
+ const W=1600,H=1010;c.width=W;c.height=H;const x=c.getContext("2d")
+ const GOLD="#e2bd5c",SERIF="Georgia,'Times New Roman',serif",SANS="Arial,Helvetica,sans-serif"
+ const fit=(t,max,size,weight,fam)=>{let s=size;do{x.font=`${weight} ${s}px ${fam}`;s-=2}while(x.measureText(t).width>max&&s>18)}
+ const line=(a,y,b)=>{x.strokeStyle=GOLD;x.lineWidth=2;x.beginPath();x.moveTo(a,y);x.lineTo(b,y);x.stroke()}
+ // fond
+ x.save();rr(x,8,8,W-16,H-16,34);x.clip()
+ const red=x.createLinearGradient(400,1000,1600,200);red.addColorStop(0,"#7d0a12");red.addColorStop(.55,"#b30f1f");red.addColorStop(1,"#d4111f")
+ x.fillStyle=red;x.fillRect(0,0,W,H)
+ x.fillStyle="#0b0b0b";x.beginPath();x.moveTo(0,0);x.lineTo(1235,0);x.lineTo(95,H);x.lineTo(0,H);x.closePath();x.fill()
+ x.fillStyle="#0b0b0b";x.fillRect(0,915,W,H-915);line(0,915,W)
+ x.restore()
+ x.lineWidth=10;x.strokeStyle=GOLD;rr(x,8,8,W-16,H-16,34);x.stroke()
+ // en-tête
+ x.textAlign="center";x.fillStyle=GOLD;x.font=`700 104px ${SERIF}`;x.fillText("BREK-AYITI",W/2,132)
+ x.fillStyle="#fff";fit("BRIGADIERS DE LA RÉVOLUTION CLASSIQUE",1080,40,"700",SERIF);x.fillText("BRIGADIERS DE LA RÉVOLUTION CLASSIQUE",W/2,192)
+ line(196,214,1404);x.textAlign="left"
  const [logo,photo]=await Promise.all([loadImg("/membre/logo-brek-carre.png"),loadImg(photoUrl(m.photo_path))])
- if(logo){x.save();x.beginPath();x.arc(96,98,58,0,7);x.clip();x.drawImage(logo,38,40,116,116);x.restore();x.beginPath();x.arc(96,98,58,0,7);x.lineWidth=4;x.strokeStyle="#d4b26a";x.stroke()}
- x.fillStyle="#2a1d14";x.font="800 46px system-ui,sans-serif";x.fillText("BREK-AYITI",162,92)
- x.fillStyle="#5c4a2e";x.font="600 24px system-ui,sans-serif";x.fillText("Brigade Revolisyon Klasik · Carte de membre",162,128)
- x.fillStyle="#efe3c7";rr(x,48,190,250,310,22);x.fill()
- if(photo){x.save();rr(x,48,190,250,310,22);x.clip();const s=Math.max(250/photo.width,310/photo.height);x.drawImage(photo,48+(250-photo.width*s)/2,190+(310-photo.height*s)/2,photo.width*s,photo.height*s);x.restore()}
- x.fillStyle="#2a1d14";x.font="800 50px system-ui,sans-serif";x.fillText(m.prenom,334,250)
- x.font="800 50px system-ui,sans-serif";x.fillText(String(m.nom).toUpperCase(),334,310)
- x.fillStyle="#5c4a2e";x.font="600 28px system-ui,sans-serif"
- x.fillText(m.departement==="Diaspora"?`Diaspora · ${m.commune}${m.pays?", "+m.pays:""}`:`${m.commune} · ${m.departement}`,334,362)
- x.fillText("Membre depuis le "+new Date(m.depuis).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",timeZone:"America/Port-au-Prince"}),334,404)
- const t=TITRE[m.titre||"membre"];x.font="800 30px system-ui,sans-serif";const tw=x.measureText(t.toUpperCase()).width+44
- x.fillStyle=TITRE_COUL[m.titre||"membre"];rr(x,334,428,tw,52,26);x.fill();x.fillStyle="#fff";x.fillText(t.toUpperCase(),356,465)
- x.fillStyle="#2a1d14";x.font="800 36px ui-monospace,monospace";x.fillText(m.numero,334,532)
- if(window.qrcode){const q=qrcode(0,"M");q.addData(`${SITE}/membre/?n=${m.numero}`);q.make();const n=q.getModuleCount(),s=Math.floor(150/n),o=W-48-s*n,t=H-48-s*n
-  x.fillStyle="#fff";x.fillRect(o-10,t-10,s*n+20,s*n+20);x.fillStyle="#111";for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*s,t+r*s,s,s)}
- x.fillStyle="#2a1d14";x.font="700 22px system-ui,sans-serif";x.fillText("Dieu · Patrie · Travail",48,H-50)
+ // logo
+ if(logo){x.save();x.beginPath();x.arc(258,430,168,0,7);x.clip();x.drawImage(logo,258-260,430-260,520,520);x.restore()}
+ // QR
+ x.fillStyle="#fff";x.fillRect(94,607,280,280)
+ if(window.qrcode){const q=qrcode(0,"M");q.addData(`${SITE}/membre/?n=${m.numero}`);q.make();const n=q.getModuleCount(),s=Math.floor(220/n),o=94+(280-s*n)/2
+  x.fillStyle="#111";for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*s,o-94+607+r*s,s,s)}
+ // texte central
+ const L=575,R=1126
+ x.fillStyle=GOLD;x.font=`700 46px ${SERIF}`;x.fillText("CARTE DE MEMBRE",L,298);line(L,322,R)
+ const nom=`${m.prenom} ${m.nom}`.toUpperCase();x.fillStyle="#fff";fit(nom,R-L,36,"700",SERIF);x.fillText(nom,L,388)
+ const titre={fondateur:"FONDATEUR ET CONCEPTEUR",cofondateur:"COFONDATEUR",membre:"MEMBRE"}[m.titre||"membre"]
+ x.fillStyle=GOLD;fit(titre,R-L,34,"700",SERIF);x.fillText(titre,L,435);line(L,449,R)
+ x.fillStyle="#fff";x.font=`700 32px ${SERIF}`
+ x.fillText("Depuis le "+new Date(m.depuis).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric",timeZone:"America/Port-au-Prince"}),L,486)
+ const dia=m.departement==="Diaspora"
+ fit(dia?`Diaspora : ${m.pays||""}`:`Département : ${m.departement}`,R-L,32,"700",SERIF);x.fillText(dia?`Diaspora : ${m.pays||""}`:`Département : ${m.departement}`,L,542);line(L,561,R)
+ fit(`${dia?"Ville":"Commune"} : ${m.commune}`,R-L,32,"700",SERIF);x.fillText(`${dia?"Ville":"Commune"} : ${m.commune}`,L,612);line(L,631,R)
+ x.font=`700 28px ${SANS}`;x.fillText(`N° : ${m.numero}`,L,687);x.font=`700 25px ${SANS}`;x.fillText("brek-ayiti.pages.dev",L,734)
+ x.font=`700 29px ${SERIF}`;x.fillText("Scanner pour vérifier",421,795);x.fillText("la validité dans le registre",421,833)
+ x.fillStyle=GOLD;x.font=`italic 700 36px ${SERIF}`;x.fillText("Ayiti d’abord, Ayiti toujours",421,887);line(421,902,1107)
+ // photo
+ x.fillStyle="#fff";rr(x,1168,256,375,487,22);x.fill()
+ if(photo){x.save();rr(x,1168,256,375,487,22);x.clip();const s=Math.max(375/photo.width,487/photo.height);x.drawImage(photo,1168+(375-photo.width*s)/2,256+(487-photo.height*s)/2,photo.width*s,photo.height*s);x.restore()}
+ x.lineWidth=5;x.strokeStyle=GOLD;rr(x,1168,256,375,487,22);x.stroke()
+ // cachet de validation
+ const vd=m.valide_le||m.depuis
+ let par="";try{const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(`${m.numero}|${m.prenom}|${m.nom}|${vd}`));par="BA-"+[...new Uint8Array(h)].slice(0,6).map(b=>b.toString(16).padStart(2,"0")).join("").toUpperCase()}catch{}
+ x.lineWidth=3;x.strokeStyle=GOLD;x.strokeRect(1159,762,392,140);x.textAlign="center"
+ x.fillStyle=GOLD;x.font=`700 27px ${SANS}`;x.fillText("VALIDÉ · BREK-AYITI",1355,795)
+ x.fillStyle="#fff";x.font=`700 22px ${SANS}`;x.fillText("Paraphe électronique",1355,827);x.fillText(par,1355,859)
+ x.fillText(new Date(vd).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",timeZone:"America/Port-au-Prince"}),1355,887)
+ // bandeau bas
+ x.fillStyle=GOLD;x.font=`700 26px ${SANS}`;x.fillText("CARTE VALIDÉE — CONTRÔLE EN LIGNE PAR QR",W/2,968);x.textAlign="left"
 }
 
 /* ---------- Suivi personnel ---------- */
