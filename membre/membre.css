@@ -42,3 +42,4 @@ h1{font-size:clamp(28px,6vw,44px);margin:8px 0 10px;color:#2a1d14}
 .pad [data-move="0,-1"],.pad [data-move="0,1"]{grid-column:1/-1}
 .pw{position:relative;display:block}.pw input{padding-right:52px}
 .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;font-size:22px;padding:6px 10px;color:inherit}
+.invite{border:2px solid #206747;background:#eef8f0}

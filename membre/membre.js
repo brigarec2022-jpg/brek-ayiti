@@ -254,11 +254,10 @@ async function viewStatus(jeton,fresh=false){
  <h1>${esc(m.prenom)} ${esc(m.nom)}</h1>
  <p><span class="status ${m.statut}">${STATUT[m.statut]}</span> ${m.statut==="valide"?`<span class="status titre-${m.titre||"membre"}">${TITRE[m.titre||"membre"]}</span>`:""}</p>
  ${fresh?`<div class="panel success"><b>Merci, votre inscription est enregistrée.</b> Un responsable va vérifier votre identité. Revenez sur votre lien personnel pour voir la réponse.</div>`:""}
- <section class="panel"><h2>Votre lien personnel</h2>
-  <p>Gardez ce lien : il vous permet de revenir ici depuis n’importe quel téléphone. <b>Ne le partagez pas</b>, c’est la clé de votre espace.</p>
-  <div class="linkbox"><code>${esc(perso)}</code><button class="secondary" data-copy="${esc(perso)}">Copier</button></div>
-  <div class="actions"><a class="btn-wa" href="${wa("Mon lien personnel BREK-AYITI (à garder pour moi) : "+perso)}" target="_blank" rel="noopener noreferrer">📲 Me l’envoyer sur WhatsApp</a></div>
- </section>
+ ${m.statut==="valide"?`<section class="panel invite"><h2>📨 Lien pour inviter dans mon équipe</h2>
+  <p><b>C’est ce lien que vous envoyez</b> aux personnes que vous voulez faire entrer dans votre équipe. Elles s’inscrivent avec, et elles sont comptées dans votre équipe.</p>
+  <div class="linkbox"><code>${esc(invit)}</code><button class="secondary" data-copy="${esc(invit)}">Copier</button></div>
+  <div class="actions"><a class="btn-wa" href="${wa("Je t’invite à rejoindre BREK-AYITI. Inscription simple, sans compte ni mot de passe : "+invit)}" target="_blank" rel="noopener noreferrer">📲 Inviter sur WhatsApp</a></div></section>`:""}
  ${m.statut==="rejete"?`<section class="panel"><h2>Inscription refusée</h2><p><b>Motif :</b> ${esc(m.motif)}</p><p>Vous pouvez corriger vos informations et renvoyer votre inscription.</p><div class="actions"><button id="redo">Refaire mon inscription</button></div></section>`:""}
  ${m.statut==="en_attente"?`<section class="panel"><h2>Vérification en cours</h2><p>Un responsable compare vos informations avec votre pièce d’identité. Dès que c’est fait, votre carte de membre apparaîtra ici.</p></section>`:""}
  ${m.statut==="valide"?`<section class="panel"><h2>Ma carte de membre</h2><div class="badge-wrap"><canvas id="badge" aria-label="Carte de membre de ${esc(m.prenom)} ${esc(m.nom)}"></canvas></div>
@@ -266,9 +265,13 @@ async function viewStatus(jeton,fresh=false){
  <section class="panel"><h2>Mon équipe</h2>
   <p>Invitez au moins ${OBJECTIF} personnes avec votre lien d’invitation. Chaque personne inscrite par votre lien rejoint votre équipe.</p>
   <div class="stat"><div><b>${m.filleuls}</b>inscrits</div><div><b>${m.filleuls_valides}</b>validés</div><div><b>${Math.max(0,OBJECTIF-m.filleuls_valides)}</b>pour atteindre ${OBJECTIF}</div></div>
-  ${m.statut==="valide"?`<h3>Mon lien d’invitation</h3><div class="linkbox"><code>${esc(invit)}</code><button class="secondary" data-copy="${esc(invit)}">Copier</button></div>
-  <div class="actions"><a class="btn-wa" href="${wa("Je t’invite à rejoindre BREK-AYITI. Inscription simple, sans compte ni mot de passe : "+invit)}" target="_blank" rel="noopener noreferrer">📲 Inviter sur WhatsApp</a></div>`
+  ${m.statut==="valide"?`<p class="muted">Votre lien d’invitation se trouve plus haut, dans « Lien pour inviter dans mon équipe ».</p>`
   :`<p class="muted">Votre lien d’invitation sera actif dès que votre adhésion sera validée.</p>`}
+ </section>
+ <section class="panel"><h2>🔒 Mon lien personnel (à garder pour moi)</h2>
+  <p>Ce lien ouvre vos données : <b>ne l’envoyez à personne</b>. Gardez-le pour revenir ici depuis n’importe quel téléphone.</p>
+  <div class="linkbox"><code>${esc(perso)}</code><button class="secondary" data-copy="${esc(perso)}">Copier</button></div>
+  <div class="actions"><a class="btn-wa" href="${wa("Mon lien personnel BREK-AYITI (à garder pour moi) : "+perso)}" target="_blank" rel="noopener noreferrer">📲 Me l’envoyer sur WhatsApp</a></div>
  </section>`
  app.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent="Copié ✓"}catch{}})
  document.getElementById("redo")?.addEventListener("click",()=>viewForm({redo:m,jeton}))
