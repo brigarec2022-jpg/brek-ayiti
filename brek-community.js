@@ -15,7 +15,7 @@ function syncSubscription(){
 function renderSubscription(){
  const active=subscriptionState==='active',checking=subscriptionState==='checking';
  const blocked=typeof Notification!=='undefined'&&Notification.permission==='denied';
- const label=active?tr('✓ Abonné','✓ Abòne deja'):checking?tr('Vérification…','Verifikasyon…'):subscriptionState==='error'?tr('Notifications indisponibles','Notifikasyon pa disponib'):blocked?tr('Notifications bloquées','Notifikasyon bloke'):tr('🔔 S’abonner','🔔 Abòne');
+ const label=active?tr('✓ Abonné','✓ Abòne deja'):checking?tr('Vérification…','Verifikasyon…'):blocked?tr('Notifications bloquées','Notifikasyon bloke'):tr('🔔 S’abonner','🔔 Abòne');
  for(const b of subscribeButtons){if(b.textContent!==label)b.textContent=label;b.disabled=checking;b.dataset.subscriptionState=subscriptionState;b.setAttribute('aria-label',active?tr('Déjà abonné : gérer mes notifications','Ou abòne deja : jere notifikasyon mwen yo'):label);}
  if(typeof push!=='undefined'){const pushLabel=active?tr('✓ Notifications activées','✓ Notifikasyon aktive'):tr('🔔 Notifications sur cet appareil','🔔 Notifikasyon sou aparèy sa a');if(push.textContent!==pushLabel)push.textContent=pushLabel;push.disabled=checking||active;stop.hidden=!active;}
  if(dialog.open){const title=active?tr('Mon abonnement à BREK-AYITI','Abònman mwen ak BREK-AYITI'):tr('S’abonner à BREK-AYITI','Abòne ak BREK-AYITI');if(dialog.querySelector('h2').textContent!==title)dialog.querySelector('h2').textContent=title;}
@@ -33,6 +33,7 @@ dialog.addEventListener('close',()=>returnFocus?.focus());
 function open(){returnFocus=document.activeElement;status.textContent='';dialog.querySelector('h2').textContent=tr('S’abonner à BREK-AYITI','Abòne ak BREK-AYITI');dialog.showModal();renderSubscription();if(subscriptionState==='error')init().catch(failure);}
 function init(){
  if(readyPromise)return readyPromise;
+ if(!/^(brek-ayiti\.pages\.dev|localhost|127\.0\.0\.1)$/.test(location.hostname))return Promise.reject(Error('wrong_host'));
  if(!/^[0-9a-f-]{36}$/i.test(config.oneSignalAppId||''))return Promise.reject(Error('not_configured'));
  readyPromise=new Promise((resolve,reject)=>{
   const timer=setTimeout(()=>reject(Error('timeout')),15000);
@@ -44,7 +45,7 @@ function init(){
   const s=document.createElement('script');s.src='https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';s.defer=true;s.onerror=()=>{s.remove();clearTimeout(timer);reject(Error('network'));};if(!document.querySelector('script[data-brek-onesignal]')){s.dataset.brekOnesignal='true';document.head.append(s);}
  });readyPromise=readyPromise.catch(e=>{readyPromise=undefined;subscriptionState='error';renderSubscription();throw e;});return readyPromise;
 }
-function failure(e){status.textContent=e.message==='not_configured'?tr('Les abonnements ne sont pas encore ouverts. Revenez bientôt.','Abònman yo poko ouvè. Retounen byento.'):tr('Le service ne répond pas. Réessayez plus tard.','Sèvis la pa reponn. Eseye ankò pita.');}
+function failure(e){if(e&&e.message==='wrong_host'){status.textContent=tr('Les notifications fonctionnent sur le site officiel : ','Notifikasyon yo mache sou sit ofisyèl la : ');const a=document.createElement('a');a.href='https://brek-ayiti.pages.dev'+location.pathname+location.search+location.hash;a.textContent='brek-ayiti.pages.dev';status.append(a);return;}status.textContent=e.message==='not_configured'?tr('Les abonnements ne sont pas encore ouverts. Revenez bientôt.','Abònman yo poko ouvè. Retounen byento.'):tr('Le service ne répond pas. Réessayez plus tard.','Sèvis la pa reponn. Eseye ankò pita.');}
 const push=button('🔔 Notifications sur cet appareil',async()=>{
  try{push.disabled=true;const os=await init();
   if(!os.Notifications.isPushSupported()){status.textContent='Sur iPhone/iPad, ajoutez le site à l’écran d’accueil puis ouvrez-le depuis son icône. Sinon, choisissez les emails.';return;}
