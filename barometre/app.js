@@ -194,6 +194,7 @@ function App(){
  ${pending.length>0&&html`<div className="confirm" role="dialog" aria-label="Confirmer mes intentions">
   <p><b>Vos choix :</b></p><ul>${pending.map(r=>html`<li key=${r.id}>${r.label} : <b>${choices.find(c=>c.id===picks[r.id])?.full_name}</b></li>`)}</ul>
   ${TURNSTILE_SITE_KEY&&html`<div ref=${captchaBox} className="captcha"></div>`}
+  ${isError&&html`<p role="alert" className="error"><b>${message}</b></p>`}
   <div className="actions"><button disabled=${busy} onClick=${submit}>${busy?"Envoi…":"Envoyer mes intentions"}</button><button className="secondary" disabled=${busy} onClick=${()=>setPicks({})}>Effacer</button></div>
   <p className="muted small">Une seule intention par poste et par appareil. Elle ne peut plus être modifiée ensuite.</p></div>`}
 
