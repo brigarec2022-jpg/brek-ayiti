@@ -18,5 +18,4 @@
 @keyframes brekprogress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media(max-width:760px){#brek-news-verification{grid-template-columns:1fr}#brek-news-verification .brek-verif-visual{min-height:220px;height:220px}#brek-news-verification .brek-verif-visual:after{background:linear-gradient(0deg,#1a1520,transparent 35%)}#brek-news-verification .brek-verif-copy{padding:25px}#brek-news-verification .brek-verif-title{min-height:2em}#brek-news-verification .brek-verif-body{min-height:6em}}
 @media(prefers-reduced-motion:reduce){#brek-news-verification .brek-verif-art,#brek-news-verification .brek-verif-progress{animation:none}}
-#brek-news-verification .brek-verif-badge{position:absolute;left:12px;bottom:12px;z-index:2;background:#000a;color:#f5e2b8;font-size:11px;letter-spacing:.06em;padding:3px 8px;border-radius:6px}
 #brek-news-verification .brek-verif-title{color:#fff!important}#brek-news-verification .brek-verif-body{color:#efe4d2!important}
