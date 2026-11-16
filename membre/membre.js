@@ -15,6 +15,8 @@ const store={get(){try{return localStorage.getItem(KEY)}catch{return null}},set(
 const photoUrl=p=>p?`${SB_URL}/storage/v1/object/public/membres-photos/${p}`:""
 const fold=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-")
 const fmtDate=d=>d?new Date(d).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}):""
+const TITRE={fondateur:"Fondateur / Concepteur",cofondateur:"Cofondateur",membre:"Membre"}
+const TITRE_COUL={fondateur:"#b38a36",cofondateur:"#b9002c",membre:"#206747"}
 const STATUT={en_attente:"En attente de vérification",valide:"Membre validé",rejete:"Inscription refusée"}
 let geo=null
 async function communesOf(dept){
@@ -188,8 +190,10 @@ async function drawBadge(c,m){
  x.font="800 50px system-ui,sans-serif";x.fillText(String(m.nom).toUpperCase(),334,310)
  x.fillStyle="#5c4a2e";x.font="600 28px system-ui,sans-serif"
  x.fillText(m.departement==="Diaspora"?`Diaspora · ${m.commune}${m.pays?", "+m.pays:""}`:`${m.commune} · ${m.departement}`,334,362)
- x.fillText("Membre depuis le "+fmtDate(m.depuis),334,404)
- x.fillStyle="#b9002c";x.font="800 40px ui-monospace,monospace";x.fillText(m.numero,334,474)
+ x.fillText("Depuis le "+fmtDate(m.depuis),334,404)
+ const t=TITRE[m.titre||"membre"];x.font="800 30px system-ui,sans-serif";const tw=x.measureText(t.toUpperCase()).width+44
+ x.fillStyle=TITRE_COUL[m.titre||"membre"];rr(x,334,428,tw,52,26);x.fill();x.fillStyle="#fff";x.fillText(t.toUpperCase(),356,465)
+ x.fillStyle="#2a1d14";x.font="800 36px ui-monospace,monospace";x.fillText(m.numero,334,532)
  if(window.qrcode){const q=qrcode(0,"M");q.addData(`${SITE}/membre/?n=${m.numero}`);q.make();const n=q.getModuleCount(),s=Math.floor(150/n),o=W-48-s*n,t=H-48-s*n
   x.fillStyle="#fff";x.fillRect(o-10,t-10,s*n+20,s*n+20);x.fillStyle="#111";for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*s,t+r*s,s,s)}
  x.fillStyle="#2a1d14";x.font="700 22px system-ui,sans-serif";x.fillText("Dieu · Patrie · Travail",48,H-50)
@@ -205,7 +209,7 @@ async function viewStatus(jeton,fresh=false){
  app.innerHTML=`
  <div class="eyebrow">Mon espace membre</div>
  <h1>${esc(m.prenom)} ${esc(m.nom)}</h1>
- <p><span class="status ${m.statut}">${STATUT[m.statut]}</span></p>
+ <p><span class="status ${m.statut}">${STATUT[m.statut]}</span> ${m.statut==="valide"?`<span class="status titre-${m.titre||"membre"}">${TITRE[m.titre||"membre"]}</span>`:""}</p>
  ${fresh?`<div class="panel success"><b>Merci, votre inscription est enregistrée.</b> Un responsable va vérifier votre identité. Revenez sur votre lien personnel pour voir la réponse.</div>`:""}
  <section class="panel"><h2>Votre lien personnel</h2>
   <p>Gardez ce lien : il vous permet de revenir ici depuis n’importe quel téléphone. <b>Ne le partagez pas</b>, c’est la clé de votre espace.</p>
@@ -236,7 +240,7 @@ async function viewVerify(n){
  app.innerHTML=`<div class="eyebrow">Vérification de carte</div><h1>${esc(n)}</h1>
  ${!m?`<div class="panel error"><b>Carte inconnue.</b> Ce numéro ne correspond à aucun membre.</div>`
  :`<div class="panel card">${m.photo_path?`<img src="${photoUrl(m.photo_path)}" alt="">`:"<span></span>"}<div><h3>${esc(m.prenom)} ${esc(m.nom)}</h3><p>${esc(m.departement)}</p>
-  <p><span class="status ${m.valide?"valide":"rejete"}">${m.valide?"Membre valide de BREK-AYITI":"Carte non valide"}</span></p>${m.valide&&m.depuis?`<p class="muted">Depuis le ${fmtDate(m.depuis)}</p>`:""}</div></div>`}`
+  <p><span class="status ${m.valide?"valide":"rejete"}">${m.valide?TITRE[m.titre||"membre"]+" · carte valide de BREK-AYITI":"Carte non valide"}</span></p>${m.valide&&m.depuis?`<p class="muted">Depuis le ${fmtDate(m.depuis)}</p>`:""}</div></div>`}`
 }
 
 /* ---------- Administration ---------- */
@@ -270,6 +274,7 @@ async function viewAdmin(){
     ${m.numero_cin?`<p>CIN / NINU : ${esc(m.numero_cin)}</p>`:""}
     <p class="muted">Inscrit le ${fmtDate(m.created_at)}${m.parrain?" · invité par "+esc(m.parrain):""}${m.numero?" · carte "+esc(m.numero):""}</p>
     ${m.motif?`<p class="error">Motif du refus : ${esc(m.motif)}</p>`:""}
+    ${m.statut==="valide"?`<div class="actions"><label class="field">Titre sur la carte<select data-titre>${Object.entries(TITRE).map(([k,l])=>`<option value="${k}" ${m.titre===k?"selected":""}>${l}</option>`).join("")}</select></label></div>`:""}
     <div class="actions"><button class="secondary" data-piece="${esc(m.piece_path)}">Ouvrir la pièce d’identité</button></div>
     ${m.statut!=="valide"?`<label class="oath"><input type="checkbox" data-check><span>J’ai contrôlé la pièce : l’identité et la date de naissance correspondent, et la personne a au moins 18 ans.</span></label>
      <div class="actions"><button data-ok>Valider et émettre la carte</button></div>`:""}
@@ -284,6 +289,8 @@ async function viewAdmin(){
   app.querySelectorAll(".card").forEach(card=>{const id=card.dataset.id,errp=card.querySelector("[data-err]")
    card.querySelector("[data-ok]")?.addEventListener("click",async()=>{if(!card.querySelector("[data-check]").checked){errp.textContent="Cochez d’abord le contrôle de la pièce.";return}
     const {error}=await sb.rpc("admin_decider",{p_id:id,p_decision:"valide"});error?errp.textContent=error.message:render()})
+   card.querySelector("[data-titre]")?.addEventListener("change",async e=>{const {data,error}=await sb.rpc("admin_titre",{p_id:id,p_titre:e.target.value})
+    if(error){errp.textContent=error.message;render()}else errp.innerHTML=`<span class="success">Titre enregistré. Cofondateurs : ${data.cofondateurs}/12.</span>`})
    card.querySelector("[data-ko]").onclick=async()=>{const motif=card.querySelector("[data-motif]").value.trim()
     if(!motif){errp.textContent="Écrivez le motif du refus : la personne le verra pour corriger son inscription.";return}
     const {error}=await sb.rpc("admin_decider",{p_id:id,p_decision:"rejete",p_motif:motif});error?errp.textContent=error.message:render()}})
