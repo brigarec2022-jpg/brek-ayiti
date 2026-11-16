@@ -173,6 +173,7 @@ function App(){
  <nav className="nav">${menus.map(([n,u])=>html`<a key=${n} className=${n==="Baromètre électoral"?"active":""} href=${u}>${n}</a>`)}</nav></header>
  <main><div className="muted">BREK-AYITI · BAROMÈTRE CITOYEN</div><h1>Baromètre d’intentions de vote</h1>
  <p className="lead">Président, sénateur, député : dites-nous pour qui vous comptez voter. <b>Aucun nom, aucun e-mail, aucun compte.</b></p>
+ <figure className="barometre-hero"><img src="/barometre/barometre-electoral.webp" alt="Illustration du baromètre électoral BREK-AYITI : un cadran et une urne devant la Citadelle et la baie, sans résultat chiffré." width="1734" height="907" fetchpriority="high"/><figcaption>Consultation citoyenne, non officielle : le baromètre prend le pouls des intentions de vote.</figcaption></figure>
  <div className="notice"><strong>Sondage d’intentions — non officiel, ne remplace pas l’élection.</strong> Ce baromètre mesure une opinion exprimée volontairement sur internet. Ce n’est pas l’élection organisée par le CEP. BREK ne recommande aucun vote. Les listes de candidats proviennent du registre publié par le CEP et peuvent encore changer.</div>
  ${message&&html`<div role="status" className=${"panel "+(isError?"error":"success")}>${message}</div>`}
 
