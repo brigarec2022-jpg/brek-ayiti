@@ -68,10 +68,11 @@ document.getElementById('p-yt').href='https://www.youtube.com/watch?v='+v;
 if(d.chaine&&!q.get('v'))document.getElementById('p-chaine').textContent=d.chaine;
 if(q.get('chaine'))document.getElementById('p-chaine').textContent=q.get('chaine');
 const t=q.get('titre')||(!q.get('v')&&d.titre)||'';document.getElementById('p-titre').textContent=t;
-document.getElementById('partenaire').hidden=false})();</script>
-<h2 style="margin-top:20px">📡 Le direct</h2>
+document.getElementById('partenaire').hidden=false;const bd=document.getElementById('brek-direct');bd.open=false;bd.querySelector('summary').textContent='📡 Le direct RTV BREK (toucher pour afficher)'})();</script>
+<details id="brek-direct" open><summary style="cursor:pointer;font:800 24px Georgia,serif;margin:22px 0 6px">📡 Le direct RTV BREK</summary>
 <div class="frame"><iframe src="https://www.youtube.com/embed/live_stream?channel=UCYsddSPNqns5DrNa_5XtdGg&amp;rel=0" title="BREK-TV en direct" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
 <p class="note">Quand BREK-TV est en direct, l’émission s’affiche ici automatiquement. Si aucun direct n’est en cours, le lecteur indique que la vidéo n’est pas disponible : retrouvez alors nos vidéos ci-dessous, et abonnez-vous à la chaîne pour être averti du prochain direct.</p>
+</details>
 <div class="actions">
 <a class="btn" style="background:#c4001c;border-color:#c4001c;color:#fff" href="https://www.youtube.com/channel/UCYsddSPNqns5DrNa_5XtdGg?sub_confirmation=1" target="_blank" rel="noopener noreferrer">🔔 S’abonner à la chaîne</a>
 <a class="btn" href="https://www.youtube.com/@rtvbrek8665" target="_blank" rel="noopener noreferrer">Ouvrir sur YouTube ↗</a>
