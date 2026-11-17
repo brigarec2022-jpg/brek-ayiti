@@ -1,6 +1,8 @@
 /api/* / 404
 /barometre /barometre/index.html 200
 /barometre/ /barometre/index.html 200
+/tv /tv/index.html 200
+/tv/ /tv/index.html 200
 /news/vertieres-223-ans /news/vertieres-223-ans/index.html 200
 /news/vertieres-223-ans/ /news/vertieres-223-ans/index.html 200
 /spots/hymne-a-la-revolution /spots/hymne-a-la-revolution/index.html 200
