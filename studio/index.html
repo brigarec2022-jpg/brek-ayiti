@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Studio virtuel RTV BREK</title><link rel="icon" href="/favicon.svg">
+<style>
+:root{--red:#a8001c;--gold:#c99a3c;--paper:#fbf3df}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:#1b1b1b;font:17px/1.6 Arial,Helvetica,sans-serif}
+main{max-width:980px;margin:0 auto;padding:22px 16px 60px}
+h1{font:900 clamp(28px,6vw,44px)/1.1 Arial;margin:6px 0 10px}h2{margin-top:34px;border-bottom:3px solid var(--gold);padding-bottom:4px}
+.k{font:800 13px Arial;letter-spacing:2px;color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+label{display:block;font-weight:700;font-size:15px}input{width:100%;font:inherit;padding:10px;border:1px solid #cdb27b;border-radius:8px;margin-top:4px;background:#fff}
+.url{display:flex;gap:8px;margin:8px 0 14px}.url input{font:14px monospace;background:#fff9ec}
+button,.btn{font:700 15px Arial;padding:10px 14px;border-radius:8px;border:2px solid var(--red);background:var(--red);color:#fff;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.o{background:#fff;color:var(--red)}
+.prev{width:100%;aspect-ratio:16/9;border:3px solid var(--gold);border-radius:12px;overflow:hidden;position:relative;background:#000}
+.prev iframe{position:absolute;top:0;left:0;width:1920px;height:1080px;border:0;transform-origin:0 0}
+ol li,ul li{margin:6px 0}code{background:#fff;border:1px solid #e1cda0;border-radius:5px;padding:1px 5px}
+.note{background:#fff9ec;border-left:5px solid var(--red);padding:10px 14px;border-radius:8px}
+</style></head><body><main>
+<p class="k">RTV BREK · OUTIL INTERNE</p>
+<h1>Studio virtuel RTV BREK</h1>
+<p>Deux habillages prêts à l’emploi pour vos directs : l’<b>écran d’attente</b> avant le début, et l’<b>habillage du direct</b> (logo, EN DIRECT, heure d’Haïti, bandeau du nom, défilant des titres BREK). Ils s’ajoutent par-dessus votre caméra dans le logiciel gratuit <b>OBS Studio</b>.</p>
+
+<h2>1. Préparer les textes</h2>
+<div class="grid">
+<label>Titre de l’émission<input id="titre" value="Mobilisation nationale · Vertières 2026"></label>
+<label>Nom de l’intervenant<input id="nom" value="La rédaction de BREK-AYITI"></label>
+<label>Fonction<input id="fonction" value="RTV BREK"></label>
+<label>Messages du défilant (séparés par |)<input id="info" value="Inscrivez-vous sur la liste électorale avant le 20 mai 2027"></label>
+<label>Compte à rebours de l’attente (minutes)<input id="minutes" type="number" min="0" value="10"></label>
+</div>
+
+<h2>2. Écran d’attente</h2>
+<div class="prev"><iframe id="pa" title="Aperçu écran d’attente"></iframe></div>
+<div class="url"><input id="ua" readonly><button data-c="ua">Copier</button></div>
+
+<h2>3. Habillage du direct</h2>
+<div class="prev"><iframe id="ph" title="Aperçu habillage"></iframe></div>
+<div class="url"><input id="uh" readonly><button data-c="uh">Copier</button></div>
+<p style="font-size:14px">L’aperçu montre l’affiche en fond ; dans OBS, le fond est transparent et c’est votre caméra qui apparaît derrière.</p>
+
+<h2>4. Installer dans OBS Studio (une seule fois)</h2>
+<ol>
+<li>Installez <b>OBS Studio</b> (gratuit) depuis <a href="https://obsproject.com/fr/download" target="_blank" rel="noopener">obsproject.com</a>.</li>
+<li>Créez une scène <b>« Attente »</b> : <b>+</b> sous « Sources » → <b>Navigateur</b> → collez le lien de l’écran d’attente, largeur <code>1920</code>, hauteur <code>1080</code>.</li>
+<li>Créez une scène <b>« Plateau »</b> : ajoutez d’abord <b>Périphérique de capture vidéo</b> (votre webcam ou votre téléphone), puis par-dessus une source <b>Navigateur</b> avec le lien de l’habillage, <code>1920 × 1080</code>.</li>
+<li>Dans OBS : <b>Paramètres → Stream</b> → Service <b>YouTube</b> → <b>Connecter le compte</b> (compte RTV BREK). Puis <b>Paramètres → Sortie</b> : 2 500 kb/s, et <b>Vidéo</b> : 1280 × 720, 30 i/s.</li>
+<li>Le jour J : affichez la scène « Attente », cliquez <b>Démarrer le streaming</b>, puis passez sur « Plateau » quand vous commencez.</li>
+</ol>
+
+<h2>5. Pendant le direct</h2>
+<p>Dans OBS, clic droit sur la source de l’habillage → <b>Interagir</b>, puis :</p>
+<ul>
+<li><b>E</b> : mode édition — cliquez sur le nom, la fonction ou le titre pour les changer en direct (Échap pour valider).</li>
+<li><b>L</b> : afficher ou masquer le bandeau du nom.</li>
+<li><b>T</b> : afficher ou masquer le défilant.</li>
+<li><b>D</b> : basculer entre EN DIRECT et REPLAY.</li>
+</ul>
+<p>Le défilant affiche automatiquement les derniers titres publiés sur le site.</p>
+
+<h2>Votre téléphone comme caméra</h2>
+<p>Installez <b>DroidCam</b> sur le téléphone Android et sur l’ordinateur (même Wi-Fi) : le téléphone apparaît dans OBS comme une webcam.</p>
+<p class="note"><b>Sécurité.</b> Ne montrez jamais où se trouve l’équipe pendant un direct de terrain. Évitez les gros plans sur les visages de personnes qui n’ont pas donné leur accord, surtout les enfants. Ne dites rien en direct qui n’a pas été vérifié.</p>
+<p><a class="btn o" href="/tv/">Voir la page BREK-TV</a></p>
+</main>
+<script>
+const o=location.origin;const f=['titre','nom','fonction','info','minutes'];
+function q(keys){const p=new URLSearchParams();keys.forEach(k=>{const v=document.getElementById(k).value.trim();if(v)p.set(k,v)});return p.toString()}
+function up(){const a=o+'/studio/attente.html?'+q(['titre','minutes']);const h=o+'/studio/habillage.html?'+q(['titre','nom','fonction','info']);
+ua.value=a;uh.value=h;if(pa.dataset.u!==a){pa.src=a;pa.dataset.u=a}if(ph.dataset.u!==h){ph.src=h+'&apercu=1';ph.dataset.u=h}}
+f.forEach(k=>document.getElementById(k).addEventListener('change',up));up();
+function sc(){document.querySelectorAll('.prev').forEach(d=>{d.querySelector('iframe').style.transform='scale('+(d.clientWidth/1920)+')'})}addEventListener('resize',sc);sc();
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=async()=>{const i=document.getElementById(b.dataset.c);i.select();try{await navigator.clipboard.writeText(i.value);b.textContent='Copié ✓'}catch(e){document.execCommand('copy');b.textContent='Copié ✓'}setTimeout(()=>b.textContent='Copier',1500)});
+</script></body></html>
