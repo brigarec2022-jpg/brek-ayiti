@@ -3,57 +3,45 @@
 <title>RTV BREK · Habillage du direct</title>
 <style>
 html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:Arial,Helvetica,sans-serif}
-body.apercu{background:#4a5560 url('/spots/hymne-a-la-revolution/affiche.jpg') center/cover}
-.logo{position:absolute;top:40px;left:48px;display:flex;align-items:center;gap:16px}
-.logo img{width:110px;height:110px;border-radius:50%;box-shadow:0 4px 18px #0008;border:3px solid #d4af37}
-.logo div{color:#fff;text-shadow:0 2px 8px #000}.logo b{display:block;font:900 44px/1 Arial;letter-spacing:1px}.logo small{font:700 20px Arial;color:#f5d58a}
-.live{position:absolute;top:56px;right:56px;display:flex;align-items:center;gap:12px;background:#c4001c;color:#fff;font:900 30px Arial;letter-spacing:2px;padding:12px 24px;border-radius:10px;box-shadow:0 4px 18px #0007}
-.live i{width:18px;height:18px;border-radius:50%;background:#fff;animation:b 1.2s infinite}@keyframes b{50%{opacity:.15}}
-.live.replay{background:#333}.live.replay i{display:none}
-.heure{position:absolute;top:128px;right:56px;color:#fff;font:700 26px Arial;text-shadow:0 2px 8px #000}
-.lt{position:absolute;left:48px;bottom:150px;display:flex;flex-direction:column;align-items:flex-start;transition:transform .5s,opacity .5s}
-.lt.off{transform:translateX(-120%);opacity:0}
-.lt .n{background:linear-gradient(90deg,#0b0b0b,#2a0006);color:#fff;font:900 48px Arial;padding:14px 30px;border-left:12px solid #c4001c}
-.lt .f{background:#d4af37;color:#1a1a1a;font:700 30px Arial;padding:8px 30px 8px 42px}
-.ticker{position:absolute;left:0;right:0;bottom:0;height:78px;display:flex;background:#0b0b0b;border-top:4px solid #d4af37;transition:transform .5s}
-.ticker.off{transform:translateY(110%)}
-.ticker .tag{flex:none;display:flex;align-items:center;background:#c4001c;color:#fff;font:900 28px Arial;padding:0 28px;letter-spacing:2px}
-.ticker .run{flex:1;overflow:hidden;position:relative}
-.ticker .run span{position:absolute;white-space:nowrap;top:50%;transform:translateY(-50%);color:#fff;font:700 30px Arial;will-change:left}
-.site{position:absolute;right:56px;bottom:96px;color:#fff;font:700 24px Arial;text-shadow:0 2px 8px #000}
-.titre{position:absolute;top:172px;right:56px;max-width:900px;text-align:right;color:#fff;font:800 30px Arial;text-shadow:0 2px 10px #000}
+body.apercu{background:#3a3f48 url('/spots/hymne-a-la-revolution/affiche.jpg') center/cover}
+.l{position:absolute;inset:0;pointer-events:none}
+#cadre{position:absolute;left:0;top:0;width:1920px;height:1080px}
+#lt{position:absolute;left:45px;top:803px;width:919px;height:152px;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s}
+#lt.off{transform:translateX(-110%);opacity:0}
+#lt img{position:absolute;inset:0;width:100%;height:100%}
+.nom{position:absolute;left:187px;top:22px;width:600px;height:64px;display:flex;align-items:center;color:#fff;font:italic 900 50px/1 Arial;white-space:nowrap;text-shadow:0 2px 6px #0008;transform-origin:left center}
+.fct{position:absolute;left:187px;top:93px;width:640px;height:46px;display:flex;align-items:center;color:#fff;font:italic 700 32px/1 Arial;white-space:nowrap;transform-origin:left center}
+.clock{position:absolute;left:1666px;top:124px;width:210px;height:62px;display:flex;align-items:center;justify-content:center;color:#fff;font:900 48px/1 Arial;letter-spacing:1px}
+.tk{position:absolute;left:626px;top:972px;width:1282px;height:64px;overflow:hidden;transition:opacity .4s}
+.tk.off{opacity:0}
+.tk span{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;color:#fff;font:italic 700 37px/1 Arial;will-change:left}
+.tk span i{color:#f5c400;font-style:normal;margin:0 26px}
 [contenteditable=true]{outline:3px dashed #ffd84d}
-.aide{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#000c;color:#fff;font:22px/1.5 Arial;padding:24px 32px;border-radius:14px;display:none;max-width:1100px}
+.aide{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);background:#000c;color:#fff;font:22px/1.5 Arial;padding:24px 32px;border-radius:14px;display:none;max-width:1100px;pointer-events:auto}
 body.edit .aide{display:block}
-</style></head>
-<body>
-<div class="logo"><img src="/membre/logo-brek-carre.png" alt=""><div><b>RTV BREK</b><small>Ayiti d’abord, Ayiti toujours</small></div></div>
-<div class="live" id="live"><i></i><span>EN DIRECT</span></div>
-<div class="heure" id="heure"></div>
-<div class="titre" id="titre" data-k="titre"></div>
-<div class="lt" id="lt"><div class="n" data-k="nom">Nom de l’intervenant</div><div class="f" data-k="fonction">Fonction · BREK-AYITI</div></div>
-<div class="site">brek-ayiti.pages.dev/tv</div>
-<div class="ticker" id="ticker"><div class="tag">BREK INFO</div><div class="run"><span id="run">Ayiti d’abord, Ayiti toujours</span></div></div>
-<div class="aide"><b>Mode édition</b> — cliquez sur un texte pour le modifier, puis appuyez sur Échap.<br>
-<b>L</b> : afficher / masquer le bandeau du nom · <b>T</b> : le défilant · <b>D</b> : EN DIRECT / REPLAY · <b>E</b> : quitter l’édition</div>
+</style></head><body>
+<img id="cadre" src="/studio/v2/cadre.png" alt="">
+<div id="lt"><img src="/studio/v2/bandeau.png" alt=""><div class="nom" data-k="nom">Nom de l’invité</div><div class="fct" data-k="fonction">Fonction · Organisation</div></div>
+<div class="clock" id="clock"></div>
+<div class="tk" id="tk"><span id="run"></span></div>
+<div class="aide"><b>Mode édition</b> — cliquez sur le nom ou la fonction pour les modifier, puis Échap.<br><b>L</b> : afficher / masquer le bandeau de l’invité · <b>T</b> : le défilant · <b>E</b> : quitter l’édition</div>
 <script>
 const P=new URLSearchParams(location.search);
 if(P.has('apercu'))document.body.classList.add('apercu');
-const S={get(k){try{return localStorage.getItem('rtv:'+k)}catch(e){return null}},set(k,v){try{localStorage.setItem('rtv:'+k,v)}catch(e){}}};
-document.querySelectorAll('[data-k]').forEach(el=>{const k=el.dataset.k;const v=P.get(k)??S.get(k);if(v!==null)el.textContent=v;el.addEventListener('input',()=>S.set(k,el.textContent))});
-const lt=document.getElementById('lt'),tk=document.getElementById('ticker'),lv=document.getElementById('live');
-function st(){lt.classList.toggle('off',S.get('lt')==='0'||P.get('bandeau')==='0');tk.classList.toggle('off',S.get('tk')==='0'||P.get('defilant')==='0');const r=(S.get('mode')||P.get('mode'))==='replay';lv.classList.toggle('replay',r);lv.querySelector('span').textContent=r?'REPLAY':'EN DIRECT'}
-st();
+const S={get(k){try{return localStorage.getItem('rtv2:'+k)}catch(e){return null}},set(k,v){try{localStorage.setItem('rtv2:'+k,v)}catch(e){}}};
+function fit(el){el.style.transform='';const w=el.scrollWidth,max=el.clientWidth;el.style.transform=w>max?`scaleX(${max/w})`:''}
+document.querySelectorAll('[data-k]').forEach(el=>{const k=el.dataset.k;const v=P.get(k)??S.get(k);if(v!==null)el.textContent=v;fit(el);el.addEventListener('input',()=>{S.set(k,el.textContent);fit(el)})});
+const lt=document.getElementById('lt'),tk=document.getElementById('tk');
+function st(){lt.classList.toggle('off',S.get('lt')==='0'||P.get('bandeau')==='0');tk.classList.toggle('off',S.get('tk')==='0'||P.get('defilant')==='0')}st();
 let edit=false;
-addEventListener('keydown',e=>{if(e.target.isContentEditable){if(e.key==='Escape')e.target.blur();return}
-const k=e.key.toLowerCase();
+addEventListener('keydown',e=>{if(e.target.isContentEditable){if(e.key==='Escape')e.target.blur();return}const k=e.key.toLowerCase();
 if(k==='l'){S.set('lt',lt.classList.contains('off')?'1':'0');st()}
 if(k==='t'){S.set('tk',tk.classList.contains('off')?'1':'0');st()}
-if(k==='d'){S.set('mode',lv.classList.contains('replay')?'direct':'replay');st()}
-if(k==='e'){edit=!edit;document.body.classList.toggle('edit',edit);document.querySelectorAll('[data-k]').forEach(el=>el.contentEditable=edit)}});
-function h(){document.getElementById('heure').textContent=new Date().toLocaleString('fr-FR',{timeZone:'America/Port-au-Prince',weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})+' · Haïti'}h();setInterval(h,15000);
+if(k==='e'){edit=!edit;document.body.classList.toggle('edit',edit);document.querySelectorAll('[data-k]').forEach(el=>{el.contentEditable=edit;el.style.pointerEvents=edit?'auto':''})}});
+function h(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('fr-FR',{timeZone:'America/Port-au-Prince',hour:'2-digit',minute:'2-digit',second:'2-digit'})}h();setInterval(h,1000);
 const run=document.getElementById('run');let x=0;
-async function titres(){try{const r=await fetch('/publications.json?t='+Date.now());const d=await r.json();const extra=(P.get('info')||'').split('|').filter(Boolean);run.textContent=[...extra,...d.slice(0,8).map(p=>p.title)].join('   ◆   ')+'   ◆   Abonnez-vous à RTV BREK   ◆   '}catch(e){}}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+async function titres(){let list=(P.get('info')||'').split('|').map(s=>s.trim()).filter(Boolean);try{const r=await fetch('/publications.json?t='+Date.now());const d=await r.json();list=list.concat(d.slice(0,8).map(p=>p.title))}catch(e){}list.push('Abonnez-vous à RTV BREK · brek-ayiti.pages.dev/tv');run.innerHTML=list.map(esc).join('<i>●</i>')+'<i>●</i>'}
 titres();setInterval(titres,600000);
-function anim(){const w=run.parentElement.clientWidth;x-=2.2;if(x<-run.clientWidth)x=w;run.style.left=x+'px';requestAnimationFrame(anim)}x=run.parentElement.clientWidth;anim();
+function anim(){const w=tk.clientWidth;x-=2.4;if(x<-run.offsetWidth)x=w;run.style.left=x+'px';requestAnimationFrame(anim)}x=tk.clientWidth;anim();
 </script></body></html>

@@ -2,29 +2,15 @@
 <html lang="fr"><head><meta charset="utf-8"><meta name="robots" content="noindex">
 <title>RTV BREK · Écran d’attente</title>
 <style>
-html,body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#fff}
-body{background:#0b0b0b}
-.bg{position:absolute;inset:0;background:url('/spots/hymne-a-la-revolution/affiche.jpg') center/cover;filter:blur(18px) brightness(.45);transform:scale(1.1)}
-.band{position:absolute;inset:0;background:linear-gradient(90deg,#000d 0,#000a 45%,#a8001c66 100%)}
-.c{position:absolute;left:120px;top:50%;transform:translateY(-50%);max-width:1100px}
-img{width:200px;height:200px;border-radius:50%;border:5px solid #d4af37;box-shadow:0 8px 30px #000}
-.k{font:900 30px Arial;letter-spacing:6px;color:#f5d58a;margin:34px 0 6px}
-h1{font:900 96px/1.05 Arial;margin:0}
-.t{font:700 44px Arial;color:#ffdede;margin:18px 0 0;min-height:52px}
-.cd{font:900 120px Arial;color:#fff;margin-top:30px;letter-spacing:4px}
-.d{position:absolute;right:120px;bottom:80px;text-align:right;font:700 30px Arial;color:#f5d58a}
-.d b{display:block;font:900 52px Arial;color:#fff}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#000 url('/studio/v2/attente.jpg') center/cover;font-family:Arial,Helvetica,sans-serif;color:#fff}
+.b{position:absolute;left:0;right:0;bottom:70px;text-align:center}
+.t{font:italic 800 40px Arial;color:#f5d58a;text-shadow:0 3px 12px #000;min-height:46px}
+.cd{display:inline-block;margin-top:10px;font:900 96px/1 Arial;letter-spacing:4px;text-shadow:0 4px 18px #000;background:#000a;border:2px solid #d4af37;border-radius:16px;padding:10px 40px}
+.cd:empty{display:none}
 </style></head><body>
-<div class="bg"></div><div class="band"></div>
-<div class="c"><img src="/membre/logo-brek-carre.png" alt="">
-<div class="k">RTV BREK · BREK-TV</div>
-<h1 id="h">Le direct commence bientôt</h1>
-<div class="t" id="t"></div>
-<div class="cd" id="cd"></div></div>
-<div class="d">brek-ayiti.pages.dev/tv<b>Ayiti d’abord, Ayiti toujours</b></div>
+<div class="b"><div class="t" id="t"></div><div class="cd" id="cd"></div></div>
 <script>
 const P=new URLSearchParams(location.search);
 if(P.get('titre'))document.getElementById('t').textContent=P.get('titre');
-if(P.get('message'))document.getElementById('h').textContent=P.get('message');
 const m=+(P.get('minutes')||0);if(m>0){const end=Date.now()+m*60000;const cd=document.getElementById('cd');(function f(){const s=Math.max(0,Math.round((end-Date.now())/1000));cd.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');if(s>0)setTimeout(f,500);else cd.textContent='EN DIRECT'})()}
 </script></body></html>
