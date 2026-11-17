@@ -49,17 +49,22 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 <audio id="a" preload="none"></audio>
 <script>
 const T=[{t:'Hymne à la Révolution',s:'Chant · BREK-AYITI',u:'/radio/hymne-a-la-revolution.mp3'},{t:'Le temps du sérieux',s:'Spot · BREK-AYITI',u:'/radio/le-temps-du-serieux.mp3'},{t:'The Weight of Evidence',s:'Instrumental · BREK-AYITI',u:'/assets/the-weight-of-evidence.mp3'}];
-const a=document.getElementById('a'),play=document.getElementById('play'),disc=document.getElementById('disc'),list=document.getElementById('list');
-let i=0;
-T.forEach((x,k)=>{const li=document.createElement('li');li.innerHTML='<b></b><span></span>';li.querySelector('b').textContent=x.t;li.querySelector('span').textContent=x.s;li.onclick=()=>{load(k);go()};list.appendChild(li)});
-function load(k){i=(k+T.length)%T.length;a.src=T[i].u;document.getElementById('now').textContent=T[i].t;document.getElementById('sub').textContent=T[i].s;[...list.children].forEach((li,j)=>li.classList.toggle('cur',j===i));
+const a=document.getElementById('a'),ID=new Audio('/radio/indicatif-radio-brek.mp3'),play=document.getElementById('play'),disc=document.getElementById('disc'),list=document.getElementById('list');
+ID.preload='auto';
+let i=0,started=false,cur=a; // cur = élément en cours (titre ou indicatif)
+T.forEach((x,k)=>{const li=document.createElement('li');li.innerHTML='<b></b><span></span>';li.querySelector('b').textContent=x.t;li.querySelector('span').textContent=x.s;li.onclick=()=>{started=true;load(k);go(a)};list.appendChild(li)});
+function load(k){i=(k+T.length)%T.length;a.src=T[i].u;show(T[i].t,T[i].s);[...list.children].forEach((li,j)=>li.classList.toggle('cur',j===i));
  if('mediaSession'in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:T[i].t,artist:'Radio BREK',album:'BREK-AYITI',artwork:[{src:'/radio/pochette.jpg',sizes:'512x512',type:'image/jpeg'}]})}}
-function go(){a.play().catch(()=>{})}
-function ui(){const on=!a.paused;play.textContent=on?'⏸':'▶';disc.classList.toggle('on',on);document.body.classList.toggle('on-air',on)}
-play.onclick=()=>{if(!a.src)load(i);a.paused?go():a.pause()};
-document.getElementById('next').onclick=()=>{load(i+1);go()};document.getElementById('prev').onclick=()=>{load(i-1);go()};
-a.addEventListener('ended',()=>{load(i+1);go()});a.addEventListener('play',ui);a.addEventListener('pause',ui);
-document.getElementById('vol').oninput=e=>a.volume=e.target.value;a.volume=.9;
-if('mediaSession'in navigator){navigator.mediaSession.setActionHandler('nexttrack',()=>{load(i+1);go()});navigator.mediaSession.setActionHandler('previoustrack',()=>{load(i-1);go()})}
+function show(t,s){document.getElementById('now').textContent=t;document.getElementById('sub').textContent=s}
+function go(el){[a,ID].forEach(x=>{if(x!==el)x.pause()});cur=el;el.volume=+document.getElementById('vol').value;el.play().catch(()=>{});}
+function indicatif(){show('Radio BREK','La voix de la Révolution Classique');ID.currentTime=0;go(ID)}
+function ui(){const on=!cur.paused;play.textContent=on?'⏸':'▶';disc.classList.toggle('on',on);document.body.classList.toggle('on-air',on)}
+play.onclick=()=>{if(!started){started=true;indicatif();return}cur.paused?go(cur):cur.pause()};
+document.getElementById('next').onclick=()=>{started=true;load(i+1);go(a)};document.getElementById('prev').onclick=()=>{started=true;load(i-1);go(a)};
+a.addEventListener('ended',()=>{load(i+1);indicatif()});
+ID.addEventListener('ended',()=>{show(T[i].t,T[i].s);go(a)});
+[a,ID].forEach(x=>{x.addEventListener('play',ui);x.addEventListener('pause',ui)});
+document.getElementById('vol').oninput=e=>{a.volume=ID.volume=e.target.value};
+if('mediaSession'in navigator){navigator.mediaSession.setActionHandler('nexttrack',()=>{load(i+1);go(a)});navigator.mediaSession.setActionHandler('previoustrack',()=>{load(i-1);go(a)})}
 load(0);
 </script></body></html>
