@@ -39,6 +39,13 @@ ol li,ul li{margin:6px 0}code{background:#fff;border:1px solid #e1cda0;border-ra
 <div class="url"><input id="uh" readonly><button data-c="uh">Copier</button></div>
 <p style="font-size:14px">L’aperçu montre l’affiche en fond ; dans OBS, le fond est transparent et c’est votre caméra qui apparaît derrière.</p>
 
+<h2>Globe animé (générique)</h2>
+<p>Le globe tourne, s’arrête sur Haïti, relie Haïti à sa diaspora, puis affiche le titre RTV BREK. À utiliser en ouverture d’émission, avant l’écran d’attente.</p>
+<div class="prev"><iframe id="pg" title="Aperçu globe animé"></iframe></div>
+<label style="margin-top:10px">Texte du bandeau rouge<input id="gtitre" value="BREK INFO"></label>
+<div class="url"><input id="ug" readonly><button data-c="ug">Copier</button></div>
+<p style="font-size:15px">Dans OBS : source <b>Navigateur</b>, 1920 × 1080. Ajoutez <code>&amp;mode=boucle</code> au lien pour un globe qui tourne en continu (fond d’écran de plateau), et <code>&amp;fond=0</code> pour un fond transparent.</p>
+<p><a class="btn" href="/studio/intro-globe-rtv-brek.mp4" download>Télécharger le générique en vidéo (MP4, 10 s)</a></p>
 <h2>4. Installer dans OBS Studio (une seule fois)</h2>
 <ol>
 <li>Installez <b>OBS Studio</b> (gratuit) depuis <a href="https://obsproject.com/fr/download" target="_blank" rel="noopener">obsproject.com</a>.</li>
@@ -67,8 +74,8 @@ ol li,ul li{margin:6px 0}code{background:#fff;border:1px solid #e1cda0;border-ra
 const o=location.origin;const f=['titre','nom','fonction','info','minutes'];
 function q(keys){const p=new URLSearchParams();keys.forEach(k=>{const v=document.getElementById(k).value.trim();if(v)p.set(k,v)});return p.toString()}
 function up(){const a=o+'/studio/attente.html?'+q(['titre','minutes']);const h=o+'/studio/habillage.html?'+q(['titre','nom','fonction','info']);
-ua.value=a;uh.value=h;if(pa.dataset.u!==a){pa.src=a;pa.dataset.u=a}if(ph.dataset.u!==h){ph.src=h+'&apercu=1';ph.dataset.u=h}}
-f.forEach(k=>document.getElementById(k).addEventListener('change',up));up();
+const gl=o+'/studio/globe.html?'+new URLSearchParams({titre:gtitre.value.trim()||'BREK INFO'}).toString();ug.value=gl;if(pg.dataset.u!==gl){pg.src=gl;pg.dataset.u=gl}ua.value=a;uh.value=h;if(pa.dataset.u!==a){pa.src=a;pa.dataset.u=a}if(ph.dataset.u!==h){ph.src=h+'&apercu=1';ph.dataset.u=h}}
+f.forEach(k=>document.getElementById(k).addEventListener('change',up));gtitre.addEventListener('change',up);up();
 function sc(){document.querySelectorAll('.prev').forEach(d=>{d.querySelector('iframe').style.transform='scale('+(d.clientWidth/1920)+')'})}addEventListener('resize',sc);sc();
 document.querySelectorAll('[data-c]').forEach(b=>b.onclick=async()=>{const i=document.getElementById(b.dataset.c);i.select();try{await navigator.clipboard.writeText(i.value);b.textContent='Copié ✓'}catch(e){document.execCommand('copy');b.textContent='Copié ✓'}setTimeout(()=>b.textContent='Copier',1500)});
 </script></body></html>
