@@ -54,6 +54,21 @@ h2{margin-top:34px}
 <p class="kicker">BREK MÉDIAS · RADIO TV BREK</p>
 <h1>BREK-TV</h1>
 <p class="lead">Les directs, émissions et vidéos de BREK-AYITI. Suivez les mobilisations en direct, en Haïti et dans la diaspora.</p>
+<section id="partenaire" hidden>
+<h2 style="margin-top:20px">📡 Direct partenaire</h2>
+<p id="p-titre" style="font:700 17px Arial,sans-serif;margin:0"></p>
+<div class="frame"><iframe id="p-frame" title="Direct partenaire" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+<p class="note">Direct diffusé par <b id="p-chaine">une chaîne partenaire</b>, relayé par BREK-TV. Les images et les propos restent la responsabilité de cette chaîne. <a id="p-yt" target="_blank" rel="noopener noreferrer">Regarder sur YouTube ↗</a></p>
+</section>
+<script>(async()=>{function id(x){if(!x)return'';x=String(x).trim();const m=x.match(/(?:v=|youtu\.be\/|\/live\/|\/embed\/|\/shorts\/)([\w-]{11})/);return m?m[1]:(/^[\w-]{11}$/.test(x)?x:'')}
+const q=new URLSearchParams(location.search);let d={};try{const r=await fetch('/tv/direct.json?t='+Date.now());if(r.ok)d=await r.json()}catch(e){}
+const v=id(q.get('v'))||(d.actif?id(d.video):'');if(!v)return;
+document.getElementById('p-frame').src='https://www.youtube.com/embed/'+v+'?rel=0&autoplay=1&mute=1';
+document.getElementById('p-yt').href='https://www.youtube.com/watch?v='+v;
+if(d.chaine&&!q.get('v'))document.getElementById('p-chaine').textContent=d.chaine;
+if(q.get('chaine'))document.getElementById('p-chaine').textContent=q.get('chaine');
+const t=q.get('titre')||(!q.get('v')&&d.titre)||'';document.getElementById('p-titre').textContent=t;
+document.getElementById('partenaire').hidden=false})();</script>
 <h2 style="margin-top:20px">📡 Le direct</h2>
 <div class="frame"><iframe src="https://www.youtube.com/embed/live_stream?channel=UCYsddSPNqns5DrNa_5XtdGg&amp;rel=0" title="BREK-TV en direct" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
 <p class="note">Quand BREK-TV est en direct, l’émission s’affiche ici automatiquement. Si aucun direct n’est en cours, le lecteur indique que la vidéo n’est pas disponible : retrouvez alors nos vidéos ci-dessous, et abonnez-vous à la chaîne pour être averti du prochain direct.</p>
