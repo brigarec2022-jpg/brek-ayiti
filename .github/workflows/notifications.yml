@@ -1,0 +1,17 @@
+name: Notifications automatiques
+on:
+  push:
+    branches: [main]
+    paths: [publications.json]
+jobs:
+  notifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Envoyer les notifications des nouvelles publications
+        env:
+          ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
+          BEFORE_SHA: ${{ github.event.before }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: python3 .github/scripts/notify_new.py
