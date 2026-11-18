@@ -1,5 +1,7 @@
 /api/* / 404
 /barometre /barometre/index.html 200
+/news/reconstruire-centre-ville /news/reconstruire-centre-ville/index.html 200
+/news/reconstruire-centre-ville/ /news/reconstruire-centre-ville/index.html 200
 /news/accord-haiti-salvador /news/accord-haiti-salvador/index.html 200
 /news/accord-haiti-salvador/ /news/accord-haiti-salvador/index.html 200
 /tv/flash-info-17-novembre /tv/flash-info-17-novembre/index.html 200
