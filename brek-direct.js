@@ -14,7 +14,7 @@
       '#brek-live-bar .bl-btn{white-space:nowrap;background:#fff;color:#b0001a;border-radius:20px;padding:6px 14px;font-weight:900}'+
       '#brek-live-bar .bl-dot{width:12px;height:12px;border-radius:50%;background:#fff;flex:none;animation:blp 1.2s infinite}'+
       '@keyframes blp{0%{box-shadow:0 0 0 0 rgba(255,255,255,.9)}70%{box-shadow:0 0 0 10px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}'+
-      '@media(max-width:600px){#brek-live-bar{font-size:13px;gap:8px;padding:9px 12px}#brek-live-bar .bl-btn{padding:5px 10px}}';
+      '@media(max-width:600px){#brek-live-bar .bl-t{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}#brek-live-bar{font-size:13px;gap:8px;padding:9px 12px}#brek-live-bar .bl-btn{padding:5px 10px}}';
     document.head.appendChild(st); document.body.insertBefore(a,document.body.firstChild);
   }
   function player(){
