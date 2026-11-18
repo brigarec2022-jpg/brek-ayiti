@@ -38,7 +38,7 @@
       if(m.parentElement.querySelector('[data-brek-radio]'))return;
       var r=document.createElement('a');r.href='/radio/';r.textContent='📻 Radio BREK';r.setAttribute('data-brek-radio','1');r.className=m.className;
       var t=document.createElement('a');t.href='/tv/';t.textContent='📺 BREK-TV';t.setAttribute('data-brek-radio','1');t.className=m.className;
-      m.insertAdjacentElement('afterend',t);m.insertAdjacentElement('afterend',r);
+      m.insertAdjacentElement('afterend',t);m.insertAdjacentElement('afterend',r);m.style.display='none';m.setAttribute('aria-hidden','true');m.tabIndex=-1;
     });
   }
   addLinks();new MutationObserver(addLinks).observe(document.documentElement,{childList:true,subtree:true});
