@@ -1,5 +1,7 @@
 /api/* / 404
 /barometre /barometre/index.html 200
+/spots/ayiti-kanpe /spots/ayiti-kanpe/index.html 200
+/spots/ayiti-kanpe/ /spots/ayiti-kanpe/index.html 200
 /barometre/ /barometre/index.html 200
 /radio /radio/index.html 200
 /radio/ /radio/index.html 200
