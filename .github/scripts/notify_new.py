@@ -11,6 +11,16 @@ MSG = os.environ.get("COMMIT_MSG", "")
 
 if not KEY:
     print("Pas de clé ONESIGNAL_REST_API_KEY : rien envoyé."); sys.exit(0)
+if "[test-notif]" in MSG:
+    body = {"app_id": APP_ID, "included_segments": ["Active Subscriptions"],
+        "headings": {"en": "BREK-AYITI · Notifications automatiques", "fr": "BREK-AYITI · Notifications automatiques"},
+        "contents": {"en": "Test réussi : vous serez averti automatiquement de chaque nouvelle publication. ➜", "fr": "Test réussi : vous serez averti automatiquement de chaque nouvelle publication. ➜"},
+        "url": SITE + "/", "name": "Test automatique", "chrome_web_icon": SITE + "/icons/brek-ayiti-192-v2.png"}
+    req = urllib.request.Request("https://api.onesignal.com/notifications?c=push", data=json.dumps(body).encode(), method="POST",
+        headers={"Content-Type": "application/json", "Authorization": "Key " + KEY})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        print("TEST", r.status, r.read().decode()[:300])
+    sys.exit(0)
 if "[sans-notif]" in MSG:
     print("[sans-notif] : rien envoyé."); sys.exit(0)
 

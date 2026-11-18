@@ -2,7 +2,7 @@ name: Notifications automatiques
 on:
   push:
     branches: [main]
-    paths: [publications.json]
+    paths: [publications.json, .github/scripts/notify_new.py]
 jobs:
   notifier:
     runs-on: ubuntu-latest
