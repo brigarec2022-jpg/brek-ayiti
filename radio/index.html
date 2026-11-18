@@ -65,6 +65,9 @@ const I={
  ak:{t:'Ayiti Kanpé',s:'Chant · Vertières 223 ans · BREK-AYITI',u:'/radio/ayiti-kanpe.mp3',d:198.19},
  hy:{t:'Hymne à la Révolution',s:'Chant · BREK-AYITI',u:'/radio/hymne-a-la-revolution.mp3',d:226.44},
  we:{t:'The Weight of Evidence',s:'Instrumental · BREK-AYITI',u:'/assets/the-weight-of-evidence.mp3',d:59.71},
+ dn:{t:'La Dessalinienne',s:'Hymne national d’Haïti',u:'/radio/la-dessalinienne.mp3',d:204.85},
+ hp:{t:'Hymne présidentiel',s:'Ouverture officielle',u:'/radio/hymne-presidentiel.mp3',d:187.98},
+ hj:{t:'Hymne à la jeunesse',s:'Ouverture officielle',u:'/radio/hymne-jeunesse.mp3',d:278.67},
  bv:{t:'Bienvenue sur RTV BREK',s:'Spot · Monique et Simon',u:'/radio/bienvenue-rtv-brek.mp3',d:22.0}
 };
 const G=[ // grille : [heure début, heure fin, nom, description]
@@ -76,12 +79,14 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [18,19,'Journal du soir','Flash Info et Édition spéciale avec Simon'],
  [19,24,'Nuit BREK','Chants de BREK-AYITI et Flash Info chaque heure']];
 const FILL=['id','ak','id','hy','id','we','id','bv'];
-function head(h){if(h===6)return['id','hy','fl'];if(h===12||h===18)return['id','fl','es'];return['id','fl']}
+function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','hy','fl'];if(h===12||h===18)return['id','fl','es'];return['id','fl']}
 function hourPlan(h){const out=[];let t=0;for(const k of head(h)){out.push({k,st:t,en:t+I[k].d});t+=I[k].d}
  let j=0;while(t<3600){const k=FILL[j++%FILL.length];out.push({k,st:t,en:Math.min(3600,t+I[k].d)});t+=I[k].d}return out}
 function haiti(){const p=new Intl.DateTimeFormat('fr-FR',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
  const g=x=>+p.find(o=>o.type===x).value;return{h:g('hour'),m:g('minute'),s:g('second'),ms:new Date().getMilliseconds()}}
-function block(h){return G.find(b=>h>=b[0]&&h<b[1])}
+function weekday(){const d=new Intl.DateTimeFormat('en-US',{timeZone:TZ,weekday:'short'}).format(new Date());return !['Sat','Sun'].includes(d)}
+function grid(){if(!weekday())return G;const o=[];G.forEach(b=>{if(b[0]===7&&b[1]===12){o.push([7,8,b[2],b[3]],[8,9,'Ouverture officielle','La Dessalinienne, Hymne présidentiel, Hymne à la jeunesse, Hymne à la Révolution, puis Flash Info'],[9,12,b[2],b[3]])}else o.push(b)});return o}
+function block(h){return grid().find(b=>h>=b[0]&&h<b[1])}
 function pos(){const t=haiti(),sec=t.m*60+t.s+t.ms/1000,plan=hourPlan(t.h);let i=plan.findIndex(x=>sec>=x.st&&sec<x.en);if(i<0)i=plan.length-1;
  const nx=plan[i+1]||{k:head((t.h+1)%24)[0],st:3600,nh:1};return{t,sec,seg:plan[i],nx,blk:block(t.h)}}
 const a=document.getElementById('a'),play=document.getElementById('play'),disc=document.getElementById('disc');
@@ -94,7 +99,7 @@ function show(){const P=pos();document.getElementById('clock').textContent=p2(P.
  const plan=hourPlan(P.t.h);let j=plan.findIndex(x=>x.st===P.seg.st)+1;while(plan[j]&&plan[j].k==='id')j++;
  let nt,ns;if(plan[j]){nt=I[plan[j].k].t;ns=fmt(P.t.h,plan[j].st)}else{const h2=(P.t.h+1)%24,hp=head(h2);nt=I[hp[1]].t;ns=p2(h2)+'h00'}
  document.getElementById('nx').textContent=nt;document.getElementById('nxt').textContent='· '+ns;
- [...document.getElementById('grille').children].forEach((li,j)=>li.classList.toggle('cur',G[j]===P.blk));
+ const GG=grid();if(document.getElementById('grille').children.length!==GG.length)drawGrid();[...document.getElementById('grille').children].forEach((li,j)=>li.classList.toggle('cur',GG[j][0]===P.blk[0]));
  if(on&&curSeg&&(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st))tune()}
 function tune(){const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.st;
  a.src=it.u;a.volume=+document.getElementById('vol').value;
@@ -104,6 +109,6 @@ function ui(){play.textContent=on?'⏸':'▶';disc.classList.toggle('on',on);doc
 play.onclick=()=>{if(on){on=false;a.pause();curSeg=null;document.getElementById('now').textContent='Appuyez sur ▶ pour reprendre le direct'}else{on=true;tune()}ui()};
 a.addEventListener('ended',()=>{if(on)tune()});
 document.getElementById('vol').oninput=e=>{a.volume=e.target.value};
-const gl=document.getElementById('grille');G.forEach(b=>{const li=document.createElement('li');li.innerHTML='<time>'+p2(b[0])+'h – '+p2(b[1]%24)+'h</time><div><b></b><span></span></div>';li.querySelector('b').textContent=b[2];li.querySelector('span').textContent=b[3];gl.appendChild(li)});
-show();setInterval(show,1000);
+function drawGrid(){const gl=document.getElementById('grille');gl.innerHTML='';grid().forEach(b=>{const li=document.createElement('li');li.innerHTML='<time>'+p2(b[0])+'h – '+p2(b[1]%24)+'h'+(b[2]==='Ouverture officielle'?'<br><small>lun.–ven.</small>':'')+'</time><div><b></b><span></span></div>';li.querySelector('b').textContent=b[2];li.querySelector('span').textContent=b[3];gl.appendChild(li)})}
+drawGrid();show();setInterval(show,1000);
 </script><script src="/brek-direct.js?v=4" defer></script></body></html>
