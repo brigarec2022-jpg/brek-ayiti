@@ -30,3 +30,16 @@
   fetch('/tv/direct.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){D=d;apply();
     if(D.actif) new MutationObserver(apply).observe(document.body,{childList:true,subtree:true});}).catch(function(){});
 })();
+
+/* Menu : liens directs Radio BREK et BREK-TV après « Médiathèque » */
+(function(){
+  function addLinks(){
+    document.querySelectorAll('a[href="#medias"]').forEach(function(m){
+      if(m.parentElement.querySelector('[data-brek-radio]'))return;
+      var r=document.createElement('a');r.href='/radio/';r.textContent='📻 Radio BREK';r.setAttribute('data-brek-radio','1');r.className=m.className;
+      var t=document.createElement('a');t.href='/tv/';t.textContent='📺 BREK-TV';t.setAttribute('data-brek-radio','1');t.className=m.className;
+      m.insertAdjacentElement('afterend',t);m.insertAdjacentElement('afterend',r);
+    });
+  }
+  addLinks();new MutationObserver(addLinks).observe(document.documentElement,{childList:true,subtree:true});
+})();
