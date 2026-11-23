@@ -70,6 +70,10 @@ const I={
  hp:{t:'Hymne présidentiel',s:'Ouverture officielle',u:'/radio/hymne-presidentiel.mp3',d:187.98},
  hj:{t:'Hymne à la jeunesse',s:'Ouverture officielle',u:'/radio/hymne-jeunesse.mp3',d:278.67},
  mj:{t:'Info de la mi-journée',s:'Monique · bulletin du lundi 23 novembre 2026',u:'/radio/info-mi-journee-2026-11-23.mp3',d:288.50},
+ yt:{t:'Yon ti chans pou Ayiti',s:'Chant · BREK-HAITI',u:'/radio/yon-ti-chans-pou-ayiti.mp3',d:343.33},
+ ap:{t:'Ayiti pa kapab ankò',s:'Chant · BREK-HAITI',u:'/radio/ayiti-pa-kapab-anko.mp3',d:413.07},
+ so:{t:'SOS d’un terrien en détresse',s:'Version BREK-HAITI · d’après Michel Berger et Luc Plamondon',u:'/radio/sos-terrien-en-detresse.mp3',d:202.92},
+ cp:{t:'Le Chant des Partisans',s:'Version BREK-HAITI · Kessel, Druon, Anna Marly',u:'/radio/chant-des-partisans.mp3',d:237.30},
  bv:{t:'Bienvenue sur RTV BREK',s:'Spot · Monique et Simon',u:'/radio/bienvenue-rtv-brek.mp3',d:22.0}
 };
 const G=[ // grille : [heure début, heure fin, nom, description]
@@ -83,7 +87,7 @@ const G=[ // grille : [heure début, heure fin, nom, description]
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
-const FILL=['id','ak','id','hy','id','we','id','bv'];
+const FILL=['id','ak','id','yt','id','cp','id','we','id','hy','id','ap','id','bv','id','so'];
 function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','hy','fl'];if(h===12||h===18)return['id','fl','es'];return['id','fl']}
 function hourPlan(h){const sp=SPECIAL[today()],at=sp&&sp.slots[h]!==undefined?sp.slots[h]:null;
  let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
