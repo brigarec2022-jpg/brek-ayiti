@@ -60,7 +60,7 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 const TZ='America/Port-au-Prince';
 const I={
  id:{t:'Radio BREK',s:'Indicatif · La voix de la Révolution Classique',u:'/radio/indicatif-radio-brek.mp3?v=2',d:10.22},
- fl:{t:'Flash Info',s:'Monique · bulletin du 17 novembre 2026',u:'/radio/flash-info-monique.mp3',d:59.77},
+ fl:{t:'Info de la mi-journée',s:'Monique · bulletin du lundi 23 novembre 2026',u:'/radio/info-mi-journee-2026-11-23.mp3',d:288.50},
  es:{t:'Édition spéciale',s:'Simon · bulletin du 17 novembre 2026',u:'/radio/edition-speciale-simon.mp3',d:166.66},
  ak:{t:'Ayiti Kanpé',s:'Chant · Vertières 223 ans · BREK-AYITI',u:'/radio/ayiti-kanpe.mp3',d:198.19},
  hy:{t:'Hymne à la Révolution',s:'Chant · BREK-AYITI',u:'/radio/hymne-a-la-revolution.mp3',d:226.44},
@@ -68,6 +68,7 @@ const I={
  dn:{t:'La Dessalinienne',s:'Hymne national d’Haïti',u:'/radio/la-dessalinienne.mp3',d:204.85},
  hp:{t:'Hymne présidentiel',s:'Ouverture officielle',u:'/radio/hymne-presidentiel.mp3',d:187.98},
  hj:{t:'Hymne à la jeunesse',s:'Ouverture officielle',u:'/radio/hymne-jeunesse.mp3',d:278.67},
+ mj:{t:'Info de la mi-journée',s:'Monique · bulletin du lundi 23 novembre 2026',u:'/radio/info-mi-journee-2026-11-23.mp3',d:288.50},
  bv:{t:'Bienvenue sur RTV BREK',s:'Spot · Monique et Simon',u:'/radio/bienvenue-rtv-brek.mp3',d:22.0}
 };
 const G=[ // grille : [heure début, heure fin, nom, description]
@@ -78,10 +79,17 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [13,18,'Après-midi BREK','Chants, spots et Flash Info chaque heure'],
  [18,19,'Journal du soir','Flash Info et Édition spéciale avec Simon'],
  [19,24,'Nuit BREK','Chants de BREK-AYITI et Flash Info chaque heure']];
+// Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
+const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2700}}};
+function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 const FILL=['id','ak','id','hy','id','we','id','bv'];
 function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','hy','fl'];if(h===12||h===18)return['id','fl','es'];return['id','fl']}
-function hourPlan(h){const out=[];let t=0;for(const k of head(h)){out.push({k,st:t,en:t+I[k].d});t+=I[k].d}
- let j=0;while(t<3600){const k=FILL[j++%FILL.length];out.push({k,st:t,en:Math.min(3600,t+I[k].d)});t+=I[k].d}return out}
+function hourPlan(h){const sp=SPECIAL[today()],at=sp&&sp.slots[h]!==undefined?sp.slots[h]:null;
+ let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
+ const out=[];let t=0,done=at===null||at<11;
+ const push=k=>{if(!done&&t+I[k].d>at){if(at>t)out.push({k,st:t,en:at});t=at;out.push({k:'id',st:t,en:t+I.id.d});t+=I.id.d;out.push({k:sp.k,st:t,en:t+I[sp.k].d});t+=I[sp.k].d;done=true;return}
+  out.push({k,st:t,en:Math.min(3600,t+I[k].d)});t+=I[k].d};
+ for(const k of hd)push(k);let j=0;while(t<3600)push(FILL[j++%FILL.length]);return out}
 function haiti(){const p=new Intl.DateTimeFormat('fr-FR',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
  const g=x=>+p.find(o=>o.type===x).value;return{h:g('hour'),m:g('minute'),s:g('second'),ms:new Date().getMilliseconds()}}
 function weekday(){const d=new Intl.DateTimeFormat('en-US',{timeZone:TZ,weekday:'short'}).format(new Date());return !['Sat','Sun'].includes(d)}
