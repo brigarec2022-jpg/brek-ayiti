@@ -84,9 +84,9 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [0,6,'Nuit BREK','Chants de BREK-AYITI et Flash Info chaque heure'],
  [6,7,'Réveil révolutionnaire','Fanfare d’ouverture, bulletin d’information, Hymne à la Révolution'],
  [7,12,'Matinale BREK','Chants, spots et Flash Info chaque heure'],
- [12,13,'Journal de midi','Flash Info et Édition spéciale avec Simon'],
+ [12,13,'Journal de midi','Bulletin d’information'],
  [13,18,'Après-midi BREK','Chants, spots et Flash Info chaque heure'],
- [18,19,'Journal du soir','Flash Info et Édition spéciale avec Simon'],
+ [18,19,'Journal du soir','Bulletin d’information'],
  [19,24,'Nuit BREK','Chants de BREK-AYITI et Flash Info chaque heure']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const MUS=['n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
@@ -94,7 +94,7 @@ function lab(k){return MUS.includes(k)?{t:'Musique',s:'Radio BREK · La voix de 
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 const FILL=['id','ak','jg','yt','id','n2','id','cp','id','we','jg','hy','id','gk','id','ap','id','bv','id','so'];
-function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','fl','hy','mf'];if(h===12||h===18)return['id','fl','es'];return['id','fl']}
+function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','fl','hy','mf'];if(h===12||h===18)return['id','fl'];return['id','fl']}
 function hourPlan(h){const sp=SPECIAL[today()],at=sp&&sp.slots[h]!==undefined?sp.slots[h]:null;
  let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
  const out=[];let t=0,done=at===null||at<11;
