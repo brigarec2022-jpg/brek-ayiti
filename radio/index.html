@@ -74,23 +74,24 @@ const I={
  ap:{t:'Ayiti pa kapab ankò',s:'Chant · BREK-HAITI',u:'/radio/ayiti-pa-kapab-anko.mp3',d:413.07},
  so:{t:'SOS d’un terrien en détresse',s:'Version BREK-HAITI · d’après Michel Berger et Luc Plamondon',u:'/radio/sos-terrien-en-detresse.mp3',d:202.92},
  cp:{t:'Le Chant des Partisans',s:'Version BREK-HAITI · Kessel, Druon, Anna Marly',u:'/radio/chant-des-partisans.mp3',d:237.30},
+ mf:{t:'Majestic Fanfare',s:'Ouverture · BREK-AYITI',u:'/radio/majestic-fanfare.mp3',d:69.25},
  bv:{t:'Bienvenue sur RTV BREK',s:'Spot · Monique et Simon',u:'/radio/bienvenue-rtv-brek.mp3',d:22.0}
 };
 const G=[ // grille : [heure début, heure fin, nom, description]
  [0,6,'Nuit BREK','Chants de BREK-AYITI et Flash Info chaque heure'],
- [6,7,'Réveil révolutionnaire','Indicatif, Hymne à la Révolution, Flash Info'],
+ [6,7,'Réveil révolutionnaire','Fanfare d’ouverture, bulletin d’information, Hymne à la Révolution'],
  [7,12,'Matinale BREK','Chants, spots et Flash Info chaque heure'],
  [12,13,'Journal de midi','Flash Info et Édition spéciale avec Simon'],
  [13,18,'Après-midi BREK','Chants, spots et Flash Info chaque heure'],
  [18,19,'Journal du soir','Flash Info et Édition spéciale avec Simon'],
  [19,24,'Nuit BREK','Chants de BREK-AYITI et Flash Info chaque heure']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
-const MUS=['ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
+const MUS=['mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:'Musique',s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 const FILL=['id','ak','id','yt','id','cp','id','we','id','hy','id','ap','id','bv','id','so'];
-function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','hy','fl'];if(h===12||h===18)return['id','fl','es'];return['id','fl']}
+function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','fl','hy','mf'];if(h===12||h===18)return['id','fl','es'];return['id','fl']}
 function hourPlan(h){const sp=SPECIAL[today()],at=sp&&sp.slots[h]!==undefined?sp.slots[h]:null;
  let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
  const out=[];let t=0,done=at===null||at<11;
@@ -121,6 +122,8 @@ function tune(){const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.s
  a.src=it.u;a.volume=+document.getElementById('vol').value;
  a.onloadedmetadata=()=>{try{a.currentTime=Math.max(0,off+0.3)}catch(e){};a.play().catch(()=>{})};a.load();
  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:'/radio/pochette.jpg',sizes:'512x512',type:'image/jpeg'}]});show()}
+setInterval(()=>{if(!on||!curSeg)return;const P=pos();const left=curSeg.en-P.sec,full=I[curSeg.k].d-(P.sec-curSeg.st);
+ const base=+document.getElementById('vol').value;a.volume=(left<3&&full-left>0.5)?Math.max(0,base*left/3):base},100);
 function ui(){play.textContent=on?'⏸':'▶';disc.classList.toggle('on',on);document.body.classList.toggle('on-air',on)}
 play.onclick=()=>{if(on){on=false;a.pause();curSeg=null;document.getElementById('now').textContent='Appuyez sur ▶ pour reprendre le direct'}else{on=true;tune()}ui()};
 a.addEventListener('ended',()=>{if(on)tune()});
