@@ -85,6 +85,8 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [18,19,'Journal du soir','Flash Info et Édition spéciale avec Simon'],
  [19,24,'Nuit BREK','Chants de BREK-AYITI et Flash Info chaque heure']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
+const MUS=['ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
+function lab(k){return MUS.includes(k)?{t:'Musique',s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 const FILL=['id','ak','id','yt','id','cp','id','we','id','hy','id','ap','id','bv','id','so'];
@@ -108,9 +110,9 @@ const p2=n=>String(n).padStart(2,'0');
 function fmt(h,secInHour){const m=Math.floor(secInHour/60);return p2((h+Math.floor(m/60))%24)+'h'+p2(m%60)}
 function show(){const P=pos();document.getElementById('clock').textContent=p2(P.t.h)+'h'+p2(P.t.m);
  document.getElementById('blk').textContent=P.blk[2];
- if(on){const it=I[P.seg.k];document.getElementById('now').textContent=it.t;document.getElementById('sub').textContent=it.s}
+ if(on){const it=lab(P.seg.k);document.getElementById('now').textContent=it.t;document.getElementById('sub').textContent=it.s}
  const plan=hourPlan(P.t.h);let j=plan.findIndex(x=>x.st===P.seg.st)+1;while(plan[j]&&plan[j].k==='id')j++;
- let nt,ns;if(plan[j]){nt=I[plan[j].k].t;ns=fmt(P.t.h,plan[j].st)}else{const h2=(P.t.h+1)%24,hp=head(h2);nt=I[hp[1]].t;ns=p2(h2)+'h00'}
+ let nt,ns;if(plan[j]){nt=lab(plan[j].k).t;ns=fmt(P.t.h,plan[j].st)}else{const h2=(P.t.h+1)%24,hp=head(h2);nt=I[hp[1]].t;ns=p2(h2)+'h00'}
  document.getElementById('nx').textContent=nt;
  {const h2=(P.t.h+1)%24,bk=head(h2).find(k=>k==='fl'||k==='mj')||'fl';document.getElementById('nb').innerHTML='<span class="lbl">PROCHAIN BULLETIN</span> <b>'+I[bk].t+'</b> <span style="color:#aaa">· '+p2(h2)+'h00</span>'}document.getElementById('nxt').textContent='· '+ns;
  const GG=grid();if(document.getElementById('grille').children.length!==GG.length)drawGrid();[...document.getElementById('grille').children].forEach((li,j)=>li.classList.toggle('cur',GG[j][0]===P.blk[0]));
@@ -118,7 +120,7 @@ function show(){const P=pos();document.getElementById('clock').textContent=p2(P.
 function tune(){const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.st;
  a.src=it.u;a.volume=+document.getElementById('vol').value;
  a.onloadedmetadata=()=>{try{a.currentTime=Math.max(0,off+0.3)}catch(e){};a.play().catch(()=>{})};a.load();
- if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:it.t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:'/radio/pochette.jpg',sizes:'512x512',type:'image/jpeg'}]});show()}
+ if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:'/radio/pochette.jpg',sizes:'512x512',type:'image/jpeg'}]});show()}
 function ui(){play.textContent=on?'⏸':'▶';disc.classList.toggle('on',on);document.body.classList.toggle('on-air',on)}
 play.onclick=()=>{if(on){on=false;a.pause();curSeg=null;document.getElementById('now').textContent='Appuyez sur ▶ pour reprendre le direct'}else{on=true;tune()}ui()};
 a.addEventListener('ended',()=>{if(on)tune()});
