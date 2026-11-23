@@ -75,6 +75,8 @@ const I={
  so:{t:'SOS d’un terrien en détresse',s:'Version BREK-HAITI · d’après Michel Berger et Luc Plamondon',u:'/radio/sos-terrien-en-detresse.mp3',d:202.92},
  cp:{t:'Le Chant des Partisans',s:'Version BREK-HAITI · Kessel, Druon, Anna Marly',u:'/radio/chant-des-partisans.mp3',d:237.30},
  mf:{t:'Majestic Fanfare',s:'Ouverture · BREK-AYITI',u:'/radio/majestic-fanfare.mp3',d:69.25},
+ n2:{t:'Nan 25 an ankò si n pa fè anyen',s:'Chant · BREK-HAITI',u:'/radio/nan-25-an-anko.mp3',d:237.48},
+ gk:{t:'Gade kandida : kote yo soti, kote yo prale',s:'Chant · BREK-HAITI',u:'/radio/gade-kandida.mp3',d:491.23},
  jg:{t:'Radio BREK',s:'La voix de la Révolution Classique',u:'/radio/jingle-radio-brek.mp3',d:29.54},
  bv:{t:'Bienvenue sur RTV BREK',s:'Spot · Monique et Simon',u:'/radio/bienvenue-rtv-brek.mp3?v=2',d:29.54}
 };
@@ -87,11 +89,11 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [18,19,'Journal du soir','Flash Info et Édition spéciale avec Simon'],
  [19,24,'Nuit BREK','Chants de BREK-AYITI et Flash Info chaque heure']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
-const MUS=['mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
+const MUS=['n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:'Musique',s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
-const FILL=['id','ak','jg','yt','id','cp','id','we','jg','hy','id','ap','id','bv','id','so'];
+const FILL=['id','ak','jg','yt','id','n2','id','cp','id','we','jg','hy','id','gk','id','ap','id','bv','id','so'];
 function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','fl','hy','mf'];if(h===12||h===18)return['id','fl','es'];return['id','fl']}
 function hourPlan(h){const sp=SPECIAL[today()],at=sp&&sp.slots[h]!==undefined?sp.slots[h]:null;
  let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
