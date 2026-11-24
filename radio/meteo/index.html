@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MÉTÉO BREK · Maquette · Radio BREK</title><link rel="icon" href="/favicon.svg">
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--red:#b8001f;--gold:#d4af37;--line:#ffffff1f;--card:#ffffff0b;--txt:#f3efe6;--mut:#c9bfae}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 30% 0%,#3a0710,#0b0b0b 60%);color:var(--txt);font:16px/1.5 Arial,Helvetica,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:14px 16px;max-width:1000px;margin:0 auto}
+header img{width:46px;height:46px;border-radius:50%;border:2px solid var(--gold)}header b{font:800 19px Arial}header small{display:block;color:#f5d58a;font:700 12px Arial;letter-spacing:1px}
+header a.back{margin-left:auto;color:#f5d58a;font:700 14px Arial;text-decoration:none}
+main{max-width:1000px;margin:0 auto;padding:6px 16px 60px}
+.proto{background:#d4af3722;border:1px dashed var(--gold);color:#f5d58a;border-radius:10px;padding:8px 12px;font:700 13px Arial;margin-bottom:16px}
+.hero{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--red);padding-bottom:14px}
+.hero .k{font:800 12px Arial;letter-spacing:3px;color:#f5d58a}
+.hero h1{margin:4px 0 2px;font:900 clamp(34px,7vw,54px)/1 Arial;letter-spacing:-1px}.hero h1 span{color:var(--red);-webkit-text-stroke:1px #ff4a5f}
+.hero .sig{font-style:italic;color:var(--mut)}
+.stamp{font:700 13px Arial;color:var(--mut);text-align:right}.stamp b{color:var(--txt)}
+.tabs{display:flex;gap:8px;margin:18px 0 10px;flex-wrap:wrap}
+.tabs button{background:transparent;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font:700 14px Arial;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--red);border-color:var(--red)}
+.grid{display:grid;gap:14px}
+.top{grid-template-columns:1.4fr 1fr}@media(max-width:760px){.top{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h2{margin:0 0 10px;font:800 13px Arial;letter-spacing:2px;color:#f5d58a;text-transform:uppercase}
+.big{display:flex;gap:16px;align-items:center}.big svg{width:84px;height:84px;flex:none}
+.big .t{font:900 52px/1 Arial}.big .t small{font:700 18px Arial;color:var(--mut)}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;margin-top:12px;font-size:14px}.facts span{color:var(--mut)}.facts b{display:block;font-size:17px}
+.sun{display:flex;justify-content:space-around;text-align:center;margin-top:4px}.sun div{font:700 13px Arial;color:var(--mut)}.sun b{display:block;font:900 26px Arial;color:var(--txt)}
+.alert{border-radius:12px;padding:12px 14px;font-size:14px;margin-top:10px}
+.a-off{background:#b8001f33;border:2px solid #ff3b3b}.a-vig{background:#d4af371f;border:1px solid var(--gold)}.a-ok{background:#ffffff08;border:1px solid var(--line);color:var(--mut)}
+.alert .lab{display:inline-block;font:800 11px Arial;letter-spacing:1.5px;padding:3px 8px;border-radius:4px;margin-bottom:6px}
+.a-off .lab{background:#ff3b3b}.a-vig .lab{background:var(--gold);color:#111}.a-ok .lab{background:#ffffff22}
+.deps{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.dep h3{margin:0 0 8px;font:800 15px Arial;display:flex;justify-content:space-between;align-items:center}.dep h3 i{font:700 11px Arial;color:#f5d58a;letter-spacing:1px;font-style:normal}
+.city{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}.city:first-of-type{border-top:0}
+.city svg{width:34px;height:34px}.city b{display:block;font-size:15px}.city span{font-size:12px;color:var(--mut)}
+.city .tt{text-align:right;font:800 16px Arial}.city .tt small{display:block;font:700 12px Arial;color:#7fb2ff}
+.adv{grid-template-columns:1fr 1fr}@media(max-width:640px){.adv{grid-template-columns:1fr}}
+.adv ul{margin:0;padding-left:18px}.adv li{margin:4px 0}
+.studio textarea{width:100%;min-height:340px;background:#0b0b0b;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:12px;font:15px/1.55 Georgia,serif}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.btn{background:var(--red);color:#fff;border:0;border-radius:8px;padding:10px 16px;font:700 14px Arial;cursor:pointer}.btn.o{background:transparent;border:1px solid var(--gold);color:#f5d58a}
+.err{background:#b8001f22;border:1px solid #ff3b3b;border-radius:12px;padding:16px}
+.src{margin-top:24px;font-size:13px;color:var(--mut);border-top:1px solid var(--line);padding-top:12px}.src a{color:#f5d58a}
+[hidden]{display:none!important}
+</style></head><body>
+<header><img src="/membre/logo-brek-carre.png" alt="BREK"><div><b>Radio BREK</b><small>LA VOIX DE LA RÉVOLUTION CLASSIQUE</small></div><a class="back" href="/radio/">← Radio BREK</a></header>
+<main>
+<div class="proto">MAQUETTE — Phase 1, en attente de validation. Page non référencée, non reliée à la programmation.</div>
+<section class="hero"><div><div class="k">RUBRIQUE PERMANENTE</div><h1>MÉTÉO <span>BREK</span></h1><div class="sig">« Le temps chez vous, les conseils pour votre journée. »</div></div>
+<div class="stamp" id="stamp">Chargement des prévisions…</div></section>
+<div class="tabs" role="group" aria-label="Affichage"><button id="tJ" aria-pressed="true">Aujourd’hui</button><button id="tD" aria-pressed="false">Demain</button><button id="tS" aria-pressed="false">Studio · scripts</button></div>
+<div id="err" class="err" hidden></div>
+<div id="vue">
+ <div class="grid top">
+  <div class="card"><h2>Situation générale · Port-au-Prince</h2><div class="big" id="gen"></div><div class="facts" id="facts"></div></div>
+  <div class="card"><h2>Soleil · Port-au-Prince</h2><div class="sun" id="sun"></div><div id="alerts"></div></div>
+ </div>
+ <h2 style="font:800 13px Arial;letter-spacing:2px;color:#f5d58a;margin:22px 0 10px">PRÉVISIONS RÉGIONALES · 10 DÉPARTEMENTS</h2>
+ <div class="grid deps" id="deps"></div>
+ <div class="grid adv" style="margin-top:14px"><div class="card"><h2>🏠 Si vous restez à la maison</h2><ul id="cM"></ul></div><div class="card"><h2>🚶 Si vous sortez</h2><ul id="cD"></ul></div></div>
+</div>
+<div id="studio" class="studio" hidden>
+ <div class="card"><h2>Générateur de scripts — contrôle avant diffusion</h2>
+ <div class="row"><label>Édition <select id="ed"><option value="matin">Météo du matin (06 h)</option><option value="midi">Météo de midi (12 h)</option><option value="soir">Météo du soir (18 h)</option></select></label><span id="cnt" style="color:var(--mut);font-size:13px"></span></div>
+ <textarea id="txt" spellcheck="true"></textarea>
+ <div class="row"><button class="btn" id="cp">Copier le script</button><button class="btn o" id="rg">Régénérer avec les données actuelles</button><span id="cpm" style="color:#9be29b;font-size:13px"></span></div>
+ <p style="font-size:13px;color:var(--mut);margin:0">Le texte peut être corrigé avant copie. Il est rédigé pour la synthèse vocale (sans symboles). Étape suivante : enregistrement par la voix MÉTÉO BREK (à valider), puis programmation.</p></div>
+</div>
+<div class="src">Données météo : <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (licence CC BY 4.0), prévisions numériques automatiques. Les « points de vigilance » sont calculés à partir de ces prévisions et <b>ne sont pas des alertes officielles</b>. Alertes officielles : Unité hydrométéorologique d’Haïti (UHM) et Direction générale de la Protection civile (DGPC). Heures : America/Port-au-Prince.</div>
+</main>
+<script src="/radio/meteo/meteo-core.js?v=1"></script>
+<script>
+const M=window.MeteoBREK,$=id=>document.getElementById(id),KEY='meteo-brek-v1',MAXAGE=30*60e3,STALE=6*3600e3;
+let RAW=null,FETCHED=0,ALERTE=null,day=0;
+const IC={sun:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="9" fill="#f5c542"/><g stroke="#f5c542" stroke-width="3" stroke-linecap="round"><path d="M24 4v6M24 38v6M4 24h6M38 24h6M10 10l4 4M34 34l4 4M10 38l4-4M34 14l4-4"/></g></svg>',
+part:'<svg viewBox="0 0 48 48"><circle cx="18" cy="17" r="8" fill="#f5c542"/><path d="M14 38h22a8 8 0 0 0 0-16 11 11 0 0 0-21 3 6.5 6.5 0 0 0-1 13z" fill="#d9d4cc"/></svg>',
+cloud:'<svg viewBox="0 0 48 48"><path d="M12 36h24a9 9 0 0 0 0-18 12 12 0 0 0-23 3 7.5 7.5 0 0 0-1 15z" fill="#b9b3aa"/></svg>',
+rain:'<svg viewBox="0 0 48 48"><path d="M12 30h24a8 8 0 0 0 0-16 11 11 0 0 0-21 3 6.5 6.5 0 0 0-3 13z" fill="#b9b3aa"/><g stroke="#5aa0ff" stroke-width="3" stroke-linecap="round"><path d="M16 35l-2 6M24 35l-2 6M32 35l-2 6"/></g></svg>',
+storm:'<svg viewBox="0 0 48 48"><path d="M12 28h24a8 8 0 0 0 0-16 11 11 0 0 0-21 3 6.5 6.5 0 0 0-3 13z" fill="#8f8a83"/><path d="M25 28l-6 10h6l-3 8 9-12h-6l3-6z" fill="#f5c542"/></svg>',
+na:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="16" fill="none" stroke="#777" stroke-width="3"/><path d="M18 18l12 12M30 18L18 30" stroke="#777" stroke-width="3"/></svg>'};
+const hfmt=new Intl.DateTimeFormat('fr-FR',{timeZone:M.TZ,weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function r0(x){return x==null?'—':Math.round(x)}
+async function load(force){
+ try{const c=JSON.parse(localStorage.getItem(KEY)||'null');if(!force&&c&&Date.now()-c.t<MAXAGE){RAW=c.d;FETCHED=c.t;return}}catch(e){}
+ try{const r=await fetch(M.url(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();
+  if(!Array.isArray(d)||d.length!==M.VILLES.length||!d[0].daily)throw new Error('réponse incomplète');RAW=d;FETCHED=Date.now();
+  try{localStorage.setItem(KEY,JSON.stringify({t:FETCHED,d}))}catch(e){}}
+ catch(e){try{const c=JSON.parse(localStorage.getItem(KEY)||'null');if(c&&Date.now()-c.t<STALE){RAW=c.d;FETCHED=c.t;return}}catch(_){}
+  RAW=null;$('err').hidden=false;$('err').innerHTML='<b>Prévisions indisponibles pour le moment.</b><br>La source de données ne répond pas. MÉTÉO BREK ne diffuse aucune prévision inventée : réessayez dans quelques minutes.';$('stamp').textContent='Données indisponibles'}}
+async function loadAlerte(){try{const r=await fetch('/radio/meteo/alerte.json?ck='+Date.now(),{cache:'no-store'});ALERTE=await r.json()}catch(e){ALERTE=null}}
+function render(){if(!RAW)return;$('err').hidden=true;
+ const age=Date.now()-FETCHED;$('stamp').innerHTML=`Prévision du <b>${hfmt.format(new Date(FETCHED))}</b><br>${age>MAXAGE?'<span style="color:#ffb35a">Données de plus de 30 min — actualisation en cours</span>':'Données à jour'}`;
+ const as=M.VILLES.map((_,i)=>M.analyse(RAW,i,day)),pap=as.find(a=>a.v==='Port-au-Prince'),rp=M.resume(pap),c=day===0?pap.cur:null;
+ $('gen').innerHTML=`${IC[M.icone(rp.humides.length?(rp.orage?95:61):pap.code>=51?2:pap.code)]}<div><div class="t">${c?r0(c.temperature_2m):r0(pap.tmax)}°<small>${c?' maintenant':' max'}</small></div><div>${esc(rp.txt)} · ${esc(rp.pluieTxt)}</div></div>`;
+ $('facts').innerHTML=[['Min / max',`${r0(pap.tmin)}° / ${r0(pap.tmax)}°`],['Ressentie (max)',`${r0(pap.ress)}°`],['Humidité',c?`${c.relative_humidity_2m} %`:'—'],['Vent',`${r0(pap.vent)} km/h · rafales ${r0(pap.rafales)}`],['Risque de pluie',`${r0(pap.pluie)} %`],['Indice UV max',`${r0(pap.uv)}`]].map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('');
+ $('sun').innerHTML=`<div>Lever<b>${pap.lever||'—'}</b></div><div>Coucher<b>${pap.coucher||'—'}</b></div>`;
+ let al='';const off=ALERTE&&ALERTE.actif&&ALERTE.texte;
+ if(off)al+=`<div class="alert a-off"><span class="lab">ALERTE OFFICIELLE</span><div><b>${esc(ALERTE.niveau||'')}</b> ${esc(ALERTE.texte)}</div><div style="font-size:12px;margin-top:4px">Source : ${esc(ALERTE.source||'')} · ${esc(ALERTE.date||'')}</div></div>`;
+ const vg=M.vigilances(as);for(const v of vg)al+=`<div class="alert a-vig"><span class="lab">POINT DE VIGILANCE · prévision, non officiel</span><div>${esc(v.t)}</div></div>`;
+ if(!off)al+=`<div class="alert a-ok"><span class="lab">PRÉVISION ORDINAIRE</span><div>Aucune alerte officielle relayée par la rédaction. En cas d’alerte, suivez l’UHM et la Protection civile.</div></div>`;
+ $('alerts').innerHTML=al;
+ $('deps').innerHTML=M.DEPS.map(dep=>{const vs=as.filter(a=>a.dep===dep);return `<div class="card dep"><h3>${esc(dep)}<i>${vs.length>1?vs.length+' VILLES':''}</i></h3>${vs.map(a=>{const r=M.resume(a);return `<div class="city">${IC[M.icone(r.humides.length?(r.orage?95:61):a.code>=51?2:a.code)]}<div><b>${esc(a.v)}</b><span>${esc(r.txt)} · ${esc(r.pluieTxt)}</span></div><div class="tt">${r0(a.tmin)}° / ${r0(a.tmax)}°<small>💧 ${r0(a.pluie)} %</small></div></div>`}).join('')}</div>`}).join('');
+ const co=M.conseils(as);$('cM').innerHTML=co.maison.map(x=>`<li>${esc(x)}</li>`).join('');$('cD').innerHTML=co.dehors.map(x=>`<li>${esc(x)}</li>`).join('');
+ gen()}
+function gen(){if(!RAW)return;const s=M.script(RAW,$('ed').value);$('txt').value=s.ok?s.texte:s.erreur;cnt()}
+function cnt(){const n=$('txt').value.length;$('cnt').textContent=`${n} caractères · environ ${Math.round(n/15/60*10)/10} min`}
+function tab(t){$('tJ').setAttribute('aria-pressed',t==='J');$('tD').setAttribute('aria-pressed',t==='D');$('tS').setAttribute('aria-pressed',t==='S');$('vue').hidden=t==='S';$('studio').hidden=t!=='S';day=t==='D'?1:0;render()}
+$('tJ').onclick=()=>tab('J');$('tD').onclick=()=>tab('D');$('tS').onclick=()=>tab('S');$('ed').onchange=gen;$('txt').oninput=cnt;
+$('cp').onclick=async()=>{try{await navigator.clipboard.writeText($('txt').value);$('cpm').textContent='Copié ✓'}catch(e){$('txt').select();document.execCommand('copy');$('cpm').textContent='Copié ✓'}setTimeout(()=>$('cpm').textContent='',2500)};
+$('rg').onclick=async()=>{await load(true);render()};
+(async()=>{await Promise.all([load(false),loadAlerte()]);render();setInterval(async()=>{await load(false);render()},10*60e3)})();
+</script></body></html>
