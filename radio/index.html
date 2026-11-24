@@ -146,10 +146,13 @@ setInterval(()=>{if(!on||!curSeg)return;const P=pos();const off=P.sec-curSeg.st,
  const base=+document.getElementById('vol').value;
  for(const tr of drops(curSeg.k)){const key=curSeg.st+'/'+tr+'/'+P.t.h;if(off>=tr&&off<tr+1.5&&left>15&&!fired[key]){fired[key]=1;DROP.currentTime=0;DROP.volume=base;DROP.play().catch(()=>{})}}
  let v=(left<3&&full-left>0.5)?Math.max(0,base*left/3):base;if(!DROP.paused)v=Math.min(v,base*0.3);a.volume=v},100);
-// Correction de dérive : si l'auditeur prend du retard (réseau, écran verrouillé), on le recale
-let lastFix=0;setInterval(()=>{if(!on||!curSeg||a.readyState<2||a.seeking)return;const P=pos();if(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st)return;
- const want=P.sec-curSeg.st,gap=want-a.currentTime;if(Math.abs(gap)>0.6&&Date.now()-lastFix>6000&&want<I[curSeg.k].d-2){lastFix=Date.now();try{a.currentTime=want+0.2}catch(e){}}},3000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&on){syncClock().then(()=>{lastFix=0})}});
+// Correction de dérive douce : petits écarts -> on accélère/ralentit légèrement ; gros écart -> un seul recalage, puis on attend
+let lastFix=0,stalled=false;a.addEventListener('waiting',()=>{stalled=true});a.addEventListener('playing',()=>{stalled=false});
+setInterval(()=>{if(!on||!curSeg||stalled||a.paused||a.seeking||a.readyState<3){a.playbackRate=1;return}const P=pos();if(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st)return;
+ const want=P.sec-curSeg.st,gap=want-a.currentTime;
+ if(Math.abs(gap)>5&&Date.now()-lastFix>30000&&want<I[curSeg.k].d-3){lastFix=Date.now();a.playbackRate=1;try{a.currentTime=want+0.5}catch(e){};return}
+ a.playbackRate=Math.abs(gap)<0.25?1:(gap>0?1.04:0.96)},2000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&on){syncClock()}});
 function ui(){play.textContent=on?'⏸':'▶';disc.classList.toggle('on',on);document.body.classList.toggle('on-air',on)}
 play.onclick=()=>{if(on){on=false;a.pause();DROP.pause();curSeg=null;document.getElementById('now').textContent='Appuyez sur ▶ pour reprendre le direct'}else{on=true;tune()}ui()};
 a.addEventListener('ended',()=>{if(on)tune()});
