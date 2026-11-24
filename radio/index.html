@@ -119,7 +119,7 @@ const METEO={'2026-11-24':{u:'/radio/meteo-brek-2026-11-24.mp3',d:155.38,heures:
 // ÉCO BREK : analyse économique du jour (après la météo s'il y en a une)
 const ECO={'2026-11-24':{u:'/radio/eco-brek-2026-11-24.mp3?v=2',d:492.98,heures:[12,18]}};
 // INFO INTERNATIONAL : après Éco BREK
-const INTL={'2026-11-24':{u:'/radio/info-international-2026-11-24.mp3',d:322.74,heures:[12,18]}};
+const INTL={'2026-11-24':{u:'/radio/info-international-2026-11-24.mp3?v=2',d:322.74,heures:[12,18]}};
 function head(h){let b=head0(h);const af={6:'fl',8:'hy',12:'fl',18:'es'}[h];
  const ins=(k,after)=>{const i=b.indexOf(after);b=i<0?b.concat(k):[...b.slice(0,i+1),k,...b.slice(i+1)]};
  const m=METEO[today()];if(m&&m.heures.includes(h)){I.mt={t:'Météo BREK',s:'Le temps chez vous, les conseils pour votre journée',u:m.u,d:m.d};ins('mt',af)}
