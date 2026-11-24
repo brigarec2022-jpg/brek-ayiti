@@ -96,7 +96,9 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [19,22,'Soirée BREK','Chants de BREK-AYITI · rediffusion du Bulletin spécial du soir à 19h, 20h et 21h'],[22,23,'Kompa de la Patrie','Musique engagée'],[23,24,'Nuit BREK','Chants de BREK-AYITI']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const MUS=['kp','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
-function lab(k){return MUS.includes(k)?{t:'Musique',s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
+function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
+function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(MUS.includes(k))return'/radio/disques/'+k+'.webp';if(['fl','es','er','mj'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp'}
+let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c}}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 const FILL=['id','ak','jg','yt','id','sj','id','n2','id','cp','jg','uf','id','we','id','hy','id','gk','jg','ms','id','ap','id','bv','id','so'];
@@ -120,7 +122,7 @@ const p2=n=>String(n).padStart(2,'0');
 function fmt(h,secInHour){const m=Math.floor(secInHour/60);return p2((h+Math.floor(m/60))%24)+'h'+p2(m%60)}
 function show(){const P=pos();document.getElementById('clock').textContent=p2(P.t.h)+'h'+p2(P.t.m);
  document.getElementById('blk').textContent=P.blk[2];
- if(on){const it=lab(P.seg.k);document.getElementById('now').textContent=it.t;document.getElementById('sub').textContent=it.s}
+ if(on){const it=lab(P.seg.k);setCov(P.seg.k);document.getElementById('now').textContent=it.t;document.getElementById('sub').textContent=it.s}
  const plan=hourPlan(P.t.h);let j=plan.findIndex(x=>x.st===P.seg.st)+1;while(plan[j]&&plan[j].k==='id')j++;
  let nt,ns;if(plan[j]){nt=lab(plan[j].k).t;ns=fmt(P.t.h,plan[j].st)}else{const h2=(P.t.h+1)%24,hp=head(h2);nt=I[hp[1]].t;ns=p2(h2)+'h00'}
  document.getElementById('nx').textContent=nt;
@@ -130,7 +132,7 @@ function show(){const P=pos();document.getElementById('clock').textContent=p2(P.
 function tune(){const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.st;
  a.src=it.u;a.volume=+document.getElementById('vol').value;
  a.onloadedmetadata=()=>{try{a.currentTime=Math.max(0,off+0.3)}catch(e){};a.play().catch(()=>{})};a.load();
- if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:'/radio/pochette.jpg',sizes:'512x512',type:'image/jpeg'}]});show()}
+ if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:cov(P.seg.k),sizes:'512x512'}]});show()}
 const DROP=new Audio('/radio/drop-radio-brek.mp3');DROP.preload='auto';const fired={};
 function drops(k){const d=I[k].d,t=[];if(!MUS.includes(k)||k==='mf'||d<90)return t;t.push(45);if(d>300)t.push(Math.round(d/2));return t}
 setInterval(()=>{if(!on||!curSeg)return;const P=pos();const off=P.sec-curSeg.st,left=curSeg.en-P.sec,full=I[curSeg.k].d-off;
