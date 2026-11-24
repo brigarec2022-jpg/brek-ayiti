@@ -91,10 +91,10 @@ const I={
  ms:{t:'M pap fè silans',s:'Chant · BREK-HAITI',u:'/radio/m-pap-fe-silans.mp3',d:354.40},
  uf:{t:'L’Union fait la force',s:'Chant · BREK-HAITI',u:'/radio/l-union-fait-la-force.mp3',d:308.72},
  in:{t:'Citoyens du monde',s:'L’Internationale (Pottier et Degeyter) · version Chronicles and Ballads',u:'/radio/l-internationale.mp3',d:399.31},
- k1:{t:'Kompa de la Patrie',s:'Musique engagée · BREK-HAITI · partie 1/4',u:'/radio/kompa-de-la-patrie-1.mp3',d:318.537143},
- k2:{t:'Kompa de la Patrie',s:'Musique engagée · BREK-HAITI · partie 2/4',u:'/radio/kompa-de-la-patrie-2.mp3',d:647.732245},
- k3:{t:'Kompa de la Patrie',s:'Musique engagée · BREK-HAITI · partie 3/4',u:'/radio/kompa-de-la-patrie-3.mp3',d:673.018776},
- k4:{t:'Kompa de la Patrie',s:'Musique engagée · BREK-HAITI · partie 4/4',u:'/radio/kompa-de-la-patrie-4.mp3',d:354.951837},
+ k1:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 1/4',u:'/radio/kompa-de-la-patrie-1.mp3',d:318.537143},
+ k2:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 2/4',u:'/radio/kompa-de-la-patrie-2.mp3',d:647.732245},
+ k3:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 3/4',u:'/radio/kompa-de-la-patrie-3.mp3',d:673.018776},
+ k4:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 4/4',u:'/radio/kompa-de-la-patrie-4.mp3',d:354.951837},
  jg:{t:'Radio BREK',s:'La voix de la Révolution Classique',u:'/radio/jingle-radio-brek.mp3',d:29.54},
  bv:{t:'Bienvenue sur RTV BREK',s:'Spot · Monique et Simon',u:'/radio/bienvenue-rtv-brek.mp3?v=2',d:29.54}
 };
@@ -105,7 +105,7 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [12,13,'Journal de midi','Bulletin d’information'],
  [13,18,'Après-midi BREK','Chants, spots et Flash Info chaque heure'],
  [18,19,'Journal du soir','Bulletin spécial du soir avec Simon'],
- [19,22,'Soirée BREK','Chants de BREK-AYITI · rediffusion du Bulletin spécial du soir à 19h, 20h et 21h'],[22,23,'Kompa de la Patrie','Musique engagée'],[23,24,'Nuit BREK','Chants de BREK-AYITI']];
+ [19,22,'Soirée BREK','Chants de BREK-AYITI · rediffusion du Bulletin spécial du soir à 19h, 20h et 21h'],[22,23,'BREK sou Kompa','Kompa de la Patrie · musique engagée'],[23,24,'Nuit BREK','Chants de BREK-AYITI']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const MUS=['k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
