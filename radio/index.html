@@ -91,6 +91,7 @@ const I={
  ms:{t:'M pap fè silans',s:'Chant · BREK-HAITI',u:'/radio/m-pap-fe-silans.mp3',d:354.40},
  uf:{t:'L’Union fait la force',s:'Chant · BREK-HAITI',u:'/radio/l-union-fait-la-force.mp3',d:308.72},
  in:{t:'Citoyens du monde',s:'L’Internationale (Pottier et Degeyter) · version Chronicles and Ballads',u:'/radio/l-internationale.mp3',d:399.31},
+ sp:{t:'RTV BREK',s:'La voix d’une nouvelle génération',u:'/radio/spot-rtv-brek.mp3',d:27.51},
  sm:{t:'Journal de la mi-journée',s:'Radio BREK · Journal de midi',u:'/radio/spot-journal-midi.mp3?v=2',d:70.82},
  k1:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 1/4',u:'/radio/kompa-de-la-patrie-1.mp3',d:318.537143},
  k2:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 2/4',u:'/radio/kompa-de-la-patrie-2.mp3',d:647.732245},
@@ -114,7 +115,7 @@ function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(/^k[1-4]$/.test(k))re
 let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c}}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(now())}
-const FILL=['id','ak','jg','yt','id','sj','id','n2','id','cp','jg','uf','id','hy','id','gk','jg','ms','id','ap','id','bv','id','so'];
+const FILL=['id','ak','jg','yt','id','sj','sp','n2','id','cp','jg','uf','id','hy','id','gk','jg','ms','sp','ap','id','bv','id','so'];
 // MÉTÉO BREK : un fichier par jour ; heures de passage (6 = après Flash Info, 8 = après les hymnes, 12 = après le Journal de midi, 18 = après le Journal du soir)
 const METEO={'2026-11-24':{u:'/radio/meteo-brek-2026-11-24.mp3',d:155.38,heures:[8,12]}};
 // ÉCO BREK : analyse économique du jour (après la météo s'il y en a une)
