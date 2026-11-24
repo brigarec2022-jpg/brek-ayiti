@@ -131,7 +131,7 @@ function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOI
  if(fx){I.fl={t:'Flash Info',s:'Monique · '+JFR(today()),u:fx.u,d:fx.d}}else if(h<12)b=b.filter(k=>k!=='fl');
  if(so){I.es={t:'Bulletin spécial du soir',s:'Simon · '+JFR(today()),u:so.u,d:so.d};I.er={t:'Bulletin spécial du soir · rediffusion',s:I.es.s,u:so.u,d:so.d}}else b=b.filter(k=>k!=='es'&&k!=='er');
  // Flash Info Réveil révolutionnaire : jusqu'à 11 h. De 12 h à 17 h : Journal de la mi-journée.
- if(h>=12&&h<=17){if(jm){I.jm={t:'Journal de la mi-journée',s:h===12?'Radio BREK · Journal de midi':'Radio BREK · rediffusion',u:jm.u,d:jm.d};b=b.map(k=>k==='fl'?'jm':k)}else b=b.filter(k=>k!=='fl'&&k!=='sm')}
+ if(h>=12&&h<=17){if(jm){I.jm={t:'Journal de la mi-journée',s:'Monique · '+JFR(today())+(h===12?'':' · rediffusion'),u:jm.u,d:jm.d};b=b.map(k=>k==='fl'?'jm':k)}else b=b.filter(k=>k!=='fl'&&k!=='sm')}
  const af={6:b.includes('fl')?'fl':'id',8:'hy',12:b.includes('jm')?'jm':'id',18:b.includes('es')?'es':'id'}[h];
  const ins=(k,after)=>{const i=b.indexOf(after);b=i<0?b.concat(k):[...b.slice(0,i+1),k,...b.slice(i+1)]};
  const m=METEO[today()];if(m&&m.heures.includes(h)){I.mt={t:'Météo BREK',s:'Le temps chez vous, les conseils pour votre journée',u:m.u,d:m.d};ins('mt',af)}
