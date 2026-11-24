@@ -1,0 +1,10 @@
+name: diag-radio
+on: workflow_dispatch
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          B=https://brek-ayiti.pages.dev
+          for f in radio/l-internationale.mp3 radio/kompa-de-la-patrie-3.mp3; do echo "== $f"; curl -s -o p.bin -D - -H "Range: bytes=1000000-1000099" "$B/$f?v=2" | grep -iE "^HTTP|content-range|content-length"; wc -c < p.bin; done
+          curl -s $B/radio/ | grep -c 'id="rf"'
