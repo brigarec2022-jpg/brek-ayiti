@@ -82,6 +82,7 @@ const I={
  ms:{t:'M pap fè silans',s:'Chant · BREK-HAITI',u:'/radio/m-pap-fe-silans.mp3',d:354.40},
  uf:{t:'L’Union fait la force',s:'Chant · BREK-HAITI',u:'/radio/l-union-fait-la-force.mp3',d:308.72},
  in:{t:'Citoyens du monde',s:'L’Internationale (Pottier et Degeyter) · version Chronicles and Ballads',u:'/radio/l-internationale.mp3',d:399.31},
+ kp:{t:'Kompa de la Patrie',s:'Musique engagée · BREK-HAITI',u:'/radio/kompa-de-la-patrie.mp3',d:1994.16},
  jg:{t:'Radio BREK',s:'La voix de la Révolution Classique',u:'/radio/jingle-radio-brek.mp3',d:29.54},
  bv:{t:'Bienvenue sur RTV BREK',s:'Spot · Monique et Simon',u:'/radio/bienvenue-rtv-brek.mp3?v=2',d:29.54}
 };
@@ -92,14 +93,14 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [12,13,'Journal de midi','Bulletin d’information'],
  [13,18,'Après-midi BREK','Chants, spots et Flash Info chaque heure'],
  [18,19,'Journal du soir','Bulletin spécial du soir avec Simon'],
- [19,24,'Nuit BREK','Chants de BREK-AYITI · rediffusion du Bulletin spécial du soir à 19h, 20h et 21h']];
+ [19,22,'Soirée BREK','Chants de BREK-AYITI · rediffusion du Bulletin spécial du soir à 19h, 20h et 21h'],[22,23,'Kompa de la Patrie','Musique engagée'],[23,24,'Nuit BREK','Chants de BREK-AYITI']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
-const MUS=['in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
+const MUS=['kp','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:'Musique',s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 const FILL=['id','ak','jg','yt','id','sj','id','n2','id','cp','jg','uf','id','we','id','hy','id','gk','jg','ms','id','ap','id','bv','id','so'];
-function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h>21||h<6)return['id'];return['id','fl']}
+function head(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h===22)return['id','kp'];if(h>21||h<6)return['id'];return['id','fl']}
 function hourPlan(h){const sp=SPECIAL[today()],at=sp&&sp.slots[h]!==undefined?sp.slots[h]:null;
  let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
  const out=[];let t=0,done=at===null||at<11;
