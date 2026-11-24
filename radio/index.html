@@ -122,7 +122,7 @@ const ECO={'2026-11-24':{u:'/radio/eco-brek-2026-11-24.mp3?v=2',d:492.98,heures:
 // INFO INTERNATIONAL : après Éco BREK
 const INTL={'2026-11-24':{u:'/radio/info-international-2026-11-24.mp3?v=4',d:426.55,heures:[12,18]}};
 // JOURNAL DE LA MI-JOURNÉE : remplace le Flash Info de 12 h le jour indiqué
-const JMIDI={'2026-11-24':{u:'/radio/journal-midi-2026-11-24.mp3?v=2',d:584.31,rediff:[15]}};
+const JMIDI={'2026-11-24':{u:'/radio/journal-midi-2026-11-24.mp3?v=2',d:584.31,rediff:[14,15]}};
 function head(h){let b=head0(h);const jm=JMIDI[today()];if(h===12&&jm){I.jm={t:'Journal de la mi-journée',s:'Radio BREK · Journal de midi',u:jm.u,d:jm.d};b=b.map(k=>k==='fl'?'jm':k)}
  if(jm&&jm.rediff&&jm.rediff.includes(h)){I.jm={t:'Journal de la mi-journée',s:'Radio BREK · rediffusion',u:jm.u,d:jm.d};const i=b.indexOf('fl');b=i<0?b.concat('jm'):[...b.slice(0,i+1),'jm',...b.slice(i+1)]}const af={6:'fl',8:'hy',12:b.includes('jm')?'jm':'fl',18:'es'}[h];
  const ins=(k,after)=>{const i=b.indexOf(after);b=i<0?b.concat(k):[...b.slice(0,i+1),k,...b.slice(i+1)]};
