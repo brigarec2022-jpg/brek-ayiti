@@ -125,7 +125,7 @@ const INTL={'2026-11-24':{u:'/radio/info-international-2026-11-24.mp3?v=4',d:426
 const JMIDI={'2026-11-24':{u:'/radio/journal-midi-2026-11-24.mp3?v=2',d:584.31}};
 // LES 3 BULLETINS QUOTIDIENS (un fichier par jour ; un bulletin d'un autre jour n'est jamais rediffusé)
 const FLASH={'2026-11-24':{u:'/radio/flash-info-monique-2026-11-24.mp3',d:354.25}};
-const SOIR={'2026-11-23':{u:'/radio/bulletin-soir-simon-2026-11-23.mp3?v=2',d:286.98}};
+const SOIR={'2026-11-24':{u:'/radio/bulletin-soir-simon-2026-11-24.mp3',d:1167.6}};
 const JFR=d=>{const[y,m,j]=d.split('-').map(Number);return new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,j,12)))};
 function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOIR[today()];
  if(fx){I.fl={t:'Flash Info',s:'Monique · '+JFR(today()),u:fx.u,d:fx.d}}else if(h<12)b=b.filter(k=>k!=='fl');
