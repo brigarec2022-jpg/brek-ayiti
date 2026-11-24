@@ -1,0 +1,10 @@
+name: diag-meteo
+on: workflow_dispatch
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          U="https://api.open-meteo.com/v1/forecast?latitude=19.7594,19.6656,19.9395,19.4475,19.1082,19.1430,18.5392,18.5447,18.5833,18.5125,18.5111,18.2342,18.4459,18.1933,18.6500&longitude=-72.2009,-71.8389,-72.8305,-72.6889,-72.6939,-72.0049,-72.3350,-72.3027,-72.2667,-72.2853,-72.6339,-72.5347,-73.0896,-73.7461,-74.1167&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code,precipitation&hourly=precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,precipitation_sum,weather_code,sunrise,sunset,uv_index_max,wind_speed_10m_max,wind_gusts_10m_max&timezone=America%2FPort-au-Prince&forecast_days=2"
+          curl -s "$U" > m.json
+          echo "BEGIN"; jq -c '.[]|{lat:.latitude,lon:.longitude,el:.elevation,c:.current,d:.daily,h:{t:.hourly.time[6:30],p:.hourly.precipitation_probability[6:30],w:.hourly.weather_code[6:30]}}' m.json; echo "END"
