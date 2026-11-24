@@ -138,6 +138,8 @@ function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOI
  const m=METEO[today()];if(m&&m.heures.includes(h)){I.mt={t:'Météo BREK',s:'Le temps chez vous, les conseils pour votre journée',u:m.u,d:m.d};ins('mt',af)}
  const e=ECO[today()];if(e&&e.heures.includes(h)){I.ec={t:'Éco BREK',s:'L’analyse économique du jour',u:e.u,d:e.d};ins('ec',b.includes('mt')?'mt':af)}
  const n=INTL[today()];if(n&&n.heures.includes(h)){I.it={t:'Info International',s:'L’actualité du monde sur Radio BREK',u:n.u,d:n.d};ins('it',b.includes('ec')?'ec':b.includes('mt')?'mt':af)}
+ // Spot RTV BREK juste avant les nouvelles
+ {const n=b.findIndex(k=>['sm','fl','jm','es','er'].includes(k));if(n>=0)b=[...b.slice(0,n),'sp',...b.slice(n)]}
  return b}
 function head0(h){if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','sm','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h===22)return['id','k1','k2','k3','k4'];if(h>21||h<6)return['id'];return['id','fl']}
 function hourPlan(h){const sp=SPECIAL[today()],at=sp&&sp.slots[h]!==undefined?sp.slots[h]:null;
