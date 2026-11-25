@@ -141,7 +141,7 @@ const G=[ // grille : [heure début, heure fin, nom, description]
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const MUS=['bg','mp','nf','em','le','rr','jl','kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
-function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(/^k[1-4]$/.test(k))return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp'}
+function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(/^k[1-4]$/.test(k))return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa','is'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp'}
 let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c}}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(now())}
@@ -158,19 +158,21 @@ const JMIDI={'2026-11-24':{u:'/radio/journal-midi-2026-11-24.mp3?v=2',d:584.31},
 // SANTÉ BREK (Sophie) : lundi, mercredi, vendredi — 10 h et reprise 15 h, après le bulletin
 const SANTE={'2026-11-25':{u:'/radio/sante-brek-2026-11-25.mp3',d:599.46,heures:[10,15]}};
 const FLASH={'2026-11-24':{u:'/radio/flash-info-monique-2026-11-24.mp3',d:354.25},'2026-11-25':{u:'/radio/flash-info-monique-2026-11-25.mp3',d:421.62}};
-const SOIR={'2026-11-24':{u:'/radio/bulletin-soir-simon-2026-11-24.mp3',d:1167.6},'2026-11-25':{u:'/radio/actualite-soir-simon-2026-11-25.mp3',d:704.37}};
+const SOIR={'2026-11-24':{u:'/radio/bulletin-soir-simon-2026-11-24.mp3',d:1167.6},'2026-11-25':{u:'/radio/actualite-soir-simon-2026-11-25.mp3',d:704.37,it:{u:'/radio/actualite-internationale-soir-2026-11-25.mp3',d:437.39}}};
 const JFR=d=>{const[y,m,j]=d.split('-').map(Number);return new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,j,12)))};
 function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOIR[today()];
  if(fx){I.fl={t:'Flash Info',s:'Monique · '+JFR(today()),u:fx.u,d:fx.d}}else if(h<12)b=b.filter(k=>k!=='fl');
  if(so){I.es={t:'Actualité du soir : Nationale & Internationale',s:'Simon · '+JFR(today()),u:so.u,d:so.d};I.er={t:'Actualité du soir · rediffusion',s:I.es.s,u:so.u,d:so.d}}else b=b.filter(k=>k!=='es'&&k!=='er');
+ // Volet international du soir (Daly), juste après Simon
+ if(so&&so.it){I.is={t:'Actualité du soir : Internationale',s:'Daly · '+JFR(today())+(h>18?' · rediffusion':''),u:so.it.u,d:so.it.d};const k=b.indexOf('es')>=0?'es':'er',i=b.indexOf(k);if(i>=0)b=[...b.slice(0,i+1),'is',...b.slice(i+1)]}
  // Flash Info Réveil révolutionnaire : jusqu'à 11 h. De 12 h à 17 h : Journal de la mi-journée.
  if(h>=12&&h<=17){if(jm){I.jm={t:'Journal de la mi-journée',s:'Monique · '+JFR(today())+(h===12?'':' · rediffusion'),u:jm.u,d:jm.d};b=b.map(k=>k==='fl'?'jm':k)}else b=b.filter(k=>k!=='fl'&&k!=='sm')}
  const af={6:b.includes('fl')?'fl':'id',8:'hy',12:b.includes('jm')?'jm':'id',18:b.includes('es')?'es':'id'}[h];
  const ins=(k,after)=>{const i=b.indexOf(after);b=i<0?b.concat(k):[...b.slice(0,i+1),k,...b.slice(i+1)]};
  // Ordre : bulletin → Actualité internationale → Météo → Éco BREK
  const n=INTL[today()];if(n&&n.heures.includes(h)){I.it={t:'Actualité internationale',s:'L’actualité du monde sur Radio BREK',u:n.u,d:n.d};ins('it',af)}
- const m=METEO[today()];if(m&&m.heures.includes(h)){I.mt={t:'Météo BREK',s:'Le temps chez vous, les conseils pour votre journée',u:m.u,d:m.d};ins('mt',b.includes('it')?'it':af)}
- const e=ECO[today()];if(e&&(e.heures||[6,12,18]).includes(h)){I.ec={t:'Éco BREK',s:'L’analyse économique du jour',u:e.u,d:e.d};ins('ec',b.includes('mt')?'mt':b.includes('it')?'it':af)}
+ const m=METEO[today()];if(m&&m.heures.includes(h)){I.mt={t:'Météo BREK',s:'Le temps chez vous, les conseils pour votre journée',u:m.u,d:m.d};ins('mt',b.includes('it')?'it':b.includes('is')?'is':af)}
+ const e=ECO[today()];if(e&&(e.heures||[6,12,18]).includes(h)){I.ec={t:'Éco BREK',s:'L’analyse économique du jour',u:e.u,d:e.d};ins('ec',b.includes('mt')?'mt':b.includes('it')?'it':b.includes('is')?'is':af)}
  const sa=SANTE[today()];if(sa&&sa.heures.includes(h)){I.sa={t:'Santé BREK',s:'Sophie · Votre santé, notre combat',u:sa.u,d:sa.d};const bi=b.findIndex(k=>['fl','jm'].includes(k));b=bi<0?b.concat('ss','sa'):[...b.slice(0,bi+1),'ss','sa',...b.slice(bi+1)]}
  // Spot RTV BREK juste avant les nouvelles
  {const n=b.findIndex(k=>['sm','fl','jm','es','er'].includes(k));if(n>=0)b=[...b.slice(0,n),'sp',...b.slice(n)]}
@@ -233,7 +235,7 @@ a.addEventListener('error',()=>{if(LOW&&a.dataset.hi&&a.src.indexOf('/radio/lo/'
 const lowB=document.getElementById('low');function lowUI(){lowB.classList.toggle('on',LOW);lowB.textContent=LOW?'📶 Ti done : ON':'📶 Ti done'}lowUI();
 lowB.onclick=()=>{LOW=!LOW;try{localStorage.setItem('rb-low',LOW?'1':'0')}catch(e){};lowUI();if(on)tune()};
 // ---- Programme d'aujourd'hui ----
-const SHOWK={fl:1,jm:1,es:1,er:1,it:1,mt:1,ec:1,sa:1,dn:1,k1:1,mj:1};
+const SHOWK={is:1,fl:1,jm:1,es:1,er:1,it:1,mt:1,ec:1,sa:1,dn:1,k1:1,mj:1};
 function drawProg(){const P=pos(),cur=P.t.h*3600+P.sec,ol=document.getElementById('prog');ol.innerHTML='';
  for(let h=0;h<24;h++){if(h===18&&!SOIR[today()]){const li=document.createElement('li');li.className=cur>=18*3600?'past':'';li.innerHTML='<time>18h00</time><div><b>Actualité du soir : Nationale &amp; Internationale</b><span>Simon · bulletin en préparation</span></div>';ol.append(li)}hourPlan(h).forEach(x=>{if(!SHOWK[x.k])return;const it=x.k==='dn'?{t:'Ouverture officielle',s:'Les hymnes nationaux'}:x.k==='k1'?{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée'}:I[x.k];
   const st=h*3600+x.st,en=x.k==='dn'?st+I.dn.d+I.hp.d+I.hj.d+I.hy.d:x.k==='k1'?st+I.k1.d+I.k2.d+I.k3.d+I.k4.d:h*3600+x.en;
