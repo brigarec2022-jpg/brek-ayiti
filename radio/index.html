@@ -43,8 +43,8 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 .rf.on{background:#e8b84a;color:#111}
 .box{max-width:520px;margin:26px auto 0;text-align:left}
 .box summary{cursor:pointer;font:800 20px Arial;list-style:none;padding:8px 0}.box summary::-webkit-details-marker{display:none}.box summary:after{content:" ▾";color:#f5d58a}
-.prog{list-style:none;padding:0;margin:6px 0 0}.prog li{display:flex;text-align:left;gap:12px;padding:9px 12px;border-bottom:1px solid #ffffff1c;border-radius:8px}
-.prog li time{flex:none;width:58px;color:#f5d58a;font:700 14px Arial}.prog li b{display:block;font-size:15px}.prog li span{color:#bbb;font-size:13px}
+.prog{list-style:none;padding:0;margin:6px 0 0}.prog li{display:flex;justify-content:flex-start;text-align:left;gap:12px;padding:9px 12px;border-bottom:1px solid #ffffff1c;border-radius:8px}
+.prog li>div{flex:1}.prog li time{flex:none;width:58px;color:#f5d58a;font:700 14px Arial}.prog li b{display:block;font-size:15px}.prog li span{color:#bbb;font-size:13px}
 .prog li.past{opacity:.45}.prog li.cur{background:#b8001f55}.prog li.cur b:after{content:" ● en cours";color:#ff8080;font-size:12px}
 .rep{display:grid;gap:10px;margin-top:8px}.rep .it{text-align:left;background:#ffffff0b;border:1px solid #ffffff22;border-radius:12px;padding:10px 12px}
 .rep .it b{display:block}.rep .it span{color:#bbb;font-size:13px}.rep audio{width:100%;margin-top:8px;height:38px}
@@ -67,7 +67,7 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 <details class="box" id="pj"><summary>📋 Programme d’aujourd’hui</summary><ol class="prog" id="prog"></ol></details>
 <details class="box" id="rj"><summary>🔁 Réécouter les bulletins</summary><div class="rep" id="rep"></div></details>
 <div class="acts"><a class="wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=%C3%89coutez%20Radio%20BREK%20en%20direct%20%3A%20https%3A%2F%2Fbrek-ayiti.pages.dev%2Fradio%2F">📲 Partager sur WhatsApp</a><a href="/tv/">📺 BREK-TV</a></div>
-<p class="note">Radio BREK diffuse en direct selon l’heure d’Haïti : tous les auditeurs entendent la même chose au même moment. Un Flash Info ouvre chaque heure. Monique et Simon sont des présentateurs virtuels générés par intelligence artificielle.</p>
+<p class="note">Radio BREK diffuse en direct selon l’heure d’Haïti : tous les auditeurs entendent la même chose au même moment. Les bulletins d’information ouvrent les heures de la journée. Monique, Simon, Daly, Elodie, Camille et Sophie sont des présentateurs virtuels générés par intelligence artificielle.</p>
 </main>
 <audio id="a" preload="none"></audio>
 <script>
