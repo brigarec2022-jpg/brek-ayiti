@@ -101,6 +101,7 @@ const I={
  am:{t:'Ayiti pran nan mannigèt',s:'Chant · BREK-HAITI',u:'/radio/ayiti-pran-nan-manniget.mp3',d:338.6},
  nk:{t:'Nèg yo pa konn pwoblèm nou',s:'Chant · BREK-HAITI',u:'/radio/neg-yo-pa-konn-pwoblem-nou.mp3',d:232.05},
  kl:{t:'Ayiti sou kabann lopital',s:'Chant · BREK-HAITI',u:'/radio/ayiti-sou-kabann-lopital.mp3',d:187.59},
+ jl:{t:'Jou a pa lwen',s:'Chant · BREK-HAITI',u:'/radio/jou-a-pa-lwen.mp3',d:254.3},
  ss:{t:'Santé BREK',s:'Votre santé, notre combat',u:'/radio/spot-sante-brek.mp3',d:30.51},
  sp:{t:'RTV BREK',s:'La voix d’une nouvelle génération',u:'/radio/spot-rtv-brek.mp3',d:27.51},
  sm:{t:'Journal de la mi-journée',s:'Radio BREK · Journal de midi',u:'/radio/spot-journal-midi.mp3?v=2',d:70.82},
@@ -120,13 +121,13 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [18,19,'Journal du soir','Bulletin spécial du soir avec Simon'],
  [19,22,'Soirée BREK','Chants de BREK-AYITI · rediffusion du Bulletin spécial du soir à 19h, 20h et 21h'],[22,23,'BREK sou Kompa','Kompa de la Patrie · musique engagée'],[23,24,'Nuit BREK','Chants de BREK-AYITI']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
-const MUS=['kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
+const MUS=['jl','kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
 function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(/^k[1-4]$/.test(k))return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp'}
 let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c}}
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(now())}
-const FILL=['id','ak','jg','yt','id','sj','sp','n2','id','cp','ss','uf','id','hy','id','gk','jg','ms','sp','ap','id','bv','id','so','id','pa','id','bc','id','sy','id','lm','id','mw','id','np','id','sn','id','am','id','nk','id','kl'];
+const FILL=['id','ak','jg','yt','id','sj','sp','n2','id','cp','ss','uf','id','hy','id','gk','jg','ms','sp','ap','id','bv','id','so','id','pa','id','bc','id','sy','id','lm','id','mw','id','np','id','sn','id','am','id','nk','id','kl','id','jl'];
 // MÉTÉO BREK : un fichier par jour ; heures de passage (6 = après Flash Info, 8 = après les hymnes, 12 = après le Journal de midi, 18 = après le Journal du soir)
 const METEO={'2026-11-24':{u:'/radio/meteo-brek-2026-11-24.mp3',d:155.38,heures:[8,12]},'2026-11-25':{u:'/radio/meteo-brek-2026-11-25.mp3?v=2',d:223.19,heures:[6,12,18]}};
 // ÉCO BREK : analyse économique du jour — par défaut 6 h, 12 h et 18 h, après le bulletin et la météo
