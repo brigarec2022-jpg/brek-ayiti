@@ -138,7 +138,7 @@ const METEO={'2026-11-24':{u:'/radio/meteo-brek-2026-11-24.mp3',d:155.38,heures:
 // ÉCO BREK : analyse économique du jour — par défaut 6 h, 12 h et 18 h, après le bulletin et la météo
 const ECO={'2026-11-24':{u:'/radio/eco-brek-2026-11-24.mp3?v=2',d:492.98,heures:[12,18]},'2026-11-25':{u:'/radio/eco-brek-2026-11-25.mp3?v=9',d:245.92}};
 // INFO INTERNATIONAL : après Éco BREK
-const INTL={'2026-11-24':{u:'/radio/info-international-2026-11-24.mp3?v=4',d:426.55,heures:[12,18]}};
+const INTL={'2026-11-24':{u:'/radio/info-international-2026-11-24.mp3?v=4',d:426.55,heures:[12,18]},'2026-11-25':{u:'/radio/info-international-2026-11-25.mp3',d:433.71,heures:[12,18]}};
 // JOURNAL DE LA MI-JOURNÉE : remplace le Flash Info de 12 h le jour indiqué
 const JMIDI={'2026-11-24':{u:'/radio/journal-midi-2026-11-24.mp3?v=2',d:584.31},'2026-11-25':{u:'/radio/journal-midi-2026-11-25.mp3',d:415.37}};
 // LES 3 BULLETINS QUOTIDIENS (un fichier par jour ; un bulletin d'un autre jour n'est jamais rediffusé)
@@ -156,7 +156,7 @@ function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOI
  const ins=(k,after)=>{const i=b.indexOf(after);b=i<0?b.concat(k):[...b.slice(0,i+1),k,...b.slice(i+1)]};
  const m=METEO[today()];if(m&&m.heures.includes(h)){I.mt={t:'Météo BREK',s:'Le temps chez vous, les conseils pour votre journée',u:m.u,d:m.d};ins('mt',af)}
  const e=ECO[today()];if(e&&(e.heures||[6,12,18]).includes(h)){I.ec={t:'Éco BREK',s:'L’analyse économique du jour',u:e.u,d:e.d};ins('ec',b.includes('mt')?'mt':af)}
- const n=INTL[today()];if(n&&n.heures.includes(h)){I.it={t:'Info International',s:'L’actualité du monde sur Radio BREK',u:n.u,d:n.d};ins('it',b.includes('ec')?'ec':b.includes('mt')?'mt':af)}
+ const n=INTL[today()];if(n&&n.heures.includes(h)){I.it={t:'Actualité internationale',s:'L’actualité du monde sur Radio BREK',u:n.u,d:n.d};ins('it',b.includes('ec')?'ec':b.includes('mt')?'mt':af)}
  const sa=SANTE[today()];if(sa&&sa.heures.includes(h)){I.sa={t:'Santé BREK',s:'Sophie · Votre santé, notre combat',u:sa.u,d:sa.d};const bi=b.findIndex(k=>['fl','jm'].includes(k));b=bi<0?b.concat('ss','sa'):[...b.slice(0,bi+1),'ss','sa',...b.slice(bi+1)]}
  // Spot RTV BREK juste avant les nouvelles
  {const n=b.findIndex(k=>['sm','fl','jm','es','er'].includes(k));if(n>=0)b=[...b.slice(0,n),'sp',...b.slice(n)]}
