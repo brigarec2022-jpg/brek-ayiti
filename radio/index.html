@@ -136,8 +136,8 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [7,12,'Matinale BREK','Chants, spots et Flash Info chaque heure'],
  [12,13,'Journal de midi','Bulletin d’information'],
  [13,18,'Après-midi BREK','Chants, spots et Flash Info chaque heure'],
- [18,19,'Journal du soir','Bulletin spécial du soir avec Simon'],
- [19,22,'Soirée BREK','Chants de BREK-AYITI · rediffusion du Bulletin spécial du soir à 19h, 20h et 21h'],[22,23,'BREK sou Kompa','Kompa de la Patrie · musique engagée'],[23,24,'Nuit BREK','Chants de BREK-AYITI']];
+ [18,19,'Actualité du soir','Nationale & Internationale avec Simon'],
+ [19,22,'Soirée BREK','Chants de BREK-AYITI · rediffusion de l’Actualité du soir à 19h, 20h et 21h'],[22,23,'BREK sou Kompa','Kompa de la Patrie · musique engagée'],[23,24,'Nuit BREK','Chants de BREK-AYITI']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const MUS=['bg','mp','nf','em','le','rr','jl','kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
@@ -162,7 +162,7 @@ const SOIR={'2026-11-24':{u:'/radio/bulletin-soir-simon-2026-11-24.mp3',d:1167.6
 const JFR=d=>{const[y,m,j]=d.split('-').map(Number);return new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,j,12)))};
 function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOIR[today()];
  if(fx){I.fl={t:'Flash Info',s:'Monique · '+JFR(today()),u:fx.u,d:fx.d}}else if(h<12)b=b.filter(k=>k!=='fl');
- if(so){I.es={t:'Bulletin spécial du soir',s:'Simon · '+JFR(today()),u:so.u,d:so.d};I.er={t:'Bulletin spécial du soir · rediffusion',s:I.es.s,u:so.u,d:so.d}}else b=b.filter(k=>k!=='es'&&k!=='er');
+ if(so){I.es={t:'Actualité du soir : Nationale & Internationale',s:'Simon · '+JFR(today()),u:so.u,d:so.d};I.er={t:'Actualité du soir · rediffusion',s:I.es.s,u:so.u,d:so.d}}else b=b.filter(k=>k!=='es'&&k!=='er');
  // Flash Info Réveil révolutionnaire : jusqu'à 11 h. De 12 h à 17 h : Journal de la mi-journée.
  if(h>=12&&h<=17){if(jm){I.jm={t:'Journal de la mi-journée',s:'Monique · '+JFR(today())+(h===12?'':' · rediffusion'),u:jm.u,d:jm.d};b=b.map(k=>k==='fl'?'jm':k)}else b=b.filter(k=>k!=='fl'&&k!=='sm')}
  const af={6:b.includes('fl')?'fl':'id',8:'hy',12:b.includes('jm')?'jm':'id',18:b.includes('es')?'es':'id'}[h];
@@ -241,7 +241,7 @@ function drawProg(){const P=pos(),cur=P.t.h*3600+P.sec,ol=document.getElementByI
 document.getElementById('pj').addEventListener('toggle',e=>{if(e.target.open)drawProg()});setInterval(()=>{if(document.getElementById('pj').open)drawProg()},30000);
 // ---- Réécouter ----
 function drawRep(){const box=document.getElementById('rep');box.innerHTML='';const t=today(),h=haiti().h;
- const L=[['Flash Info · Réveil révolutionnaire','Monique',FLASH,6],['Journal de la mi-journée','Monique',JMIDI,12],['Bulletin spécial du soir','Simon',SOIR,18],['Actualité internationale','Daly',INTL,12],['Météo BREK','Elodie',METEO,6],['Éco BREK','Camille',ECO,6],['Santé BREK','Sophie',SANTE,10]];
+ const L=[['Flash Info · Réveil révolutionnaire','Monique',FLASH,6],['Journal de la mi-journée','Monique',JMIDI,12],['Actualité du soir : Nationale & Internationale','Simon',SOIR,18],['Actualité internationale','Daly',INTL,12],['Météo BREK','Elodie',METEO,6],['Éco BREK','Camille',ECO,6],['Santé BREK','Sophie',SANTE,10]];
  let n=0;for(const[ti,who,M,h0]of L){const ds=Object.keys(M).filter(d=>d<t||(d===t&&h>=Math.min(...((M[d].heures)||[h0])))).sort();const d=ds.pop();if(!d)continue;
   const age=(Date.parse(t)-Date.parse(d))/864e5;if(age>2)continue;n++;
   const div=document.createElement('div');div.className='it';div.innerHTML='<b></b><span></span><audio controls preload="none"></audio>';div.querySelector('b').textContent=ti;div.querySelector('span').textContent=who+' · '+JFR(d);
