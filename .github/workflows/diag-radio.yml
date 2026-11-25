@@ -1,0 +1,11 @@
+name: diag-radio
+on: workflow_dispatch
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          B=https://brek-ayiti.pages.dev
+          curl -s -D h.txt "$B/radio/?r=$RANDOM" -o p.html; grep -iE "^HTTP|cache-control|age:|cf-cache" h.txt
+          grep -o "meteo-brek-2026-11-25.mp3?v=2',d:[0-9.]*,heures:\[[0-9,]*\]" p.html; grep -o "info-international-2026-11-25.mp3',d:[0-9.]*,heures:\[[0-9,]*\]" p.html; grep -c 'id="grille" class="grille" hidden' p.html
+          curl -s -D h2.txt "$B/radio/" -o /dev/null; grep -iE "cache-control|age:" h2.txt
