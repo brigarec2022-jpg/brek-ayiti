@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Radio BREK · En direct · BREK-AYITI</title><link rel="icon" href="/favicon.svg">
+<title>Radio BREK · En direct · BREK-AYITI</title><link rel="icon" href="/favicon.svg"><link rel="manifest" href="/radio/manifest.webmanifest"><meta name="theme-color" content="#b8001f"><link rel="apple-touch-icon" href="/radio/icon-192.png">
 <meta name="description" content="Radio BREK en direct : Flash Info chaque heure, journaux de midi et du soir, chants de BREK-AYITI. Ayiti d’abord, Ayiti toujours.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="BREK-AYITI">
 <meta property="og:title" content="Radio BREK — en direct"><meta property="og:description" content="Hymnes, spots et messages de BREK-AYITI, 24 heures sur 24.">
@@ -40,6 +40,15 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 .grille li time{flex:none;width:96px;color:#f5d58a;font:700 14px Arial}.grille li div b{display:block}.grille li div span{color:#bbb;font-size:14px}
 .grille li.cur{background:#b8001f55}.grille li.cur b:after{content:" ● en cours";color:#ff8080;font-size:12px}
 .ctrl{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}.rf{background:transparent;color:#f1d58a;border:2px solid #e8b84a;border-radius:999px;padding:10px 18px;font:700 15px Arial,sans-serif;cursor:pointer}.rf:active{background:#e8b84a;color:#111}
+.rf.on{background:#e8b84a;color:#111}
+.box{max-width:520px;margin:26px auto 0;text-align:left}
+.box summary{cursor:pointer;font:800 20px Arial;list-style:none;padding:8px 0}.box summary::-webkit-details-marker{display:none}.box summary:after{content:" ▾";color:#f5d58a}
+.prog{list-style:none;padding:0;margin:6px 0 0}.prog li{display:flex;text-align:left;gap:12px;padding:9px 12px;border-bottom:1px solid #ffffff1c;border-radius:8px}
+.prog li time{flex:none;width:58px;color:#f5d58a;font:700 14px Arial}.prog li b{display:block;font-size:15px}.prog li span{color:#bbb;font-size:13px}
+.prog li.past{opacity:.45}.prog li.cur{background:#b8001f55}.prog li.cur b:after{content:" ● en cours";color:#ff8080;font-size:12px}
+.rep{display:grid;gap:10px;margin-top:8px}.rep .it{text-align:left;background:#ffffff0b;border:1px solid #ffffff22;border-radius:12px;padding:10px 12px}
+.rep .it b{display:block}.rep .it span{color:#bbb;font-size:13px}.rep audio{width:100%;margin-top:8px;height:38px}
+#ios{display:none;max-width:520px;margin:10px auto 0;font-size:14px;color:#ddd;background:#ffffff10;border:1px solid #ffffff26;border-radius:10px;padding:10px 12px}
 </style></head><body>
 <header><img src="/membre/logo-brek-carre.png" alt=""><a href="/">BREK-AYITI</a><nav><a href="/tv/">BREK-TV</a><a href="/">Accueil</a></nav></header>
 <main>
@@ -49,11 +58,15 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 <span class="live"><i></i>EN DIRECT · <span id="clock">--:--</span> (heure d’Haïti)</span>
 <div class="onair"><div class="lbl">À L’ANTENNE</div><div class="blk" id="blk">Radio BREK</div><div class="now" id="now">Appuyez sur ▶ pour écouter</div><div class="sub" id="sub">Ayiti d’abord, Ayiti toujours</div></div>
 <div class="ctrl"><button class="play" id="play" aria-label="Écouter le direct">▶</button><button class="rf" id="rf" type="button" title="Recharger la radio">↻ Actualiser</button><a class="rf" href="/radio/frequences/" style="text-decoration:none">📡 Fréquences</a></div>
+<div class="ctrl"><button class="rf" id="low" type="button" title="Consomme environ 3 fois moins de données">📶 Ti done</button><button class="rf" id="inst" type="button" hidden>📲 Installer Radio BREK</button></div>
+<div id="ios">Pour installer Radio BREK : touchez <b>Partager</b> puis <b>« Sur l’écran d’accueil »</b>.</div>
 <label style="font-size:14px;color:#ccc">Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.9"></label>
 <div class="next"><span class="lbl">À SUIVRE</span> <b id="nx">—</b> <span id="nxt"></span></div>
 <div class="next" id="nb"></div>
 <h2 class="gh">Grille des programmes</h2>
 <ol id="grille" class="grille"></ol>
+<details class="box" id="pj"><summary>📋 Programme d’aujourd’hui</summary><ol class="prog" id="prog"></ol></details>
+<details class="box" id="rj"><summary>🔁 Réécouter les bulletins</summary><div class="rep" id="rep"></div></details>
 <div class="acts"><a class="wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=%C3%89coutez%20Radio%20BREK%20en%20direct%20%3A%20https%3A%2F%2Fbrek-ayiti.pages.dev%2Fradio%2F">📲 Partager sur WhatsApp</a><a href="/tv/">📺 BREK-TV</a></div>
 <p class="note">Radio BREK diffuse en direct selon l’heure d’Haïti : tous les auditeurs entendent la même chose au même moment. Un Flash Info ouvre chaque heure. Monique et Simon sont des présentateurs virtuels générés par intelligence artificielle.</p>
 </main>
@@ -190,7 +203,7 @@ function show(){const P=pos();document.getElementById('clock').textContent=p2(P.
  const GG=grid();if(document.getElementById('grille').children.length!==GG.length)drawGrid();[...document.getElementById('grille').children].forEach((li,j)=>li.classList.toggle('cur',GG[j][0]===P.blk[0]));
  if(on&&curSeg&&(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st))tune()}
 function tune(){const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.st;
- a.src=it.u;a.volume=+document.getElementById('vol').value;
+ a.src=SRC(it.u);a.dataset.hi=it.u;a.volume=+document.getElementById('vol').value;
  a.onloadedmetadata=()=>{const Q=pos();try{a.currentTime=Math.max(0,Q.sec-curSeg.st+0.2)}catch(e){};a.play().catch(()=>{})};a.load();
  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:cov(P.seg.k),sizes:'512x512'}]});show()}
 // Aucun jingle sur les hymnes, par respect pour le bicolore
@@ -213,5 +226,33 @@ play.onclick=()=>{if(on){on=false;a.pause();DROP.pause();curSeg=null;document.ge
 a.addEventListener('ended',()=>{if(on)tune()});
 document.getElementById('vol').oninput=e=>{a.volume=e.target.value};
 function drawGrid(){const gl=document.getElementById('grille');gl.innerHTML='';grid().forEach(b=>{const li=document.createElement('li');li.innerHTML='<time>'+p2(b[0])+'h – '+p2(b[1]%24)+'h'+(b[2]==='Ouverture officielle'?'<br><small>lun.–ven.</small>':'')+'</time><div><b></b><span></span></div>';li.querySelector('b').textContent=b[2];li.querySelector('span').textContent=b[3];gl.appendChild(li)})}
+// ---- Mode « ti done » (≈ 3 fois moins de données) ----
+let LOW=false;try{LOW=localStorage.getItem('rb-low')==='1'}catch(e){}
+function SRC(u){if(!LOW)return u;const m=/^\/radio\/([^\/?]+\.mp3)(\?.*)?$/.exec(u);return m?'/radio/lo/'+m[1]+(m[2]||''):u}
+a.addEventListener('error',()=>{if(LOW&&a.dataset.hi&&a.src.indexOf('/radio/lo/')>=0){a.src=a.dataset.hi;a.load()}});
+const lowB=document.getElementById('low');function lowUI(){lowB.classList.toggle('on',LOW);lowB.textContent=LOW?'📶 Ti done : ON':'📶 Ti done'}lowUI();
+lowB.onclick=()=>{LOW=!LOW;try{localStorage.setItem('rb-low',LOW?'1':'0')}catch(e){};lowUI();if(on)tune()};
+// ---- Programme d'aujourd'hui ----
+const SHOWK={fl:1,jm:1,es:1,er:1,it:1,mt:1,ec:1,sa:1,dn:1,k1:1,mj:1};
+function drawProg(){const P=pos(),cur=P.t.h*3600+P.sec,ol=document.getElementById('prog');ol.innerHTML='';
+ for(let h=0;h<24;h++){hourPlan(h).forEach(x=>{if(!SHOWK[x.k])return;const it=x.k==='dn'?{t:'Ouverture officielle',s:'Les hymnes nationaux'}:x.k==='k1'?{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée'}:I[x.k];
+  const st=h*3600+x.st,en=x.k==='dn'?st+I.dn.d+I.hp.d+I.hj.d+I.hy.d:x.k==='k1'?st+I.k1.d+I.k2.d+I.k3.d+I.k4.d:h*3600+x.en;
+  const li=document.createElement('li');li.className=cur>=en?'past':cur>=st?'cur':'';li.innerHTML='<time>'+fmt(h,x.st)+'</time><div><b></b><span></span></div>';li.querySelector('b').textContent=it.t;li.querySelector('span').textContent=it.s||'';ol.append(li)})}}
+document.getElementById('pj').addEventListener('toggle',e=>{if(e.target.open)drawProg()});setInterval(()=>{if(document.getElementById('pj').open)drawProg()},30000);
+// ---- Réécouter ----
+function drawRep(){const box=document.getElementById('rep');box.innerHTML='';const t=today(),h=haiti().h;
+ const L=[['Flash Info · Réveil révolutionnaire','Monique',FLASH,6],['Journal de la mi-journée','Monique',JMIDI,12],['Bulletin spécial du soir','Simon',SOIR,18],['Actualité internationale','Daly',INTL,12],['Météo BREK','Elodie',METEO,6],['Éco BREK','Camille',ECO,6],['Santé BREK','Sophie',SANTE,10]];
+ let n=0;for(const[ti,who,M,h0]of L){const ds=Object.keys(M).filter(d=>d<t||(d===t&&h>=Math.min(...((M[d].heures)||[h0])))).sort();const d=ds.pop();if(!d)continue;
+  const age=(Date.parse(t)-Date.parse(d))/864e5;if(age>2)continue;n++;
+  const div=document.createElement('div');div.className='it';div.innerHTML='<b></b><span></span><audio controls preload="none"></audio>';div.querySelector('b').textContent=ti;div.querySelector('span').textContent=who+' · '+JFR(d);
+  const au=div.querySelector('audio');au.src=SRC(M[d].u);au.addEventListener('play',()=>{if(on)play.onclick();document.querySelectorAll('#rep audio').forEach(o=>{if(o!==au)o.pause()})});box.append(div)}
+ if(!n)box.innerHTML='<p style="color:#bbb">Aucun bulletin disponible pour le moment.</p>'}
+document.getElementById('rj').addEventListener('toggle',e=>{if(e.target.open)drawRep()});
+// ---- Installer sur l'écran d'accueil ----
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/radio/sw.js',{scope:'/radio/'}).catch(()=>{});
+let defer=null;const ib=document.getElementById('inst');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();defer=e;ib.hidden=false});
+ib.onclick=async()=>{if(!defer)return;defer.prompt();try{await defer.userChoice}catch(e){};defer=null;ib.hidden=true};
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone)document.getElementById('ios').style.display='block';
 drawGrid();show();setInterval(show,1000);
 </script><script src="/brek-direct.js?v=4" defer></script></body></html>
