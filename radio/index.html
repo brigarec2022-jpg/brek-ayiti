@@ -235,7 +235,7 @@ lowB.onclick=()=>{LOW=!LOW;try{localStorage.setItem('rb-low',LOW?'1':'0')}catch(
 // ---- Programme d'aujourd'hui ----
 const SHOWK={fl:1,jm:1,es:1,er:1,it:1,mt:1,ec:1,sa:1,dn:1,k1:1,mj:1};
 function drawProg(){const P=pos(),cur=P.t.h*3600+P.sec,ol=document.getElementById('prog');ol.innerHTML='';
- for(let h=0;h<24;h++){hourPlan(h).forEach(x=>{if(!SHOWK[x.k])return;const it=x.k==='dn'?{t:'Ouverture officielle',s:'Les hymnes nationaux'}:x.k==='k1'?{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée'}:I[x.k];
+ for(let h=0;h<24;h++){if(h===18&&!SOIR[today()]){const li=document.createElement('li');li.className=cur>=18*3600?'past':'';li.innerHTML='<time>18h00</time><div><b>Actualité du soir : Nationale &amp; Internationale</b><span>Simon · bulletin en préparation</span></div>';ol.append(li)}hourPlan(h).forEach(x=>{if(!SHOWK[x.k])return;const it=x.k==='dn'?{t:'Ouverture officielle',s:'Les hymnes nationaux'}:x.k==='k1'?{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée'}:I[x.k];
   const st=h*3600+x.st,en=x.k==='dn'?st+I.dn.d+I.hp.d+I.hj.d+I.hy.d:x.k==='k1'?st+I.k1.d+I.k2.d+I.k3.d+I.k4.d:h*3600+x.en;
   const li=document.createElement('li');li.className=cur>=en?'past':cur>=st?'cur':'';li.innerHTML='<time>'+fmt(h,x.st)+'</time><div><b></b><span></span></div>';li.querySelector('b').textContent=it.t;li.querySelector('span').textContent=it.s||'';ol.append(li)})}}
 document.getElementById('pj').addEventListener('toggle',e=>{if(e.target.open)drawProg()});setInterval(()=>{if(document.getElementById('pj').open)drawProg()},30000);
