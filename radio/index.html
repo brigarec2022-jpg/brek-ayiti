@@ -158,7 +158,7 @@ const JMIDI={'2026-11-24':{u:'/radio/journal-midi-2026-11-24.mp3?v=2',d:584.31},
 // SANTÉ BREK (Sophie) : lundi, mercredi, vendredi — 10 h et reprise 15 h, après le bulletin
 const SANTE={'2026-11-25':{u:'/radio/sante-brek-2026-11-25.mp3',d:599.46,heures:[10,15]}};
 const FLASH={'2026-11-24':{u:'/radio/flash-info-monique-2026-11-24.mp3',d:354.25},'2026-11-25':{u:'/radio/flash-info-monique-2026-11-25.mp3',d:421.62}};
-const SOIR={'2026-11-24':{u:'/radio/bulletin-soir-simon-2026-11-24.mp3',d:1167.6}};
+const SOIR={'2026-11-24':{u:'/radio/bulletin-soir-simon-2026-11-24.mp3',d:1167.6},'2026-11-25':{u:'/radio/actualite-soir-simon-2026-11-25.mp3',d:704.37}};
 const JFR=d=>{const[y,m,j]=d.split('-').map(Number);return new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,j,12)))};
 function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOIR[today()];
  if(fx){I.fl={t:'Flash Info',s:'Monique · '+JFR(today()),u:fx.u,d:fx.d}}else if(h<12)b=b.filter(k=>k!=='fl');
