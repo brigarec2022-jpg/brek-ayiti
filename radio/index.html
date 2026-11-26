@@ -156,7 +156,7 @@ const INTL={'2026-11-24':{u:'/radio/info-international-2026-11-24.mp3?v=4',d:426
 const JMIDI={'2026-11-24':{u:'/radio/journal-midi-2026-11-24.mp3?v=2',d:584.31},'2026-11-25':{u:'/radio/journal-midi-2026-11-25.mp3',d:415.37}};
 // LES 3 BULLETINS QUOTIDIENS (un fichier par jour ; un bulletin d'un autre jour n'est jamais rediffusé)
 // SANTÉ BREK (Sophie) : lundi, mercredi, vendredi — 10 h et reprise 15 h, après le bulletin
-const SANTE={'2026-11-25':{u:'/radio/sante-brek-2026-11-25.mp3',d:599.46,heures:[10,15]}};
+const SANTE={'2026-11-25':{u:'/radio/sante-brek-2026-11-25.mp3',d:599.46,heures:[10,15]},'2026-11-27':{u:'/radio/sante-brek-2026-11-27.mp3',d:638.17,heures:[10,15]}};
 const FLASH={'2026-11-24':{u:'/radio/flash-info-monique-2026-11-24.mp3',d:354.25},'2026-11-25':{u:'/radio/flash-info-monique-2026-11-25.mp3',d:421.62}};
 const SOIR={'2026-11-24':{u:'/radio/bulletin-soir-simon-2026-11-24.mp3',d:1167.6},'2026-11-25':{u:'/radio/actualite-soir-simon-2026-11-25.mp3',d:704.37,it:{u:'/radio/actualite-internationale-soir-2026-11-25.mp3',d:437.39}}};
 const JFR=d=>{const[y,m,j]=d.split('-').map(Number);return new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,j,12)))};
