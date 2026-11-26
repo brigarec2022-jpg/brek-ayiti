@@ -218,7 +218,7 @@ function tune(){const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.s
  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:cov(P.seg.k),sizes:'512x512'}]});show()}
 // Aucun jingle sur les hymnes, par respect pour le bicolore
 const NODROP=['mf','dn','hp','hj','hy'];
-let DROP=new Audio('/radio/drop-radio-brek.mp3');DROP.preload='auto';const fired={};
+let DROP=new Audio('/radio/drop-radio-brek.mp3?v=2');DROP.preload='auto';const fired={};
 // Pendant BREK sou Kompa : jingle voix seule « Vous suivez BREK sou Kompa »
 const DROPR=DROP,DROPK=new Audio('/radio/drop-brek-sou-kompa.mp3');DROPK.preload='auto';const KOMPA=/^(q[0-9]+|k[1-4])$/;
 function drops(k){const d=I[k].d,t=[];if(!MUS.includes(k)||NODROP.includes(k)||d<90)return t;t.push(45);if(d>300)t.push(Math.round(d/2));return t}
