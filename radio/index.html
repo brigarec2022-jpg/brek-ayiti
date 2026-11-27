@@ -129,7 +129,7 @@ const I={
  q4:{t:'Pale pou tèt ou',s:'BREK sou Kompa',u:'/radio/pale-pou-tet-ou.mp3',d:336.85},
  q5:{t:'Rete la',s:'BREK sou Kompa',u:'/radio/rete-la.mp3',d:294.61},
  ss:{t:'Santé BREK',s:'Votre santé, notre combat',u:'/radio/spot-sante-brek.mp3',d:30.51},
- sf:{t:'Flash Info Réveil',s:'Dans un instant sur Radio BREK',u:'/radio/spot-flash-info.mp3',d:62.54},sp:{t:'RTV BREK',s:'La voix d’une nouvelle génération',u:'/radio/spot-rtv-brek.mp3',d:27.51},
+ se:{t:'Flash Info Réveil',s:'Fin du Flash · Radio BREK',u:'/radio/spot-fin-flash-info.mp3',d:33.88},sf:{t:'Flash Info Réveil',s:'Dans un instant sur Radio BREK',u:'/radio/spot-flash-info.mp3',d:62.54},sp:{t:'RTV BREK',s:'La voix d’une nouvelle génération',u:'/radio/spot-rtv-brek.mp3',d:27.51},
  sm:{t:'Journal de la mi-journée',s:'Radio BREK · Journal de midi',u:'/radio/spot-journal-midi.mp3?v=2',d:70.82},
  k1:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 1/4',u:'/radio/kompa-de-la-patrie-1.mp3',d:318.537143},
  k2:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 2/4',u:'/radio/kompa-de-la-patrie-2.mp3',d:647.732245},
@@ -188,6 +188,7 @@ function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOI
  const sa=SANTE[today()];if(sa&&sa.heures.includes(h)){I.sa={t:'Santé BREK',s:'Sophie · Votre santé, notre combat',u:sa.u,d:sa.d};const bi=b.findIndex(k=>['fl','jm'].includes(k));b=bi<0?b.concat('ss','sa'):[...b.slice(0,bi+1),'ss','sa',...b.slice(bi+1)]}
  // Spot RTV BREK juste avant les nouvelles
  {const n=b.findIndex(k=>['sm','fl','jm','es','er'].includes(k));if(n>=0)b=[...b.slice(0,n),'sp',...(b[n]==='fl'?['sf']:[]),...b.slice(n)]}
+ {const n=b.indexOf('fl');if(n>=0)b=[...b.slice(0,n+1),'se',...b.slice(n+1)]}
  return b}
 function head0(h){if(h===0)return['id','nt'];if(h>=1&&h<=5)return[];if(h===23)return['id','jk','q2','jk','q3','jk','q4','jk','k1','k2','jk','k3','k4','jk','q1','jk'];if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','sm','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h===22)return['id','sk','q1','jk','q2','jk','q3','jk','q4','jk','k1','k2','jk','k3','k4','jk'];if(h>21||h<6)return['id'];return['id','fl']}
 function hourPlan(h){const sp0=SPECIAL[today()],sp=sp0&&sp0.slots[h]!==undefined?sp0:(h===5?OUV:null),at=sp?sp.slots[h]:null;
