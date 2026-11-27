@@ -121,7 +121,7 @@ const I={
  em:{t:'Ede m chante, peyi m menase',s:'Chant · BREK-HAITI',u:'/radio/ede-m-chante.mp3',d:207.33},
  nf:{t:'Nou pi fò pase yo',s:'Chant · BREK-HAITI',u:'/radio/nou-pi-fo-pase-yo.mp3',d:288.63},
  mp:{t:'Mizè pèp la rive twò lwen',s:'Chant · BREK-HAITI',u:'/radio/mize-pep-la.mp3',d:343.56},
- bg:{t:'Bay Bondye glwa',s:'Chant · BREK-HAITI',u:'/radio/bay-bondye-glwa.mp3',d:253.1},
+ qf:{t:'De quelle fierté parlez-vous ?',s:'Chant · BREK-AYITI',u:'/radio/de-quelle-fierte-parlez-vous.mp3',d:311.59},bg:{t:'Bay Bondye glwa',s:'Chant · BREK-HAITI',u:'/radio/bay-bondye-glwa.mp3',d:253.1},
  sk:{t:'BREK sou Kompa',s:'Chaque soir à 22 h sur Radio BREK',u:'/radio/spot-brek-sou-kompa.mp3?v=2',d:67.37},
  s2:{t:'BREK sou Kompa',s:'Chaque soir à 22 h sur Radio BREK',u:'/radio/spot-brek-sou-kompa-2.mp3',d:57.42},
  q1:{t:'Se ou l ye',s:'Kai feat. Teddy Hashtag · BREK sou Kompa',u:'/radio/se-ou-l-ye.mp3',d:219.04},
@@ -149,7 +149,7 @@ const G=[ // grille : [heure début, heure fin, nom, description]
  [18,19,'Actualité du soir','Nationale & Internationale avec Simon'],
  [19,22,'Soirée BREK','Chants de BREK-AYITI · rediffusion de l’Actualité du soir à 19h, 20h et 21h'],[22,24,'BREK sou Kompa','Kompa : chants choisis et Kompa de la Patrie']];
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
-const MUS=['q5','q4','q3','q2','q1','bg','mp','nf','em','le','rr','jl','kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
+const MUS=['qf','q5','q4','q3','q2','q1','bg','mp','nf','em','le','rr','jl','kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
 function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(k==='ov')return'/radio/disques/ov.webp';if(k==='nt')return'/radio/disques/nt.webp';if(/^l[0-6]$/.test(k))return'/radio/disques/ln.webp';if(/^k[1-4]$/.test(k)||k==='sk'||k==='s2'||k==='q1'||k==='q2'||k==='q3'||k==='q4'||k==='q5'||k==='jk')return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa','is'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp'}
 let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c}}
@@ -159,7 +159,7 @@ const OUV={k:'ov',slots:{5:1800}};
 const LN=['l0','l1','l2','l3','l4','l5','l6'];
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(now())}
-const FILL=['id','ak','sk','yt','id','sj','sp','n2','id','cp','ss','uf','id','hy','id','gk','s2','ms','sp','ap','id','bv','id','so','id','pa','id','bc','id','sy','id','lm','id','mw','id','np','id','sn','id','am','id','nk','id','kl','id','jl','id','rr','id','le','id','em','id','nf','id','mp','id','bg'];
+const FILL=['id','qf','id','ak','sk','yt','id','sj','sp','n2','id','cp','ss','uf','id','hy','id','gk','s2','ms','sp','ap','id','bv','id','so','id','pa','id','bc','id','sy','id','lm','id','qf','id','mw','id','np','id','sn','id','am','id','nk','id','kl','id','jl','id','rr','id','le','id','em','id','nf','id','mp','id','bg'];
 // MÉTÉO BREK : un fichier par jour ; heures de passage (6 = après Flash Info, 8 = après les hymnes, 12 = après le Journal de midi, 18 = après le Journal du soir)
 const METEO={'2026-11-24':{u:'/radio/meteo-brek-2026-11-24.mp3',d:155.38,heures:[8,12]},'2026-11-25':{u:'/radio/meteo-brek-2026-11-25.mp3?v=2',d:223.19,heures:[6,12],soir:{u:'/radio/meteo-soir-2026-11-25.mp3',d:100.36}},'2026-11-26':{u:'/radio/meteo-brek-2026-11-26.mp3',d:356.44,heures:[6,12]},'2026-11-27':{u:'/radio/meteo-brek-2026-11-27.mp3',d:483.47,heures:[6,12]}};
 // ÉCO BREK : analyse économique du jour — par défaut 6 h, 12 h et 18 h, après le bulletin et la météo
