@@ -220,7 +220,7 @@ function show(){const P=pos();document.getElementById('clock').innerHTML=p2(P.t.
  {const B=['fl','mj','jm','es','er'];let h2=(P.t.h+1)%24,bk;for(let n=0;n<24;n++){bk=head(h2).find(k=>B.includes(k));if(bk)break;h2=(h2+1)%24}document.getElementById('nb').innerHTML=bk&&I[bk]?'<span class="lbl">PROCHAIN BULLETIN</span> <b>'+I[bk].t+'</b> <span style="color:#aaa">· '+p2(h2)+'h00</span>':''}document.getElementById('nxt').textContent='· '+ns;
  const GG=grid();if(document.getElementById('grille').children.length!==GG.length)drawGrid();[...document.getElementById('grille').children].forEach((li,j)=>li.classList.toggle('cur',GG[j][0]===P.blk[0]));
  if(!LIVE&&on&&curSeg&&(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st))tune()}
-function tune(){if(LIVE){if(a.dataset.live!==LIVE.url){a.dataset.live=LIVE.url;a.src=LIVE.url;a.playbackRate=1}a.volume=1;a.play().catch(()=>{});return}a.dataset.live='';const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.st;
+function tune(){if(LIVE&&LIVE.yt){a.pause();ytShow();return}if(LIVE){if(a.dataset.live!==LIVE.url){a.dataset.live=LIVE.url;a.src=LIVE.url;a.playbackRate=1}a.volume=1;a.play().catch(()=>{});return}a.dataset.live='';const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.st;
  a.src=SRC(it.u);a.dataset.hi=it.u;a.volume=+document.getElementById('vol').value;
  a.onloadedmetadata=()=>{const Q=pos();try{a.currentTime=Math.max(0,Q.sec-curSeg.st+0.2)}catch(e){};a.play().catch(()=>{})};a.load();
  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:cov(P.seg.k),sizes:'512x512'}]});show()}
@@ -305,7 +305,13 @@ drawGrid();show();setInterval(show,1000);
 // MODE DIRECT : quand radio/live.json a "actif": true, tous les auditeurs basculent sur le flux en direct, puis reviennent au programme
 (function(){const bar=document.createElement('div');bar.id='livebar';bar.style.cssText='display:none;position:sticky;top:0;z-index:60;background:linear-gradient(90deg,#b0001a,#e0172b);color:#fff;font:800 15px Arial;padding:10px 14px;text-align:center;letter-spacing:.5px;box-shadow:0 3px 12px #0008';document.body.prepend(bar);
  async function chk(){try{const r=await fetch('/radio/live.json?t='+Date.now(),{cache:'no-store'});const j=await r.json();const was=!!LIVE;
-  if(j.actif&&j.url){LIVE={url:j.url,titre:j.titre,sous:j.sous};bar.innerHTML='🔴 EN DIRECT · '+String(j.titre||'Émission en direct').replace(/[<>&]/g,'');bar.style.display='block';if(on&&!was)tune()}
-  else{LIVE=null;bar.style.display='none';if(on&&was){a.dataset.live='';tune()}}}catch(e){}}
+  if(j.actif&&(j.url||j.youtube)){LIVE={url:j.url||'',yt:j.youtube||'',titre:j.titre,sous:j.sous};bar.innerHTML='🔴 EN DIRECT · '+String(j.titre||'Émission en direct').replace(/[<>&]/g,'');bar.style.display='block';if(on&&!was)tune()}
+  else{LIVE=null;bar.style.display='none';ytHide();if(on&&was){a.dataset.live='';tune()}}}catch(e){}}
  chk();setInterval(chk,20000)})();
+</script><script>
+// Direct YouTube (RTV BREK) : lecteur affiché sur la page radio pendant l'émission
+function ytShow(){let w=document.getElementById('ytlive');const id=LIVE.yt,src=/^UC[\w-]{22}$/.test(id)?'https://www.youtube.com/embed/live_stream?channel='+id+'&autoplay=1':'https://www.youtube.com/embed/'+id+'?autoplay=1';
+ if(!w){w=document.createElement('div');w.id='ytlive';w.style.cssText='max-width:640px;margin:10px auto 18px;padding:0 12px';w.innerHTML='<div style="position:relative;padding-top:56.25%;border-radius:16px;overflow:hidden;border:2px solid #d4af37;box-shadow:0 10px 40px #0008"><iframe style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="RTV BREK en direct"></iframe></div>';const m=document.querySelector('main');m.insertBefore(w,m.firstChild)}
+ const f=w.querySelector('iframe');if(f.dataset.src!==src){f.dataset.src=src;f.src=src}w.style.display='block'}
+function ytHide(){const w=document.getElementById('ytlive');if(w){w.style.display='none';const f=w.querySelector('iframe');f.src='about:blank';f.dataset.src=''}}
 </script></body></html>
