@@ -168,7 +168,8 @@ const INTL={'2026-11-24':{u:'/radio/info-international-2026-11-24.mp3?v=4',d:426
 const JMIDI={'2026-11-24':{u:'/radio/journal-midi-2026-11-24.mp3?v=2',d:584.31},'2026-11-25':{u:'/radio/journal-midi-2026-11-25.mp3',d:415.37},'2026-11-26':{u:'/radio/journal-midi-2026-11-26.mp3',d:790.83}};
 // LES 3 BULLETINS QUOTIDIENS (un fichier par jour ; un bulletin d'un autre jour n'est jamais rediffusé)
 // SANTÉ BREK (Sophie) : lundi, mercredi, vendredi — 10 h et reprise 15 h, après le bulletin
-const SANTE={'2026-11-25':{u:'/radio/sante-brek-2026-11-25.mp3',d:599.46,heures:[10,15]},'2026-11-27':{u:'/radio/sante-brek-2026-11-27.mp3',d:638.17,heures:[10,15]}};
+const CIVISME={'2026-11-28':{u:'/radio/brek-civisme-2026-11-28.mp3',d:862.35,heures:[10]},'2026-11-29':{u:'/radio/brek-civisme-2026-11-28.mp3',d:862.35,heures:[10]}};
+SANTE={'2026-11-25':{u:'/radio/sante-brek-2026-11-25.mp3',d:599.46,heures:[10,15]},'2026-11-27':{u:'/radio/sante-brek-2026-11-27.mp3',d:638.17,heures:[10,15]}};
 const FLASH={'2026-11-24':{u:'/radio/flash-info-monique-2026-11-24.mp3',d:354.25},'2026-11-25':{u:'/radio/flash-info-monique-2026-11-25.mp3',d:421.62},'2026-11-26':{u:'/radio/flash-info-monique-2026-11-26.mp3',d:775.05},'2026-11-27':{u:'/radio/flash-info-monique-2026-11-27.mp3?v=2',d:642.80}};
 const SOIR={'2026-11-24':{u:'/radio/bulletin-soir-simon-2026-11-24.mp3',d:1167.6},'2026-11-25':{u:'/radio/actualite-soir-simon-2026-11-25.mp3',d:704.37,it:{u:'/radio/actualite-internationale-soir-2026-11-25.mp3',d:437.39}}};
 const JFR=d=>{const[y,m,j]=d.split('-').map(Number);return new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,j,12)))};
@@ -185,7 +186,7 @@ function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOI
  const n=INTL[today()];if(n&&n.heures.includes(h)){I.it={t:'Actualité internationale',s:'L’actualité du monde sur Radio BREK',u:n.u,d:n.d};ins('it',af)}
  const m=METEO[today()];if(m&&(m.heures.includes(h)||(h===18&&m.soir))){const mm=h===18&&m.soir?m.soir:m;I.mt={t:'Météo BREK',s:h===18?'La météo du soir':'Le temps chez vous, les conseils pour votre journée',u:mm.u,d:mm.d};ins('mt',b.includes('it')?'it':b.includes('is')?'is':af)}
  const e=ECO[today()];if(e&&(e.heures||[6,12,18]).includes(h)){I.ec={t:'Éco BREK',s:'L’analyse économique du jour',u:e.u,d:e.d};ins('ec',b.includes('mt')?'mt':b.includes('it')?'it':b.includes('is')?'is':af)}
- const sa=SANTE[today()];if(sa&&sa.heures.includes(h)){I.sa={t:'Santé BREK',s:'Sophie · Votre santé, notre combat',u:sa.u,d:sa.d};const bi=b.findIndex(k=>['fl','jm'].includes(k));b=bi<0?b.concat('ss','sa'):[...b.slice(0,bi+1),'ss','sa',...b.slice(bi+1)]}
+ const cv=CIVISME[today()];if(cv&&cv.heures.includes(h)){I.cv={t:'BREK-Civisme',s:'Empire, royaume, république : quel État voulons-nous ?',u:cv.u,d:cv.d};const bi=Math.max(b.indexOf('se'),b.indexOf('fl'),b.indexOf('jm'));b=bi<0?['id','cv',...b.filter(k=>k!=='id')]:[...b.slice(0,bi+1),'cv',...b.slice(bi+1)]}const sa=SANTE[today()];if(sa&&sa.heures.includes(h)){I.sa={t:'Santé BREK',s:'Sophie · Votre santé, notre combat',u:sa.u,d:sa.d};const bi=b.findIndex(k=>['fl','jm'].includes(k));b=bi<0?b.concat('ss','sa'):[...b.slice(0,bi+1),'ss','sa',...b.slice(bi+1)]}
  // Spot RTV BREK juste avant les nouvelles
  {const n=b.findIndex(k=>['sm','fl','jm','es','er'].includes(k));if(n>=0)b=[...b.slice(0,n),'sp',...(b[n]==='fl'?['sf']:[]),...b.slice(n)]}
  {const n=b.indexOf('fl');if(n>=0)b=[...b.slice(0,n+1),'se',...b.slice(n+1)]}
