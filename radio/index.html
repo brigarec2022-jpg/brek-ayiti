@@ -96,7 +96,7 @@ const I={
  ap:{t:'Ayiti pa kapab ankò',s:'Chant · BREK-HAITI',u:'/radio/ayiti-pa-kapab-anko.mp3',d:413.07},
  so:{t:'SOS d’un terrien en détresse',s:'Version BREK-HAITI · d’après Michel Berger et Luc Plamondon',u:'/radio/sos-terrien-en-detresse.mp3',d:202.92},
  cp:{t:'Le Chant des Partisans',s:'Version BREK-HAITI · Kessel, Druon, Anna Marly',u:'/radio/chant-des-partisans.mp3',d:237.30},
- ov:{t:'Près de toi, Elohim',s:'Ouverture · BREK-AYITI',u:'/radio/pres-de-toi-elohim.mp3',d:278.57},mf:{t:'Majestic Fanfare',s:'Ouverture · BREK-AYITI',u:'/radio/majestic-fanfare.mp3',d:69.25},
+ nt:{t:'Douce nuit sur BREK-AYITI',s:'Fin des émissions · BREK-AYITI',u:'/radio/douce-nuit-brek-ayiti.mp3',d:375.43},ov:{t:'Près de toi, Elohim',s:'Ouverture · BREK-AYITI',u:'/radio/pres-de-toi-elohim.mp3',d:278.57},mf:{t:'Majestic Fanfare',s:'Ouverture · BREK-AYITI',u:'/radio/majestic-fanfare.mp3',d:69.25},
  n2:{t:'Nan 25 an ankò si n pa fè anyen',s:'Chant · BREK-HAITI',u:'/radio/nan-25-an-anko.mp3',d:237.48},
  gk:{t:'Gade kandida : kote yo soti, kote yo prale',s:'Chant · BREK-HAITI',u:'/radio/gade-kandida.mp3',d:491.23},
  sj:{t:'Sispann jwe ak peyi a',s:'Chant · BREK-HAITI',u:'/radio/sispann-jwe-ak-peyi-a.mp3',d:339.44},
@@ -139,7 +139,7 @@ const I={
  bv:{t:'Bienvenue sur RTV BREK',s:'Spot · Monique et Simon',u:'/radio/bienvenue-rtv-brek.mp3?v=2',d:29.54}
 };
 const G=[ // grille : [heure début, heure fin, nom, description]
- [0,6,'Nuit BREK','Chants de BREK-AYITI · 5 h 30 : Près de toi, Elohim (ouverture)'],
+ [0,6,'Nuit BREK','Minuit : Douce nuit sur BREK-AYITI (fin des émissions) · Chants de BREK-AYITI · 5 h 30 : Près de toi, Elohim (ouverture)'],
  [6,7,'Réveil révolutionnaire','Fanfare d’ouverture, L’Internationale, Flash Info, Hymne à la Révolution'],
  [7,12,'Matinale BREK','Chants, spots et Flash Info chaque heure'],
  [12,13,'Journal de midi','Bulletin d’information'],
@@ -149,7 +149,7 @@ const G=[ // grille : [heure début, heure fin, nom, description]
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const MUS=['q5','q4','q3','q2','q1','bg','mp','nf','em','le','rr','jl','kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
-function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(k==='ov')return'/radio/disques/ov.webp';if(/^k[1-4]$/.test(k)||k==='sk'||k==='s2'||k==='q1'||k==='q2'||k==='q3'||k==='q4'||k==='q5'||k==='jk')return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa','is'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp'}
+function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(k==='ov')return'/radio/disques/ov.webp';if(k==='nt')return'/radio/disques/nt.webp';if(/^k[1-4]$/.test(k)||k==='sk'||k==='s2'||k==='q1'||k==='q2'||k==='q3'||k==='q4'||k==='q5'||k==='jk')return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa','is'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp'}
 let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c}}
 // OUVERTURE : « Près de toi, Elohim » chaque jour à 5 h 30
 const OUV={k:'ov',slots:{5:1800}};
@@ -187,7 +187,7 @@ function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOI
  // Spot RTV BREK juste avant les nouvelles
  {const n=b.findIndex(k=>['sm','fl','jm','es','er'].includes(k));if(n>=0)b=[...b.slice(0,n),'sp',...b.slice(n)]}
  return b}
-function head0(h){if(h===23)return['id','jk','q5','jk'];if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','sm','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h===22)return['id','sk','q1','jk','q2','jk','q3','jk','q4','jk','k1','k2','jk','k3','k4','jk'];if(h>21||h<6)return['id'];return['id','fl']}
+function head0(h){if(h===0)return['id','nt'];if(h===23)return['id','jk','q5','jk'];if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','sm','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h===22)return['id','sk','q1','jk','q2','jk','q3','jk','q4','jk','k1','k2','jk','k3','k4','jk'];if(h>21||h<6)return['id'];return['id','fl']}
 function hourPlan(h){const sp0=SPECIAL[today()],sp=sp0&&sp0.slots[h]!==undefined?sp0:(h===5?OUV:null),at=sp?sp.slots[h]:null;
  let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
  const out=[];let t=0,done=at===null||at<11;
@@ -219,7 +219,7 @@ function tune(){const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.s
  a.onloadedmetadata=()=>{const Q=pos();try{a.currentTime=Math.max(0,Q.sec-curSeg.st+0.2)}catch(e){};a.play().catch(()=>{})};a.load();
  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:cov(P.seg.k),sizes:'512x512'}]});show()}
 // Aucun jingle sur les hymnes, par respect pour le bicolore
-const NODROP=['ov','mf','dn','hp','hj','hy'];
+const NODROP=['nt','ov','mf','dn','hp','hj','hy'];
 let DROP=new Audio('/radio/drop-radio-brek.mp3?v=2');DROP.preload='auto';const fired={};
 // Pendant BREK sou Kompa : jingle voix seule « Vous suivez BREK sou Kompa »
 const DROPR=DROP,DROPK=new Audio('/radio/drop-brek-sou-kompa.mp3');DROPK.preload='auto';const KOMPA=/^(q[0-9]+|k[1-4])$/;
