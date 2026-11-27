@@ -208,25 +208,25 @@ function block(h){return grid().find(b=>h>=b[0]&&h<b[1])}
 function pos(){const t=haiti(),sec=t.m*60+t.s+t.ms/1000,plan=hourPlan(t.h);let i=plan.findIndex(x=>sec>=x.st&&sec<x.en);if(i<0)i=plan.length-1;
  const nx=plan[i+1]||{k:head((t.h+1)%24)[0],st:3600,nh:1};return{t,sec,seg:plan[i],nx,blk:block(t.h)}}
 const a=document.getElementById('a'),play=document.getElementById('play'),disc=document.getElementById('disc');
-let on=false,curSeg=null;
+let on=false,curSeg=null,LIVE=null;
 const p2=n=>String(n).padStart(2,'0');
 function fmt(h,secInHour){const m=Math.floor(secInHour/60);return p2((h+Math.floor(m/60))%24)+'h'+p2(m%60)}
 function show(){const P=pos();document.getElementById('clock').innerHTML=p2(P.t.h)+'<em>:</em>'+p2(P.t.m);document.getElementById('csec').textContent=p2(P.t.s);document.getElementById('hbar').style.width=((P.t.m*60+P.t.s)/36).toFixed(2)+'%';{const d=today();if(show.d!==d){show.d=d;const [Y,M,D]=d.split('-').map(Number);document.getElementById('cdate').textContent=new Date(Date.UTC(Y,M-1,D,12)).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})}}
  document.getElementById('blk').textContent=P.blk[2];
- if(on){const it=lab(P.seg.k);setCov(P.seg.k);document.getElementById('now').textContent=it.t;document.getElementById('sub').textContent=it.s}
+ if(on&&LIVE){document.getElementById('now').textContent='🔴 '+(LIVE.titre||'Émission en direct');document.getElementById('sub').textContent=LIVE.sous||'En direct sur Radio BREK'}else if(on){const it=lab(P.seg.k);setCov(P.seg.k);document.getElementById('now').textContent=it.t;document.getElementById('sub').textContent=it.s}
  const plan=hourPlan(P.t.h);let j=plan.findIndex(x=>x.st===P.seg.st)+1;while(plan[j]&&plan[j].k==='id')j++;
  let nt,ns;if(plan[j]){nt=lab(plan[j].k).t;ns=fmt(P.t.h,plan[j].st)}else{const h2=(P.t.h+1)%24,hp=head(h2),k2=hp[1]||hp[0]||(h2>=1&&h2<=5?'l0':'id');nt=lab(k2).t;ns=p2(h2)+'h00'}
  document.getElementById('nx').textContent=nt;
  {const B=['fl','mj','jm','es','er'];let h2=(P.t.h+1)%24,bk;for(let n=0;n<24;n++){bk=head(h2).find(k=>B.includes(k));if(bk)break;h2=(h2+1)%24}document.getElementById('nb').innerHTML=bk&&I[bk]?'<span class="lbl">PROCHAIN BULLETIN</span> <b>'+I[bk].t+'</b> <span style="color:#aaa">· '+p2(h2)+'h00</span>':''}document.getElementById('nxt').textContent='· '+ns;
  const GG=grid();if(document.getElementById('grille').children.length!==GG.length)drawGrid();[...document.getElementById('grille').children].forEach((li,j)=>li.classList.toggle('cur',GG[j][0]===P.blk[0]));
- if(on&&curSeg&&(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st))tune()}
-function tune(){const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.st;
+ if(!LIVE&&on&&curSeg&&(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st))tune()}
+function tune(){if(LIVE){if(a.dataset.live!==LIVE.url){a.dataset.live=LIVE.url;a.src=LIVE.url;a.playbackRate=1}a.volume=1;a.play().catch(()=>{});return}a.dataset.live='';const P=pos();curSeg=P.seg;const it=I[P.seg.k],off=P.sec-P.seg.st;
  a.src=SRC(it.u);a.dataset.hi=it.u;a.volume=+document.getElementById('vol').value;
  a.onloadedmetadata=()=>{const Q=pos();try{a.currentTime=Math.max(0,Q.sec-curSeg.st+0.2)}catch(e){};a.play().catch(()=>{})};a.load();
  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:lab(P.seg.k).t,artist:'Radio BREK · '+P.blk[2],album:'BREK-AYITI',artwork:[{src:cov(P.seg.k),sizes:'512x512'}]});show()}
 // Lecture en arrière-plan (écran éteint, appareil au repos) : enchaînement piloté par l'audio lui-même + auto-réparation
-a.addEventListener('timeupdate',()=>{if(!on||!curSeg)return;const P=pos();if(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st)tune()});
-let guard=0,lastT=-1;setInterval(()=>{if(!on||!curSeg){guard=0;return}
+a.addEventListener('timeupdate',()=>{if(LIVE||!on||!curSeg)return;const P=pos();if(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st)tune()});
+let guard=0,lastT=-1;setInterval(()=>{if(!on||(!curSeg&&!LIVE)){guard=0;return}
  const stuck=!a.paused&&!a.seeking&&a.currentTime===lastT;lastT=a.currentTime;
  if(a.ended){guard=0;tune();return}
  if(a.error||stuck){if(++guard>=8){guard=0;tune()}}else guard=0},1000);
@@ -235,14 +235,14 @@ if('mediaSession'in navigator){const ms=navigator.mediaSession;
  try{ms.setActionHandler('pause',()=>{if(on)play.onclick()})}catch(e){}
  try{ms.setActionHandler('stop',()=>{if(on)play.onclick()})}catch(e){}
  for(const x of['seekbackward','seekforward','seekto','previoustrack','nexttrack'])try{ms.setActionHandler(x,null)}catch(e){}}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&on&&curSeg){const P=pos();if(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st||a.paused)tune()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&on&&LIVE){tune();return}if(!document.hidden&&on&&curSeg){const P=pos();if(P.seg.k!==curSeg.k||P.seg.st!==curSeg.st||a.paused)tune()}});
 // Aucun jingle sur les hymnes, par respect pour le bicolore
 const NODROP=['l0','l1','l2','l3','l4','l5','l6','nt','ov','mf','dn','hp','hj','hy'];
 let DROP=new Audio('/radio/drop-radio-brek.mp3?v=2');DROP.preload='auto';const fired={};
 // Pendant BREK sou Kompa : jingle voix seule « Vous suivez BREK sou Kompa »
 const DROPR=DROP,DROPK=new Audio('/radio/drop-brek-sou-kompa.mp3');DROPK.preload='auto';const KOMPA=/^(q[0-9]+|k[1-4])$/;
 function drops(k){const d=I[k].d,t=[];if(!MUS.includes(k)||NODROP.includes(k)||d<90)return t;t.push(45);if(d>300)t.push(Math.round(d/2));return t}
-setInterval(()=>{if(!on||!curSeg)return;const P=pos();const off=P.sec-curSeg.st,left=curSeg.en-P.sec,full=I[curSeg.k].d-off;
+setInterval(()=>{if(LIVE){DROPR.pause();DROPK.pause();a.volume=1;return}if(!on||!curSeg)return;const P=pos();const off=P.sec-curSeg.st,left=curSeg.en-P.sec,full=I[curSeg.k].d-off;
  const base=+document.getElementById('vol').value;
  for(const tr of drops(curSeg.k)){const key=curSeg.st+'/'+tr+'/'+P.t.h;if(off>=tr&&off<tr+1.5&&left>15&&!fired[key]){fired[key]=1;DROPR.pause();DROPK.pause();DROP=KOMPA.test(curSeg.k)?DROPK:DROPR;DROP.currentTime=0;DROP.volume=base;DROP.play().catch(()=>{})}}
  let v=(left<3&&full-left>0.5)?Math.max(0,base*left/3):base;if(!DROP.paused)v=Math.min(v,base*0.3);a.volume=v},100);
@@ -301,4 +301,11 @@ drawGrid();show();setInterval(show,1000);
  F.addEventListener('load',()=>{try{const L=F.contentWindow.location;if(/^\/radio\/?$/.test(L.pathname)){F.src='/';close()}
    F.contentDocument.querySelectorAll('a[href^="/radio"]').forEach(a=>{if(/^\/radio\/?(#.*)?$/.test(a.getAttribute('href')))a.addEventListener('click',ev=>{ev.preventDefault();close()})})}catch(e){}});
  setInterval(()=>{if(S.classList.contains('on'))sync()},1000)})();
+</script><script>
+// MODE DIRECT : quand radio/live.json a "actif": true, tous les auditeurs basculent sur le flux en direct, puis reviennent au programme
+(function(){const bar=document.createElement('div');bar.id='livebar';bar.style.cssText='display:none;position:sticky;top:0;z-index:60;background:linear-gradient(90deg,#b0001a,#e0172b);color:#fff;font:800 15px Arial;padding:10px 14px;text-align:center;letter-spacing:.5px;box-shadow:0 3px 12px #0008';document.body.prepend(bar);
+ async function chk(){try{const r=await fetch('/radio/live.json?t='+Date.now(),{cache:'no-store'});const j=await r.json();const was=!!LIVE;
+  if(j.actif&&j.url){LIVE={url:j.url,titre:j.titre,sous:j.sous};bar.innerHTML='🔴 EN DIRECT · '+String(j.titre||'Émission en direct').replace(/[<>&]/g,'');bar.style.display='block';if(on&&!was)tune()}
+  else{LIVE=null;bar.style.display='none';if(on&&was){a.dataset.live='';tune()}}}catch(e){}}
+ chk();setInterval(chk,20000)})();
 </script></body></html>
