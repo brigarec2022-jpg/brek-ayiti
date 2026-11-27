@@ -21,7 +21,7 @@ h1{font:900 clamp(34px,8vw,58px)/1.05 Arial;margin:6px 0 20px}
 .play{width:92px;height:92px;border-radius:50%;border:0;background:var(--red);color:#fff;font-size:40px;cursor:pointer;box-shadow:0 6px 24px #b8001f99}
 .now{margin:18px 0 4px;font:800 22px Arial}.sub{color:#ddd;font-size:15px;min-height:22px}
 .live{display:inline-flex;align-items:center;gap:8px;background:#ffffff14;border:1px solid #ffffff30;border-radius:999px;padding:6px 14px;font:800 13px Arial;letter-spacing:2px}
-.live i{width:9px;height:9px;border-radius:50%;background:#ff3b3b}.on-air .live i{animation:b 1.2s infinite}@keyframes b{50%{opacity:.2}}
+.clk{display:inline-block;margin:4px auto 18px;padding:14px 26px 16px;border-radius:22px;background:linear-gradient(160deg,#ffffff12,#ffffff05);border:1px solid #d4af3755;box-shadow:0 10px 40px #0008,inset 0 1px 0 #ffffff1a;min-width:min(320px,86vw)}.clk .live{margin-bottom:6px}.tm{display:flex;align-items:flex-start;justify-content:center;gap:6px;font:900 clamp(56px,16vw,92px)/1 Arial,Helvetica,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:1px;background:linear-gradient(180deg,#fff6d6,#d4af37 70%,#a8841f);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px #d4af3722}.tm em{font-style:normal;animation:b 2s steps(1) infinite;position:relative;top:-.06em}.tm .sec{font-size:.34em;margin-top:.18em;color:#ff4d5e;-webkit-text-fill-color:#ff4d5e;min-width:1.3em;text-align:left}.dt{font:700 13px Arial;letter-spacing:1.5px;color:#e9dcb4;text-transform:uppercase;margin-top:6px}.tz{font:600 11px Arial;letter-spacing:2px;color:#ffffff80;text-transform:uppercase;margin-top:3px}.hb{height:4px;border-radius:4px;background:#ffffff1c;margin-top:10px;overflow:hidden}.hb b{display:block;height:100%;width:0;background:linear-gradient(90deg,#b8001f,#d4af37);border-radius:4px;transition:width 1s linear}.live i{width:9px;height:9px;border-radius:50%;background:#ff3b3b}.on-air .live i{animation:b 1.2s infinite}@keyframes b{50%{opacity:.2}}
 .ctrl{display:flex;justify-content:center;align-items:center;gap:18px;margin:16px 0}
 .ctrl button.s{background:#ffffff14;border:1px solid #ffffff30;color:#fff;border-radius:50%;width:52px;height:52px;font-size:20px;cursor:pointer}
 input[type=range]{width:160px;accent-color:var(--gold)}
@@ -55,7 +55,7 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 <p class="k">RADIO BREK</p>
 <h1>La voix de la Révolution Classique</h1>
 <div class="disc" id="disc"><img src="/radio/pochette.jpg" alt="Radio BREK"></div>
-<span class="live"><i></i>EN DIRECT · <span id="clock">--:--</span> (heure d’Haïti)</span>
+<div class="clk" aria-live="off"><span class="live"><i></i>EN DIRECT</span><div class="tm"><span id="clock">--<em>:</em>--</span><span class="sec" id="csec">00</span></div><div class="dt" id="cdate">—</div><div class="tz">Heure d’Haïti · Port-au-Prince</div><div class="hb" title="Progression de l’heure"><b id="hbar"></b></div></div>
 <div class="onair"><div class="lbl">À L’ANTENNE</div><div class="blk" id="blk">Radio BREK</div><div class="now" id="now">Appuyez sur ▶ pour écouter</div><div class="sub" id="sub">Ayiti d’abord, Ayiti toujours</div></div>
 <div class="ctrl"><button class="play" id="play" aria-label="Écouter le direct">▶</button><button class="rf" id="rf" type="button" title="Recharger la radio">↻ Actualiser</button><a class="rf" href="/radio/frequences/" style="text-decoration:none">📡 Fréquences</a></div>
 <div class="ctrl"><button class="rf" id="low" type="button" title="Consomme environ 3 fois moins de données">📶 Ti done</button><button class="rf" id="inst" type="button" hidden>📲 Installer Radio BREK</button></div>
@@ -207,7 +207,7 @@ const a=document.getElementById('a'),play=document.getElementById('play'),disc=d
 let on=false,curSeg=null;
 const p2=n=>String(n).padStart(2,'0');
 function fmt(h,secInHour){const m=Math.floor(secInHour/60);return p2((h+Math.floor(m/60))%24)+'h'+p2(m%60)}
-function show(){const P=pos();document.getElementById('clock').textContent=p2(P.t.h)+'h'+p2(P.t.m);
+function show(){const P=pos();document.getElementById('clock').innerHTML=p2(P.t.h)+'<em>:</em>'+p2(P.t.m);document.getElementById('csec').textContent=p2(P.t.s);document.getElementById('hbar').style.width=((P.t.m*60+P.t.s)/36).toFixed(2)+'%';{const d=today();if(show.d!==d){show.d=d;const [Y,M,D]=d.split('-').map(Number);document.getElementById('cdate').textContent=new Date(Date.UTC(Y,M-1,D,12)).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})}}
  document.getElementById('blk').textContent=P.blk[2];
  if(on){const it=lab(P.seg.k);setCov(P.seg.k);document.getElementById('now').textContent=it.t;document.getElementById('sub').textContent=it.s}
  const plan=hourPlan(P.t.h);let j=plan.findIndex(x=>x.st===P.seg.st)+1;while(plan[j]&&plan[j].k==='id')j++;
