@@ -305,7 +305,7 @@ drawGrid();show();setInterval(show,1000);
 // MODE DIRECT : quand radio/live.json a "actif": true, tous les auditeurs basculent sur le flux en direct, puis reviennent au programme
 (function(){const bar=document.createElement('div');bar.id='livebar';bar.style.cssText='display:none;position:sticky;top:0;z-index:60;background:linear-gradient(90deg,#b0001a,#e0172b);color:#fff;font:800 15px Arial;padding:10px 14px;text-align:center;letter-spacing:.5px;box-shadow:0 3px 12px #0008';document.body.prepend(bar);
  async function chk(){try{const r=await fetch('/radio/live.json?t='+Date.now(),{cache:'no-store'});const j=await r.json();const was=!!LIVE;
-  if(j.actif&&(j.url||j.youtube)){LIVE={url:j.url||'',yt:j.youtube||'',titre:j.titre,sous:j.sous};bar.innerHTML='🔴 EN DIRECT · '+String(j.titre||'Émission en direct').replace(/[<>&]/g,'');bar.style.display='block';if(on&&!was)tune()}
+  if(j.actif&&(j.url||j.youtube)){LIVE={url:j.url||'',yt:j.youtube||'',titre:j.titre,sous:j.sous};bar.innerHTML='🔴 EN DIRECT · '+String(j.titre||'Émission en direct').replace(/[<>&]/g,'');bar.style.display='block';if(LIVE.yt){a.pause();DROPR.pause();DROPK.pause();ytShow();const w=document.getElementById('ytlive');if(w&&!was)w.scrollIntoView({behavior:'smooth',block:'center'})}else if(on&&!was)tune()}
   else{LIVE=null;bar.style.display='none';ytHide();if(on&&was){a.dataset.live='';tune()}}}catch(e){}}
  chk();setInterval(chk,20000)})();
 </script><script>
