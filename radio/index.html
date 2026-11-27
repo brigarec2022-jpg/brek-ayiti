@@ -49,7 +49,7 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 .rep{display:grid;gap:10px;margin-top:8px}.rep .it{text-align:left;background:#ffffff0b;border:1px solid #ffffff22;border-radius:12px;padding:10px 12px}
 .rep .it b{display:block}.rep .it span{color:#bbb;font-size:13px}.rep audio{width:100%;margin-top:8px;height:38px}
 #ios{display:none;max-width:520px;margin:10px auto 0;font-size:14px;color:#ddd;background:#ffffff10;border:1px solid #ffffff26;border-radius:10px;padding:10px 12px}
-</style></head><body>
+#site{position:fixed;inset:0;z-index:2147483600;display:none;flex-direction:column;background:#0b0b0b}#site.on{display:flex}#site .bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:linear-gradient(90deg,#3a0710,#160205);border-bottom:2px solid #d4af37;box-shadow:0 3px 14px #000a}#site .bar img{width:42px;height:42px;border-radius:50%;border:2px solid #d4af37;object-fit:cover;flex:none;animation:spin 8s linear infinite}#site .bar .tx{flex:1;min-width:0;line-height:1.2}#site .bar .tx b{display:block;font:900 10px Arial;letter-spacing:1px;white-space:nowrap;overflow:hidden;color:#ff4d5e}#site .bar .tx span{display:block;font:700 14px Arial;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#site .bar button{flex:none;border:1px solid #d4af3788;background:#ffffff14;color:#fff;border-radius:999px;font:800 15px Arial;height:40px;min-width:40px;padding:0 12px;cursor:pointer}#site iframe{flex:1;width:100%;border:0;background:#fff}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body>
 <header><img src="/membre/logo-brek-carre.png" alt=""><a href="/">BREK-AYITI</a><nav><a href="/tv/">BREK-TV</a><a href="/">Accueil</a></nav></header>
 <main>
 <p class="k">RADIO BREK</p>
@@ -58,6 +58,7 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 <div class="clk" aria-live="off"><span class="live"><i></i>EN DIRECT</span><div class="tm"><span id="clock">--<em>:</em>--</span><span class="sec" id="csec">00</span></div><div class="dt" id="cdate">—</div><div class="tz">Heure d’Haïti · Port-au-Prince</div><div class="hb" title="Progression de l’heure"><b id="hbar"></b></div></div>
 <div class="onair"><div class="lbl">À L’ANTENNE</div><div class="blk" id="blk">Radio BREK</div><div class="now" id="now">Appuyez sur ▶ pour écouter</div><div class="sub" id="sub">Ayiti d’abord, Ayiti toujours</div></div>
 <div class="ctrl"><button class="play" id="play" aria-label="Écouter le direct">▶</button><button class="rf" id="rf" type="button" title="Recharger la radio">↻ Actualiser</button><a class="rf" href="/radio/frequences/" style="text-decoration:none">📡 Fréquences</a></div>
+<div class="ctrl"><button class="rf" id="browse" type="button" title="La radio continue pendant la navigation">🌐 Parcourir BREK-AYITI en écoutant</button></div>
 <div class="ctrl"><button class="rf" id="low" type="button" title="Consomme environ 3 fois moins de données">📶 Ti done</button><button class="rf" id="inst" type="button" hidden>📲 Installer Radio BREK</button></div>
 <div id="ios">Pour installer Radio BREK : touchez <b>Partager</b> puis <b>« Sur l’écran d’accueil »</b>.</div>
 <label style="font-size:14px;color:#ccc">Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.9"></label>
@@ -69,6 +70,7 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 <div class="acts"><a class="wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=%C3%89coutez%20Radio%20BREK%20en%20direct%20%3A%20https%3A%2F%2Fbrek-ayiti.pages.dev%2Fradio%2F">📲 Partager sur WhatsApp</a><a href="/tv/">📺 BREK-TV</a></div>
 <p class="note">Radio BREK diffuse en direct selon l’heure d’Haïti : tous les auditeurs entendent la même chose au même moment. Les bulletins d’information ouvrent les heures de la journée. Monique, Simon, Daly, Elodie, Camille et Sophie sont des présentateurs virtuels générés par intelligence artificielle.</p>
 </main>
+<div id="site" aria-hidden="true"><div class="bar"><img id="sbimg" src="/radio/pochette.jpg" alt=""><div class="tx"><b>● EN DIRECT · RADIO BREK</b><span id="sbt">Radio BREK</span></div><button id="sbp" type="button" aria-label="Lecture / pause">⏸</button><button id="sbx" type="button" title="Revenir à la radio">✕ Radio</button></div><iframe id="sbf" title="BREK-AYITI" src="about:blank"></iframe></div>
 <audio id="a" preload="none"></audio>
 <script>
 const TZ='America/Port-au-Prince';
@@ -285,4 +287,18 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();defer=e;ib.
 ib.onclick=async()=>{if(!defer)return;defer.prompt();try{await defer.userChoice}catch(e){};defer=null;ib.hidden=true};
 if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone)document.getElementById('ios').style.display='block';
 drawGrid();show();setInterval(show,1000);
-</script><script src="/brek-direct.js?v=4" defer></script></body></html>
+</script><script src="/brek-direct.js?v=4" defer></script><script>
+// Naviguer sur BREK-AYITI sans couper la radio : le site s'ouvre dans un cadre, le lecteur reste en haut
+(function(){const S=document.getElementById('site'),F=document.getElementById('sbf'),bp=document.getElementById('sbp');
+ function sync(){bp.textContent=on?'⏸':'▶';const n=document.getElementById('now');document.getElementById('sbt').textContent=n?n.textContent:'Radio BREK';const d=document.querySelector('#disc img');if(d)document.getElementById('sbimg').src=d.src}
+ function open(u){if(!on)play.onclick();if(F.getAttribute('src')!==u)F.src=u;S.classList.add('on');S.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';try{history.pushState({site:1},'')}catch(e){};sync()}
+ function close(back){S.classList.remove('on');S.setAttribute('aria-hidden','true');document.body.style.overflow='';if(back!==false&&history.state&&history.state.site)history.back()}
+ document.getElementById('browse').onclick=()=>open('/');
+ document.getElementById('sbx').onclick=()=>close();
+ bp.onclick=()=>{play.onclick();sync()};
+ addEventListener('popstate',()=>{if(S.classList.contains('on'))close(false)});
+ document.querySelectorAll('header a').forEach(x=>x.addEventListener('click',e=>{if(on){e.preventDefault();open(x.getAttribute('href'))}}));
+ F.addEventListener('load',()=>{try{const L=F.contentWindow.location;if(/^\/radio\/?$/.test(L.pathname)){F.src='/';close()}
+   F.contentDocument.querySelectorAll('a[href^="/radio"]').forEach(a=>{if(/^\/radio\/?(#.*)?$/.test(a.getAttribute('href')))a.addEventListener('click',ev=>{ev.preventDefault();close()})})}catch(e){}});
+ setInterval(()=>{if(S.classList.contains('on'))sync()},1000)})();
+</script></body></html>
