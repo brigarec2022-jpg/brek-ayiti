@@ -189,13 +189,13 @@ function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOI
  // Spot RTV BREK juste avant les nouvelles
  {const n=b.findIndex(k=>['sm','fl','jm','es','er'].includes(k));if(n>=0)b=[...b.slice(0,n),'sp',...b.slice(n)]}
  return b}
-function head0(h){if(h===0)return['id','nt'];if(h>=1&&h<=5)return[];if(h===23)return['id','jk','q5','jk'];if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','sm','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h===22)return['id','sk','q1','jk','q2','jk','q3','jk','q4','jk','k1','k2','jk','k3','k4','jk'];if(h>21||h<6)return['id'];return['id','fl']}
+function head0(h){if(h===0)return['id','nt'];if(h>=1&&h<=5)return[];if(h===23)return['id','jk','q2','jk','q3','jk','q4','jk','k1','k2','jk','k3','k4','jk','q1','jk'];if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','sm','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h===22)return['id','sk','q1','jk','q2','jk','q3','jk','q4','jk','k1','k2','jk','k3','k4','jk'];if(h>21||h<6)return['id'];return['id','fl']}
 function hourPlan(h){const sp0=SPECIAL[today()],sp=sp0&&sp0.slots[h]!==undefined?sp0:(h===5?OUV:null),at=sp?sp.slots[h]:null;
  let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
  const out=[];let t=0,done=at===null||at<11;
  const push=k=>{if(!done&&t+I[k].d>at){if(at>t)out.push({k,st:t,en:at});t=at;out.push({k:'id',st:t,en:t+I.id.d});t+=I.id.d;out.push({k:sp.k,st:t,en:t+I[sp.k].d});t+=I[sp.k].d;done=true;return}
   out.push({k,st:t,en:Math.min(3600,t+I[k].d)});t+=I[k].d};
- for(const k of hd)push(k);const NP=FILL.length/2,dn=Math.floor(Date.parse(today()+'T00:00:00Z')/864e5);let j=2*(((dn*24+h)*10)%NP);if(h<=5){const s0=I.id.d+I.nt.d,tot=LN.reduce((a,k)=>a+I[k].d,0);let i=0;if(h>0){let e=(h*3600-s0)%tot;while(e>=I[LN[i]].d){e-=I[LN[i]].d;i++}t=-e}while(t<3600&&(h<5||!done))push(LN[i++%LN.length])}while(t<3600)push(FILL[j++%FILL.length]);return out}
+ for(const k of hd)push(k);const NP=FILL.length/2,dn=Math.floor(Date.parse(today()+'T00:00:00Z')/864e5);let j=2*(((dn*24+h)*10)%NP);if(h<=5){const s0=I.id.d+I.nt.d,tot=LN.reduce((a,k)=>a+I[k].d,0);let i=0;if(h>0){let e=(h*3600-s0)%tot;while(e>=I[LN[i]].d){e-=I[LN[i]].d;i++}t=-e}while(t<3600&&(h<5||!done))push(LN[i++%LN.length])}if(h>=22){const KF=['q5','jk','q1','jk','q2','jk','q3','jk','q4','jk'];let i=0;while(t<3600)push(KF[i++%KF.length])}while(t<3600)push(FILL[j++%FILL.length]);return out}
 function haiti(){const p=new Intl.DateTimeFormat('fr-FR',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(now());
  const g=x=>+p.find(o=>o.type===x).value;return{h:g('hour'),m:g('minute'),s:g('second'),ms:now().getMilliseconds()}}
 function weekday(){const d=new Intl.DateTimeFormat('en-US',{timeZone:TZ,weekday:'short'}).format(now());return !['Sat','Sun'].includes(d)}
