@@ -150,7 +150,7 @@ const G=[ // grille : [heure début, heure fin, nom, description]
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const MUS=['kf','qf','q5','q4','q3','q2','q1','bg','mp','nf','em','le','rr','jl','kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
-function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(k==='ov')return'/radio/disques/ov.webp';if(k==='nt')return'/radio/disques/nt.webp';if(/^l[0-6]$/.test(k))return'/radio/disques/ln.webp';if(/^k[1-4]$/.test(k)||/^q[0-9]+$/.test(k)||k==='sk'||k==='s2'||k==='jk')return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp?v=3';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa','is'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp?v=2'}
+function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(k==='ov')return'/radio/disques/ov.webp';if(k==='nt')return'/radio/disques/nt.webp';if(/^l[0-6]$/.test(k))return'/radio/disques/ln.webp';if(/^k[1-4]$/.test(k)||/^q[0-9]+$/.test(k)||k==='sk'||k==='s2'||k==='jk')return'/radio/disques/kp.webp?v=2';if(MUS.includes(k))return'/radio/disques/'+k+'.webp?v=3';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa','is'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp?v=2'}
 let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c;disc.classList.toggle('logo',/radio\.webp|logo-radyo/.test(c))}}
 // OUVERTURE : « Près de toi, Elohim » chaque jour à 5 h 30
 const OUV={k:'ov',slots:{5:1800}};
