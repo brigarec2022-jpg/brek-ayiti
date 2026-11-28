@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Radio BREK · En direct · BREK-AYITI</title><link rel="icon" href="/favicon.svg"><link rel="manifest" href="/radio/manifest.webmanifest"><meta name="theme-color" content="#b8001f"><link rel="apple-touch-icon" href="/radio/icon-192.png">
+<title>Radio BREK · En direct · BREK-AYITI</title><link rel="icon" type="image/png" href="/radio/favicon-radio.png"><link rel="manifest" href="/radio/manifest.webmanifest"><meta name="theme-color" content="#b8001f"><link rel="apple-touch-icon" href="/radio/icon-192.png">
 <meta name="description" content="Radio BREK en direct : Flash Info chaque heure, journaux de midi et du soir, chants de BREK-AYITI. Ayiti d’abord, Ayiti toujours.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="BREK-AYITI">
 <meta property="og:title" content="Radio BREK — en direct"><meta property="og:description" content="Hymnes, spots et messages de BREK-AYITI, 24 heures sur 24.">
-<meta property="og:url" content="https://brek-ayiti.pages.dev/radio/"><meta property="og:image" content="https://brek-ayiti.pages.dev/spots/hymne-a-la-revolution/partage.jpg">
+<meta property="og:url" content="https://brek-ayiti.pages.dev/radio/"><meta property="og:image" content="https://brek-ayiti.pages.dev/radio/partage-radio.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 :root{--red:#b8001f;--gold:#d4af37}
@@ -17,7 +17,7 @@ h1{font:900 clamp(34px,8vw,58px)/1.05 Arial;margin:6px 0 20px}
 .disc{position:relative;width:min(300px,72vw);aspect-ratio:1;margin:0 auto 22px}
 .disc img{width:100%;height:100%;object-fit:cover;border-radius:50%;border:6px solid var(--gold);box-shadow:0 0 50px #b8001f88}
 .disc.on img{animation:spin 22s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-.disc::after{content:"";position:absolute;left:50%;top:50%;width:18%;height:18%;transform:translate(-50%,-50%);border-radius:50%;background:#0b0b0b;border:3px solid var(--gold)}
+.disc.logo::after{display:none}.disc::after{content:"";position:absolute;left:50%;top:50%;width:18%;height:18%;transform:translate(-50%,-50%);border-radius:50%;background:#0b0b0b;border:3px solid var(--gold)}
 .play{width:92px;height:92px;border-radius:50%;border:0;background:var(--red);color:#fff;font-size:40px;cursor:pointer;box-shadow:0 6px 24px #b8001f99}
 .now{margin:18px 0 4px;font:800 22px Arial}.sub{color:#ddd;font-size:15px;min-height:22px}
 .live{display:inline-flex;align-items:center;gap:8px;background:#ffffff14;border:1px solid #ffffff30;border-radius:999px;padding:6px 14px;font:800 13px Arial;letter-spacing:2px}
@@ -50,11 +50,11 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 .rep .it b{display:block}.rep .it span{color:#bbb;font-size:13px}.rep audio{width:100%;margin-top:8px;height:38px}
 #ios{display:none;max-width:520px;margin:10px auto 0;font-size:14px;color:#ddd;background:#ffffff10;border:1px solid #ffffff26;border-radius:10px;padding:10px 12px}
 #site{position:fixed;inset:0;z-index:2147483600;display:none;flex-direction:column;background:#0b0b0b}#site.on{display:flex}#site .bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:linear-gradient(90deg,#3a0710,#160205);border-bottom:2px solid #d4af37;box-shadow:0 3px 14px #000a}#site .bar img{width:42px;height:42px;border-radius:50%;border:2px solid #d4af37;object-fit:cover;flex:none;animation:spin 8s linear infinite}#site .bar .tx{flex:1;min-width:0;line-height:1.2}#site .bar .tx b{display:block;font:900 10px Arial;letter-spacing:1px;white-space:nowrap;overflow:hidden;color:#ff4d5e}#site .bar .tx span{display:block;font:700 14px Arial;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#site .bar button{flex:none;border:1px solid #d4af3788;background:#ffffff14;color:#fff;border-radius:999px;font:800 15px Arial;height:40px;min-width:40px;padding:0 12px;cursor:pointer}#site iframe{flex:1;width:100%;border:0;background:#fff}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body>
-<header><img src="/membre/logo-brek-carre.png" alt=""><a href="/">BREK-AYITI</a><nav><a href="/tv/">BREK-TV</a><a href="/">Accueil</a></nav></header>
+<header><img src="/radio/logo-radyo-brek.webp" alt=""><a href="/">BREK-AYITI</a><nav><a href="/tv/">BREK-TV</a><a href="/">Accueil</a></nav></header>
 <main>
 <p class="k">RADIO BREK</p>
 <h1>La voix de la Révolution Classique</h1>
-<div class="disc" id="disc"><img src="/radio/pochette.jpg" alt="Radio BREK"></div>
+<div class="disc logo" id="disc"><img src="/radio/logo-radyo-brek.webp" alt="Radio BREK"></div>
 <div class="clk" aria-live="off"><span class="live"><i></i>EN DIRECT</span><div class="tm"><span id="clock">--<em>:</em>--</span><span class="sec" id="csec">00</span></div><div class="dt" id="cdate">—</div><div class="tz">Heure d’Haïti · Port-au-Prince</div><div class="hb" title="Progression de l’heure"><b id="hbar"></b></div></div>
 <div class="onair"><div class="lbl">À L’ANTENNE</div><div class="blk" id="blk">Radio BREK</div><div class="now" id="now">Appuyez sur ▶ pour écouter</div><div class="sub" id="sub">Ayiti d’abord, Ayiti toujours</div></div>
 <div class="ctrl"><button class="play" id="play" aria-label="Écouter le direct">▶</button><button class="rf" id="rf" type="button" title="Recharger la radio">↻ Actualiser</button><a class="rf" href="/radio/frequences/" style="text-decoration:none">📡 Fréquences</a></div>
@@ -70,7 +70,7 @@ ol li.cur{background:#b8001f44;font-weight:800}ol li span{color:#bbb;font-size:1
 <div class="acts"><a class="wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=%C3%89coutez%20Radio%20BREK%20en%20direct%20%3A%20https%3A%2F%2Fbrek-ayiti.pages.dev%2Fradio%2F">📲 Partager sur WhatsApp</a><a href="/tv/">📺 BREK-TV</a></div>
 <p class="note">Radio BREK diffuse en direct selon l’heure d’Haïti : tous les auditeurs entendent la même chose au même moment. Les bulletins d’information ouvrent les heures de la journée. Monique, Simon, Daly, Elodie, Camille et Sophie sont des présentateurs virtuels générés par intelligence artificielle.</p>
 </main>
-<div id="site" aria-hidden="true"><div class="bar"><img id="sbimg" src="/radio/pochette.jpg" alt=""><div class="tx"><b>● EN DIRECT · RADIO BREK</b><span id="sbt">Radio BREK</span></div><button id="sbp" type="button" aria-label="Lecture / pause">⏸</button><button id="sbx" type="button" title="Revenir à la radio">✕ Radio</button></div><iframe id="sbf" title="BREK-AYITI" src="about:blank"></iframe></div>
+<div id="site" aria-hidden="true"><div class="bar"><img id="sbimg" src="/radio/logo-radyo-brek.webp" alt=""><div class="tx"><b>● EN DIRECT · RADIO BREK</b><span id="sbt">Radio BREK</span></div><button id="sbp" type="button" aria-label="Lecture / pause">⏸</button><button id="sbx" type="button" title="Revenir à la radio">✕ Radio</button></div><iframe id="sbf" title="BREK-AYITI" src="about:blank"></iframe></div>
 <audio id="a" preload="none"></audio>
 <script>
 const TZ='America/Port-au-Prince';
@@ -151,8 +151,8 @@ const G=[ // grille : [heure début, heure fin, nom, description]
 // Bulletins du jour : date (heure d'Haïti) -> {heure: seconde de diffusion dans l'heure}
 const MUS=['kf','qf','q5','q4','q3','q2','q1','bg','mp','nf','em','le','rr','jl','kl','nk','am','sn','np','mw','lm','sy','bc','pa','k1','k2','k3','k4','in','sj','ms','uf','n2','gk','mf','ak','hy','we','yt','ap','so','cp','dn','hp','hj'];
 function lab(k){return MUS.includes(k)?{t:I[k].t,s:'Radio BREK · La voix de la Révolution Classique'}:I[k]}
-function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(k==='ov')return'/radio/disques/ov.webp';if(k==='nt')return'/radio/disques/nt.webp';if(/^l[0-6]$/.test(k))return'/radio/disques/ln.webp';if(/^k[1-4]$/.test(k)||k==='sk'||k==='s2'||k==='q1'||k==='q2'||k==='q3'||k==='q4'||k==='q5'||k==='jk')return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp?v=3';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa','is'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp'}
-let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c}}
+function cov(k){if(k==='hy')return'/radio/pochette.jpg';if(k==='ov')return'/radio/disques/ov.webp';if(k==='nt')return'/radio/disques/nt.webp';if(/^l[0-6]$/.test(k))return'/radio/disques/ln.webp';if(/^k[1-4]$/.test(k)||k==='sk'||k==='s2'||k==='q1'||k==='q2'||k==='q3'||k==='q4'||k==='q5'||k==='jk')return'/radio/disques/kp.webp';if(MUS.includes(k))return'/radio/disques/'+k+'.webp?v=3';if(['fl','es','er','mj','mt','ec','it','sm','jm','sa','is'].includes(k))return'/radio/disques/info.webp';return'/radio/disques/radio.webp?v=2'}
+let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.querySelector('img').src=c;disc.classList.toggle('logo',/radio\.webp|logo-radyo/.test(c))}}
 // OUVERTURE : « Près de toi, Elohim » chaque jour à 5 h 30
 const OUV={k:'ov',slots:{5:1800}};
 // NUIT : « Une longue nuit sur BREK-AYITI » en continu après « Douce nuit », jusqu'à 5 h 30
