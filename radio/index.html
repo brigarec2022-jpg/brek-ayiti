@@ -130,7 +130,7 @@ const I={
  q4:{t:'Pale pou tèt ou',s:'BREK sou Kompa',u:'/radio/pale-pou-tet-ou.mp3',d:336.85},
  q24:{t:'Last Dance',s:'Mickael Guirand feat. Fanny J · BREK sou Kompa',u:'/radio/last-dance.mp3',d:235.18},q23:{t:'No Drama',s:'Kreyòl La · BREK sou Kompa',u:'/radio/no-drama.mp3',d:228.96},q22:{t:'Devan l ye',s:'BREK sou Kompa',u:'/radio/devan-l-ye.mp3',d:251.92},q21:{t:'Foli renmen',s:'Bedjine · BREK sou Kompa',u:'/radio/foli-renmen.mp3',d:242.49},q20:{t:'J’avoue',s:'BREK sou Kompa',u:'/radio/javoue.mp3',d:246.00},q19:{t:'All I Want',s:'BREK sou Kompa',u:'/radio/all-i-want.mp3',d:355.71},q18:{t:'Histoire cachée',s:'BREK sou Kompa',u:'/radio/histoire-cachee.mp3',d:221.57},q17:{t:'Bèl ti moman',s:'BREK sou Kompa',u:'/radio/bel-ti-moman.mp3',d:295.34},q16:{t:'Kansè',s:'BREK sou Kompa',u:'/radio/kanse.mp3',d:329.46},q15:{t:'Lajan sere',s:'BREK sou Kompa',u:'/radio/lajan-sere.mp3',d:369.89},q14:{t:'Mea culpa',s:'Nu Look · BREK sou Kompa',u:'/radio/mea-culpa.mp3',d:361.04},q13:{t:'Ala de ka',s:'BREK sou Kompa',u:'/radio/ala-de-ka.mp3',d:351.74},q12:{t:'Sanpousan',s:'Zafem · BREK sou Kompa',u:'/radio/sanpousan.mp3',d:368.09},q11:{t:'Tolere w',s:'Rutshelle Guillaume feat. Kaï · BREK sou Kompa',u:'/radio/tolere-w.mp3',d:282.54},q10:{t:'Fè lapli',s:'Mikaben feat. Kenny Haiti · BREK sou Kompa',u:'/radio/fe-lapli.mp3',d:252.34},q9:{t:'À Dieu',s:'BREK sou Kompa',u:'/radio/a-dieu.mp3',d:366.13},q8:{t:'Psaumes 150',s:'BREK sou Kompa',u:'/radio/psaumes-150.mp3',d:352.13},q7:{t:'J’ai brûlé les étapes',s:'BREK sou Kompa',u:'/radio/jai-brule-les-etapes.mp3',d:346.28},q6:{t:'Aux Antilles',s:'BREK sou Kompa',u:'/radio/aux-antilles.mp3',d:722.89},q5:{t:'Rete la',s:'BREK sou Kompa',u:'/radio/rete-la.mp3',d:294.61},
  ss:{t:'Santé BREK',s:'Votre santé, notre combat',u:'/radio/spot-sante-brek.mp3',d:30.51},
- sw:{t:'Bienvenue sur Radio BREK',s:'Bon réveil, dès la première heure',u:'/radio/spot-bon-reveil.mp3',d:80.30},se:{t:'Flash Info Réveil',s:'Fin du Flash · Radio BREK',u:'/radio/spot-fin-flash-info.mp3',d:33.88},sf:{t:'Flash Info Réveil',s:'Dans un instant sur Radio BREK',u:'/radio/spot-flash-info.mp3',d:62.54},sp:{t:'RTV BREK',s:'La voix d’une nouvelle génération',u:'/radio/spot-rtv-brek.mp3',d:27.51},
+ ap:{t:'BREK-Actualité Politique',s:'Samedi · reprise le dimanche · Radio BREK',u:'/radio/spot-actualite-politique.mp3',d:82.05},sw:{t:'Bienvenue sur Radio BREK',s:'Bon réveil, dès la première heure',u:'/radio/spot-bon-reveil.mp3',d:80.30},se:{t:'Flash Info Réveil',s:'Fin du Flash · Radio BREK',u:'/radio/spot-fin-flash-info.mp3',d:33.88},sf:{t:'Flash Info Réveil',s:'Dans un instant sur Radio BREK',u:'/radio/spot-flash-info.mp3',d:62.54},sp:{t:'RTV BREK',s:'La voix d’une nouvelle génération',u:'/radio/spot-rtv-brek.mp3',d:27.51},
  sm:{t:'Journal de la mi-journée',s:'Radio BREK · Journal de midi',u:'/radio/spot-journal-midi.mp3?v=2',d:70.82},
  k1:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 1/4',u:'/radio/kompa-de-la-patrie-1.mp3',d:318.537143},
  k2:{t:'BREK sou Kompa',s:'Kompa de la Patrie · musique engagée · partie 2/4',u:'/radio/kompa-de-la-patrie-2.mp3',d:647.732245},
@@ -156,6 +156,8 @@ let curCov='';function setCov(k){const c=cov(k);if(c!==curCov){curCov=c;disc.que
 const OUV={k:'ov',slots:{5:1800}};
 // NUIT : « Une longue nuit sur BREK-AYITI » en continu après « Douce nuit », jusqu'à 5 h 30
 const LN=['l0','l1','l2','l3','l4','l5','l6'];
+// SPOTS PROGRAMMÉS PAR DATE ET PAR HEURE (insérés après l'indicatif)
+const EXTRA={'2026-11-28':{8:['ap'],11:['ap'],13:['ap'],15:['ap']},'2026-11-29':{9:['ap'],11:['ap'],13:['ap']}};
 const SPECIAL={'2026-11-23':{k:'mj',slots:{13:2280}}};
 function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(now())}
 const FILL=['id','qf','id','kf','id','ak','sk','yt','id','sj','sp','n2','id','cp','ss','uf','id','hy','id','gk','s2','ms','sp','ap','id','bv','id','so','id','pa','id','bc','id','sy','id','lm','id','qf','id','mw','id','kf','id','np','id','sn','id','am','id','nk','id','kl','id','jl','id','rr','id','le','id','em','id','nf','id','mp','id','bg'];
@@ -194,7 +196,7 @@ function head(h){let b=head0(h);const jm=JMIDI[today()],fx=FLASH[today()],so=SOI
  return b}
 function head0(h){if(h===0)return['id','nt'];if(h>=1&&h<=5)return[];if(h===23)return['id','jk'];if(h===8&&weekday())return['id','dn','hp','hj','hy','fl'];if(h===6)return['id','sw','mf','in','fl','hy','mf'];if(h===7)return['id','fl','in'];if(h===12)return['id','sm','fl'];if(h===18)return['id','es'];if(h>=19&&h<=21)return['id','er'];if(h===22)return['id','sk'];if(h>21||h<6)return['id'];return['id','fl']}
 function hourPlan(h){const sp0=SPECIAL[today()],sp=sp0&&sp0.slots[h]!==undefined?sp0:(h===5?OUV:null),at=sp?sp.slots[h]:null;
- let hd=head(h);if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
+ let hd=head(h);{const ex=(EXTRA[today()]||{})[h];if(ex)hd=[...hd.slice(0,1),...ex,...hd.slice(1)]}if(at!==null&&at<11)hd=hd.map(k=>k==='fl'?sp.k:k);
  const out=[];let t=0,done=at===null||at<11;
  const push=k=>{if(!done&&t+I[k].d>at){if(at>t)out.push({k,st:t,en:at});t=at;out.push({k:'id',st:t,en:t+I.id.d});t+=I.id.d;out.push({k:sp.k,st:t,en:t+I[sp.k].d});t+=I[sp.k].d;done=true;return}
   out.push({k,st:t,en:Math.min(3600,t+I[k].d)});t+=I[k].d};
